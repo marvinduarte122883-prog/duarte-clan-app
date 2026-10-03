@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-story-viewer-v30b">
+<meta name="duarte-build" content="production-story-qa-v30c">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-story-viewer-v30b";
+ window.DUARTE_BUILD="production-story-qa-v30c";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-story-viewer-v30b"};
+ window.ffDuarteV29C={version:"production-story-qa-v30c"};
 })();
 </script>
 
@@ -10566,6 +10566,39 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
+<script id="duarte-production-story-qa-v30c">
+(()=>{
+ async function run(){
+  const r={build:"production-story-qa-v30c",time:new Date().toISOString(),checks:{}};
+  const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
+  set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
+  set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
+  set("storyViewer",!!document.getElementById("ffStoryViewer"),"Story viewer");
+  set("storyProgress",!!document.getElementById("ffStoryProgress"),"progress");
+  set("storyNavigation",!!document.getElementById("ffStoryPrev")&&!!document.getElementById("ffStoryNext"),"prev/next");
+  set("mobileNavigation",!!document.querySelector(".ff-v29c-mobile-nav"),"mobile nav");
+  set("indexedDB","indexedDB" in window,"IndexedDB");
+  set("serviceWorker","serviceWorker" in navigator,navigator.serviceWorker?.controller?.scriptURL||"supported");
+  set("online",navigator.onLine,navigator.onLine?"online":"offline");
+  const sb=(typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null;
+  set("supabaseClient",!!sb,"Supabase");
+  if(sb){
+   try{
+    const s=await Promise.race([sb.auth.getSession(),new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),5000))]);
+    const u=s?.data?.session?.user; set("authSession",!!u,u?"authenticated":"no active session");
+    if(u){
+     const a=await sb.from("family_stories").select("id",{count:"exact",head:true}).gt("expires_at",new Date().toISOString());
+     set("familyStoriesTable",!a.error,a.error?.message||`${a.count||0} active`);
+     const b=await sb.from("family_story_views").select("id",{count:"exact",head:true});
+     set("storyViewsTable",!b.error,b.error?.message||`${b.count||0} readable views`);
+    }
+   }catch(e){set("authSession",false,e.message||e)}
+  }
+  r.passed=Object.values(r.checks).filter(x=>x.ok).length;r.total=Object.keys(r.checks).length;return r;
+ }
+ window.ffDuarteProductionQAV30C=run;
+})();
+</script>
 </body>
 </html>
 

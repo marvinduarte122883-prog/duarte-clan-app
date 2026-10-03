@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-smooth-v31m">
+<meta name="duarte-build" content="production-mobile-stable-v31n">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-smooth-v31m";
+ window.DUARTE_BUILD="production-mobile-stable-v31n";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-smooth-v31m"};
+ window.ffDuarteV29C={version:"production-mobile-stable-v31n"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-smooth-v31m">
+<script id="duarte-production-mobile-stable-v31n">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-smooth-v31m",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-stable-v31n",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,88 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-smooth-v31m"};
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-stable-v31n"};
+})();
+</script>
+
+
+<style id="duarte-mobile-stable-v31n">
+@media(max-width:760px){
+ html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+ html{height:auto!important;min-height:100%!important;overflow-y:auto!important}
+ body{position:static!important;height:auto!important;min-height:100dvh!important;max-height:none!important;overflow-y:visible!important}
+ #app,.app,.app-shell,.dashboard-shell,.page-shell,.main-shell{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+ main,.main,.main-content,.content,.dashboard,#home,#homeSection,#homeFeed,#feed,.feed-column{
+   position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;
+ }
+ .left-sidebar,.right-sidebar{max-height:none!important}
+ /* Mobile uses one document scroller; only intentional horizontal strips/modal content may scroll independently. */
+ .ff-stories-strip,.stories-strip{overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch}
+ .modal-content,.ff-modal-content{overscroll-behavior:contain}
+ body.ff-v31n-scrolling .post-card,
+ body.ff-v31n-scrolling .clan-member-card,
+ body.ff-v31n-scrolling .ff-story-card{pointer-events:none}
+ body.ff-v31n-scrolling .ff-v29c-mobile-nav,
+ body.ff-v31n-scrolling button,
+ body.ff-v31n-scrolling a{pointer-events:auto}
+}
+</style>
+<script id="duarte-mobile-stable-v31n-script">
+(()=>{
+ const mobile=matchMedia("(max-width:760px)");
+ if(!mobile.matches)return;
+ let scrollTimer=0,lastY=scrollY,lastAt=0;
+ const onScroll=()=>{
+   lastY=scrollY;lastAt=performance.now();
+   document.body?.classList.add("ff-v31n-scrolling");
+   clearTimeout(scrollTimer);
+   scrollTimer=setTimeout(()=>document.body?.classList.remove("ff-v31n-scrolling"),120);
+ };
+ addEventListener("scroll",onScroll,{passive:true});
+ window.ffV31NMobileBusy=()=>performance.now()-lastAt<180;
+
+ // Make refresh helpers able to cheaply skip cosmetic work during a finger scroll.
+ window.ffRunWhenMobileIdleV31N=(fn)=>{
+   if(typeof fn!=="function")return;
+   if(window.ffV31NMobileBusy())return setTimeout(()=>window.ffRunWhenMobileIdleV31N(fn),220);
+   fn();
+ };
+
+ // Repair the PWA update prompt on mobile. Activate waiting worker, then reload once.
+ let reloading=false;
+ async function activateWaiting(reg){
+   if(!reg)return false;
+   try{await reg.update()}catch(_){}
+   const waiting=reg.waiting;
+   if(!waiting)return false;
+   return new Promise(resolve=>{
+     const timeout=setTimeout(()=>resolve(false),4500);
+     navigator.serviceWorker.addEventListener("controllerchange",()=>{
+       clearTimeout(timeout);
+       if(!reloading){reloading=true;location.reload()}
+       resolve(true);
+     },{once:true});
+     waiting.postMessage({type:"SKIP_WAITING"});
+   });
+ }
+ async function updateNow(){
+   if(!("serviceWorker" in navigator))return;
+   const reg=await navigator.serviceWorker.getRegistration();
+   const ok=await activateWaiting(reg);
+   if(!ok){
+     try{await reg?.update()}catch(_){}
+     setTimeout(()=>location.reload(),700);
+   }
+ }
+ document.addEventListener("click",e=>{
+   const el=e.target.closest?.("button,a");
+   if(!el)return;
+   const t=(el.textContent||"").trim().toLowerCase();
+   if(t==="update" && (document.body.textContent||"").includes("New Duarte Clan version")){
+     e.preventDefault();e.stopImmediatePropagation();updateNow();
+   }
+ },true);
+ window.ffDuarteMobileStableV31N={version:"production-mobile-stable-v31n",updateNow};
 })();
 </script>
 

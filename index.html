@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-offline-session-v26">
+<meta name="duarte-build" content="production-facebook-lite-v27">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -9644,7 +9644,7 @@ body.ff-offline .ff-online-required{opacity:.55}
  font:600 9px/1 system-ui;color:#777;pointer-events:none;opacity:.7}
 body.ff-offline img:not([src^="data:"]){content-visibility:auto}
 </style>
-<div id="ffBuildV16" aria-hidden="true">Duarte Clan · V26 Offline Session</div>
+<div id="ffBuildV16" aria-hidden="true">Duarte Clan · V27 Facebook Lite</div>
 <script id="ff-production-v16-js">
 (function(){
  const BUILD="production-offline-v16";
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-offline-session-v26";
+ window.DUARTE_BUILD="production-facebook-lite-v27";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10123,7 +10123,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const swState=!r.serviceWorker.supported?"Not supported":r.serviceWorker.controlled?(r.serviceWorker.script||"Active"):"Not controlling page";
    const qState=r.queue.pending===null?"Unavailable":`${r.queue.pending} pending · ${r.queue.failed||0} failed`;
    grid.innerHTML=
-     item("App Build","V26 Offline Session")+
+     item("App Build","V27 Facebook Lite")+
      item("Network",r.online?"Online":"Offline",r.online?"ok":"warn")+
      item("Supabase",r.supabase.error?("Check failed: "+r.supabase.error):r.supabase.session,r.supabase.error?"bad":(r.supabase.session==="authenticated"?"ok":"warn"))+
      item("Service Worker",swState,r.serviceWorker.controlled?"ok":"warn")+

@@ -1,0 +1,40 @@
+{
+  "index.html": {
+    "bytes": 543341,
+    "script_blocks": 0,
+    "style_blocks": 0,
+    "literal_backslash_n": 9
+  },
+  "login.html": {
+    "bytes": 116660,
+    "script_blocks": 0,
+    "style_blocks": 0,
+    "literal_backslash_n": 0
+  },
+  "admin.html": {
+    "bytes": 21071,
+    "script_blocks": 0,
+    "style_blocks": 0,
+    "literal_backslash_n": 2
+  },
+  "index_duplicate_static_ids": [],
+  "pwa": {
+    "manifest_v23_refs": 1,
+    "sw_v26_refs": 1,
+    "old_sw_v24_refs": 0,
+    "old_manifest_v11_refs": 0,
+    "old_manifest_v16_refs": 0
+  },
+  "removed_empty_pages": [
+    "members.html",
+    "events.html",
+    "gallery.html"
+  ],
+  "removed_obsolete_pwa_files": [
+    "duarte-manifest-v11.webmanifest",
+    "duarte-manifest-v16.webmanifest",
+    "duarte-sw-v11.js",
+    "duarte-sw-v24.js"
+  ],
+  "javascript_syntax_errors": []
+}

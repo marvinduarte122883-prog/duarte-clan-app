@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-family-stories-v29b">
+<meta name="duarte-build" content="production-mobile-polish-v29c">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-family-stories-v29b";
+ window.DUARTE_BUILD="production-mobile-polish-v29c";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10358,6 +10358,93 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.addEventListener("online",load);
  });
  window.ffLoadFamilyStoriesV29B=load;
+})();
+</script>
+
+
+<!-- DUARTE CLAN V29C — MOBILE & HOME FEED POLISH -->
+<style id="duarte-mobile-home-polish-v29c">
+/* Keep desktop behavior intact; optimize phone/tablet presentation. */
+@media (max-width: 760px){
+  html,body{max-width:100%;overflow-x:hidden}
+  body{padding-bottom:70px!important}
+  #ffStories.ff-stories{margin:8px 8px 12px!important;padding:10px!important;border-radius:12px!important}
+  #ffStories .ff-stories-head{margin-bottom:8px!important}
+  #ffStories .ff-stories-strip{gap:8px!important;scroll-snap-type:x proximity}
+  #ffStories .ff-story-card{flex:0 0 92px!important;height:148px!important;border-radius:11px!important;scroll-snap-align:start}
+  #ffStories .ff-story-avatar{width:30px!important;height:30px!important;left:7px!important;top:7px!important}
+  #ffStories .ff-story-name{font-size:9px!important;left:7px!important;right:7px!important;bottom:8px!important}
+  #ffStories .ff-story-plus{width:34px!important;height:34px!important;font-size:23px!important}
+  #ffStories .ff-story-create span{font-size:9px!important}
+  .post-card,.dc-post,.feed-card,.create-post,.composer-card{max-width:100%!important;border-radius:10px!important}
+  .post-card img,.dc-post img,.feed-card img{max-width:100%;height:auto}
+  textarea,input,select{font-size:16px!important}
+  button,[role="button"],a{touch-action:manipulation}
+  img{content-visibility:auto}
+  .ff-v29c-mobile-nav{display:flex!important}
+}
+@media (min-width:761px){.ff-v29c-mobile-nav{display:none!important}}
+.ff-v29c-mobile-nav{
+  position:fixed;z-index:3200;left:0;right:0;bottom:0;height:62px;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:rgba(17,18,19,.97);border-top:1px solid #343434;
+  align-items:center;justify-content:space-around;backdrop-filter:blur(10px)
+}
+.ff-v29c-mobile-nav button{
+  flex:1;height:58px;border:0;background:transparent;color:#ddd;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;font-size:9px;font-weight:800;min-width:0
+}
+.ff-v29c-mobile-nav button .ico{font-size:19px;line-height:1}
+.ff-v29c-mobile-nav button.primary .ico{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;background:var(--gold,#e8ae22);color:#111;font-size:25px
+}
+.ff-v29c-mobile-nav button:active{transform:scale(.97)}
+</style>
+
+<nav class="ff-v29c-mobile-nav" aria-label="Mobile navigation">
+ <button type="button" data-v29c-nav="home"><span class="ico">⌂</span><span>Home</span></button>
+ <button type="button" data-v29c-nav="members"><span class="ico">👥</span><span>Members</span></button>
+ <button type="button" class="primary" data-v29c-nav="create"><span class="ico">+</span><span>Create</span></button>
+ <button type="button" data-v29c-nav="messenger"><span class="ico">💬</span><span>Messenger</span></button>
+ <button type="button" data-v29c-nav="menu"><span class="ico">☰</span><span>Menu</span></button>
+</nav>
+
+<script id="duarte-mobile-home-polish-v29c-script">
+(()=>{
+ const q=(s)=>document.querySelector(s);
+ function clickFirst(selectors){
+   for(const s of selectors){const el=q(s);if(el){el.click();return true}} return false;
+ }
+ function goHome(){
+   if(typeof window.showSection==="function"){try{window.showSection("home");return}catch(_){}}
+   clickFirst(['[data-section="home"]','[data-target="home"]','a[href="#home"]','.nav-home']);
+ }
+ function createPost(){
+   goHome();
+   setTimeout(()=>{
+     const el=q('#postInput,textarea[name="post"],.create-post textarea,.composer textarea');
+     if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.focus();}
+     else q('#ffStories')?.scrollIntoView({behavior:"smooth",block:"start"});
+   },120);
+ }
+ function members(){clickFirst(['[data-section="members"]','[data-target="members"]','a[href="#members"]','.nav-members']);}
+ function messenger(){clickFirst(['[data-section="messenger"]','[data-target="messenger"]','[data-action="messenger"]','.messenger-button','.nav-messenger']);}
+ function menu(){
+   if(!clickFirst(['[data-action="menu"]','.mobile-menu-toggle','.menu-toggle','.hamburger'])){
+     const side=q('.sidebar,.left-sidebar,nav.sidebar'); if(side)side.scrollIntoView({behavior:"smooth",block:"start"});
+   }
+ }
+ document.addEventListener("click",e=>{
+   const b=e.target.closest("[data-v29c-nav]");if(!b)return;
+   const a=b.dataset.v29cNav;
+   if(a==="home")goHome();else if(a==="members")members();else if(a==="create")createPost();else if(a==="messenger")messenger();else if(a==="menu")menu();
+ });
+ if("requestIdleCallback" in window){
+   requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
+ }
+ window.ffDuarteV29C={version:"production-mobile-polish-v29c"};
 })();
 </script>
 

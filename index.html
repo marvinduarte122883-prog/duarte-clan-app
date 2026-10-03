@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-polish-v29c">
+<meta name="duarte-build" content="production-story-viewer-v30b">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-polish-v29c";
+ window.DUARTE_BUILD="production-story-viewer-v30b";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10222,7 +10222,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </style>
 
 <div id="ffStoryViewer" class="ff-story-modal" aria-hidden="true">
-  <div class="ff-story-view">
+  <div class="ff-story-view"><div id="ffStoryProgress" class="ff-story-progress"></div>
     <img id="ffStoryViewImage" alt="Family story">
     <div class="ff-story-view-bg"></div>
     <div class="ff-story-view-head">
@@ -10231,6 +10231,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
       <button id="ffStoryDelete" class="ff-story-delete" type="button" title="Delete story" style="display:none">🗑</button>
       <button id="ffStoryClose" class="ff-story-view-close" type="button" aria-label="Close">×</button>
     </div>
+    <button id="ffStoryPrev" class="ff-story-nav ff-story-prev" type="button" aria-label="Previous story">‹</button>
+    <button id="ffStoryNext" class="ff-story-nav ff-story-next" type="button" aria-label="Next story">›</button>
+    <div id="ffStorySeenBy" class="ff-story-seenby"></div>
     <div id="ffStoryViewCaption" class="ff-story-caption"></div>
   </div>
 </div>
@@ -10444,7 +10447,122 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-polish-v29c"};
+ window.ffDuarteV29C={version:"production-story-viewer-v30b"};
+})();
+</script>
+
+
+<style id="duarte-family-stories-v30b">
+.ff-story-progress{position:absolute;left:8px;right:8px;top:6px;z-index:5;display:flex;gap:3px;height:3px}
+.ff-story-progress-track{height:3px;flex:1;background:rgba(255,255,255,.28);border-radius:5px;overflow:hidden}
+.ff-story-progress-fill{height:100%;width:0;background:#fff}
+.ff-story-progress-fill.done{width:100%}
+.ff-story-progress-fill.running{animation:ffStoryProgressV30B 6s linear forwards}
+@keyframes ffStoryProgressV30B{from{width:0}to{width:100%}}
+.ff-story-nav{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:42px;height:70px;border:0;background:rgba(0,0,0,.18);color:#fff;font-size:40px;cursor:pointer}
+.ff-story-prev{left:0;border-radius:0 12px 12px 0}.ff-story-next{right:0;border-radius:12px 0 0 12px}
+.ff-story-seenby{position:absolute;z-index:4;left:14px;bottom:8px;font-size:9px;color:#ddd;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ff-story-card.ff-story-viewed .ff-story-avatar{border-color:#666!important;opacity:.86}
+.ff-story-card:not(.ff-story-viewed) .ff-story-avatar{box-shadow:0 0 0 2px rgba(232,174,34,.25)}
+@media(max-width:700px){.ff-story-nav{width:34px;height:64px;font-size:34px}.ff-story-seenby{bottom:10px}}
+@media(prefers-reduced-motion:reduce){.ff-story-progress-fill.running{animation-duration:.01ms}}
+</style>
+
+<script id="duarte-family-stories-v30b-script">
+(()=>{
+ const DURATION=6000;
+ let stories=[], viewed=new Set(), me=null, currentIndex=-1, timer=null, ownerViewCount=new Map();
+ const $=id=>document.getElementById(id);
+ const client=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
+
+ function currentStory(){return currentIndex>=0?stories[currentIndex]:null}
+ function clearTimer(){if(timer){clearTimeout(timer);timer=null}}
+ function progress(){
+   const host=$("ffStoryProgress");if(!host)return;
+   host.innerHTML=stories.map((_,i)=>`<span class="ff-story-progress-track"><span class="ff-story-progress-fill ${i<currentIndex?"done":i===currentIndex?"running":""}"></span></span>`).join("");
+ }
+ async function loadViewState(){
+   const sb=client();if(!sb)return;
+   try{
+     const sess=await sb.auth.getSession();me=sess?.data?.session?.user||null;
+     const base=(window.ffLoadFamilyStoriesV29B && Array.isArray(window.__ffStoryRowsV30B))?window.__ffStoryRowsV30B:null;
+     const {data:ss}=await sb.from("family_stories").select("id,user_id,caption,photo_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:true}).limit(60);
+     stories=ss||base||[];
+     if(me&&stories.length){
+       const ids=stories.map(s=>s.id);
+       const {data:vs}=await sb.from("family_story_views").select("story_id,viewer_id").in("story_id",ids);
+       viewed=new Set((vs||[]).filter(v=>v.viewer_id===me.id).map(v=>v.story_id));
+       for(const s of stories){
+         if(s.user_id===me.id){
+           const count=(vs||[]).filter(v=>v.story_id===s.id).length;
+           ownerViewCount.set(s.id,count);
+         }
+       }
+     }
+     decorateCards();
+   }catch(e){console.warn("V30B story view state:",e)}
+ }
+ function decorateCards(){
+   document.querySelectorAll("[data-story]").forEach(card=>{
+     card.classList.toggle("ff-story-viewed",viewed.has(card.dataset.story));
+   });
+ }
+ async function recordView(s){
+   const sb=client();if(!sb||!me||!s||s.user_id===me.id)return;
+   try{
+     const {error}=await sb.from("family_story_views").insert({story_id:s.id,viewer_id:me.id});
+     if(error && !String(error.code||"").includes("23505")) throw error;
+     viewed.add(s.id);decorateCards();
+   }catch(e){console.warn("Story view record:",e)}
+ }
+ async function refreshOwnerCount(s){
+   const box=$("ffStorySeenBy");if(!box)return;
+   box.textContent="";
+   if(!me||!s||s.user_id!==me.id)return;
+   try{
+     const sb=client();
+     const {count,error}=await sb.from("family_story_views").select("id",{count:"exact",head:true}).eq("story_id",s.id);
+     if(!error){ownerViewCount.set(s.id,count||0);box.textContent=`Seen by ${count||0}`;}
+   }catch(_){}
+ }
+ function show(i){
+   if(!stories.length)return;
+   clearTimer();currentIndex=(i+stories.length)%stories.length;
+   const s=currentStory(); if(!s)return;
+   const card=document.querySelector(`[data-story="${CSS.escape(s.id)}"]`);
+   if(card){card.click()}else{
+     // Fallback when original card list has refreshed differently.
+     const viewer=$("ffStoryViewer");if(viewer){viewer.classList.add("open");viewer.setAttribute("aria-hidden","false")}
+     if($("ffStoryViewImage"))$("ffStoryViewImage").src=s.photo_url||"";
+     if($("ffStoryViewCaption"))$("ffStoryViewCaption").textContent=s.caption||"";
+   }
+   progress();recordView(s);refreshOwnerCount(s);
+   timer=setTimeout(()=>next(),DURATION);
+ }
+ function next(){if(!stories.length)return;if(currentIndex>=stories.length-1){close();return}show(currentIndex+1)}
+ function prev(){if(!stories.length)return;show(Math.max(0,currentIndex-1))}
+ function close(){clearTimer();$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
+ function interceptOpen(e){
+   const card=e.target.closest?.("[data-story]");if(!card)return;
+   const idx=stories.findIndex(s=>s.id===card.dataset.story);
+   if(idx<0)return;
+   currentIndex=idx;
+   setTimeout(()=>{progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);clearTimer();timer=setTimeout(next,DURATION)},0);
+ }
+ document.addEventListener("click",interceptOpen,true);
+ document.addEventListener("DOMContentLoaded",()=>{
+   loadViewState();
+   $("ffStoryPrev")?.addEventListener("click",e=>{e.stopPropagation();prev()});
+   $("ffStoryNext")?.addEventListener("click",e=>{e.stopPropagation();next()});
+   $("ffStoryClose")?.addEventListener("click",clearTimer);
+   $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer"))clearTimer()});
+   document.addEventListener("keydown",e=>{
+     if(!$("ffStoryViewer")?.classList.contains("open"))return;
+     if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key==="Escape")close();
+   });
+   window.addEventListener("online",loadViewState);
+ });
+ window.ffDuarteStoriesV30B={reload:loadViewState,next,prev};
 })();
 </script>
 

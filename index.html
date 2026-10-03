@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-health-v25">
+<meta name="duarte-build" content="production-offline-session-v26">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -2925,17 +2925,77 @@ function getInitials(name) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-async function protectPrivateClan() {
-    try {
-        const { data: userData, error: userError } =
-            await supabaseClient.auth.getUser();
+const FF_OFFLINE_AUTH_KEY = "duarte_offline_auth_v26";
+const FF_OFFLINE_PROFILE_KEY = "duarte_offline_profile_v26";
 
-        if (userError || !userData.user) {
+function ffSaveOfflineIdentity(user, profile){
+    try{
+        if(user?.id){
+            localStorage.setItem(FF_OFFLINE_AUTH_KEY, JSON.stringify({
+                user_id:user.id,
+                email:user.email || "",
+                verified_at:Date.now()
+            }));
+        }
+        if(profile?.id) localStorage.setItem(FF_OFFLINE_PROFILE_KEY, JSON.stringify(profile));
+    }catch(e){ console.warn("Offline identity cache unavailable:", e); }
+}
+function ffReadOfflineIdentity(){
+    try{
+        return {
+            auth: JSON.parse(localStorage.getItem(FF_OFFLINE_AUTH_KEY) || "null"),
+            profile: JSON.parse(localStorage.getItem(FF_OFFLINE_PROFILE_KEY) || "null")
+        };
+    }catch(e){ return {auth:null,profile:null}; }
+}
+function ffClearOfflineIdentity(){
+    try{
+        localStorage.removeItem(FF_OFFLINE_AUTH_KEY);
+        localStorage.removeItem(FF_OFFLINE_PROFILE_KEY);
+    }catch(e){}
+}
+function ffShowOfflineMode(){
+    document.documentElement.classList.add("ff-offline-mode");
+    document.body.style.visibility = "visible";
+    let badge=document.getElementById("ffOfflineModeBadgeV26");
+    if(!badge){
+        badge=document.createElement("div");
+        badge.id="ffOfflineModeBadgeV26";
+        badge.textContent="Offline · changes will sync when connected";
+        badge.style.cssText="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483000;background:#171717;color:#f4bd2d;border:1px solid #8b6915;border-radius:999px;padding:9px 14px;font:700 12px Arial,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35)";
+        document.body.appendChild(badge);
+    }
+}
+async function ffEnterCachedOfflineClan(){
+    const cached=ffReadOfflineIdentity();
+    if(!cached.auth?.user_id || !cached.profile?.id) return false;
+    currentUser={id:cached.auth.user_id,email:cached.auth.email || ""};
+    currentProfile=cached.profile;
+    applyMemberProfile(currentProfile);
+    syncAnnouncementAdminAccess();
+    ffShowOfflineMode();
+    try{ mountBirthdayPanel(); }catch(e){}
+    return true;
+}
+
+async function protectPrivateClan() {
+    if(!navigator.onLine){
+        if(await ffEnterCachedOfflineClan()) return;
+        window.location.replace("login.html?offline=1");
+        return;
+    }
+
+    try {
+        // getSession() reads the locally persisted Supabase session first.
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError || !sessionData?.session?.user) {
             window.location.replace("login.html");
             return;
         }
 
-        currentUser = userData.user;
+        currentUser = sessionData.session.user;
 
         const { data: profile, error: profileError } =
             await supabaseClient
@@ -2945,13 +3005,17 @@ async function protectPrivateClan() {
                 .single();
 
         if (profileError || !profile) {
+            // A network failure is not proof that the user is logged out.
+            if(!navigator.onLine || /fetch|network|timeout/i.test(profileError?.message || "")){
+                if(await ffEnterCachedOfflineClan()) return;
+            }
             console.error(profileError);
-            await supabaseClient.auth.signOut();
             window.location.replace("login.html");
             return;
         }
 
         currentProfile = profile;
+        ffSaveOfflineIdentity(currentUser, currentProfile);
 
         if (profile.approved !== true && profile.is_admin !== true) {
             showPendingApproval(profile);
@@ -2959,10 +3023,6 @@ async function protectPrivateClan() {
         }
 
         applyMemberProfile(profile);
-
-        // V2 announcements: initialize after the authenticated profile is known.
-        // The previous build only initialized this from renderHomeProfileAvatar(),
-        // which is not called during the normal startup path.
         syncAnnouncementAdminAccess();
         await loadAnnouncements();
 
@@ -2972,14 +3032,34 @@ async function protectPrivateClan() {
         await loadMembersDirectory();
         startNotificationRefresh();
         startMessengerRefresh();
-    mountBirthdayPanel();
-    loadUpcomingBirthdays();
+        mountBirthdayPanel();
+        loadUpcomingBirthdays();
 
     } catch (error) {
         console.error("Private clan access check failed:", error);
+        if(!navigator.onLine || /fetch|network|timeout/i.test(error?.message || "")){
+            if(await ffEnterCachedOfflineClan()) return;
+        }
         window.location.replace("login.html");
     }
 }
+
+window.addEventListener("online", async ()=>{
+    document.documentElement.classList.remove("ff-offline-mode");
+    document.getElementById("ffOfflineModeBadgeV26")?.remove();
+    try{
+        const {data}=await supabaseClient.auth.getSession();
+        if(data?.session?.user){
+            currentUser=data.session.user;
+            const {data:profile}=await supabaseClient.from("profiles")
+                .select("id, full_name, clan_role, approved, is_admin, avatar_url")
+                .eq("id",currentUser.id).single();
+            if(profile){ currentProfile=profile; ffSaveOfflineIdentity(currentUser,profile); }
+        }
+        if(typeof ffSyncOfflineQueue==="function") await ffSyncOfflineQueue();
+    }catch(e){ console.warn("Reconnect validation will retry later:",e); }
+});
+window.addEventListener("offline", ffShowOfflineMode);
 
 /* =========================
    NAVIGATION
@@ -9333,7 +9413,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v24.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v26.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -9564,7 +9644,7 @@ body.ff-offline .ff-online-required{opacity:.55}
  font:600 9px/1 system-ui;color:#777;pointer-events:none;opacity:.7}
 body.ff-offline img:not([src^="data:"]){content-visibility:auto}
 </style>
-<div id="ffBuildV16" aria-hidden="true">Duarte Clan · V25 Production Health</div>
+<div id="ffBuildV16" aria-hidden="true">Duarte Clan · V26 Offline Session</div>
 <script id="ff-production-v16-js">
 (function(){
  const BUILD="production-offline-v16";
@@ -10004,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-health-v25";
+ window.DUARTE_BUILD="production-offline-session-v26";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10043,7 +10123,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const swState=!r.serviceWorker.supported?"Not supported":r.serviceWorker.controlled?(r.serviceWorker.script||"Active"):"Not controlling page";
    const qState=r.queue.pending===null?"Unavailable":`${r.queue.pending} pending · ${r.queue.failed||0} failed`;
    grid.innerHTML=
-     item("App Build","V25 Production Health")+
+     item("App Build","V26 Offline Session")+
      item("Network",r.online?"Online":"Offline",r.online?"ok":"warn")+
      item("Supabase",r.supabase.error?("Check failed: "+r.supabase.error):r.supabase.session,r.supabase.error?"bad":(r.supabase.session==="authenticated"?"ok":"warn"))+
      item("Service Worker",swState,r.serviceWorker.controlled?"ok":"warn")+

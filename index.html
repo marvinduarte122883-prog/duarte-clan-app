@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-story-qa-v30c">
+<meta name="duarte-build" content="production-members-directory-v31a">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-story-qa-v30c";
+ window.DUARTE_BUILD="production-members-directory-v31a";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-story-qa-v30c"};
+ window.ffDuarteV29C={version:"production-members-directory-v31a"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-story-qa-v30c">
+<script id="duarte-production-members-directory-v31a">
 (()=>{
  async function run(){
-  const r={build:"production-story-qa-v30c",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-members-directory-v31a",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10599,6 +10599,69 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  window.ffDuarteProductionQAV30C=run;
 })();
 </script>
+
+<style id="duarte-members-directory-v31a">
+#membersManager{max-width:100%;overflow:hidden}
+#membersManager .members-manager-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+#membersManager .members-search{min-height:44px;border-radius:22px;padding:0 16px}
+#membersGrid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#membersGrid .clan-member-card{position:relative;display:flex;align-items:center;gap:12px;min-height:92px;padding:14px;border:1px solid #303030;border-radius:14px;background:#18191b;transition:transform .12s ease,border-color .12s ease}
+#membersGrid .clan-member-card:hover{border-color:#806b25;transform:translateY(-1px)}
+#membersGrid .member-avatar{width:58px;height:58px;min-width:58px;border:2px solid #d4af37;border-radius:50%;overflow:hidden;display:grid;place-items:center;font-weight:800}
+#membersGrid .member-name{margin:0 0 3px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#membersGrid .clan-member-card p{margin:0;color:#b7b7b7;font-size:12px}
+#membersGrid .ff-member-message{min-height:38px;border:1px solid #66561e;border-radius:9px;background:#29230f;color:#f2d66b;padding:0 11px;font-weight:700;cursor:pointer}
+#membersGrid .ff-v31-view-profile{min-height:38px;border:1px solid #3a3a3a;border-radius:9px;background:#242526;color:#eee;padding:0 11px;font-weight:700;cursor:pointer}
+.ff-v31-member-actions{display:flex;gap:6px;margin-left:auto}
+.ff-v31-directory-summary{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.ff-v31-chip{border:1px solid #343434;background:#202124;border-radius:999px;padding:6px 10px;color:#c8c8c8;font-size:11px}
+.ff-v31-chip strong{color:#e6c44e}
+@media(max-width:760px){
+ #membersGrid{grid-template-columns:1fr}
+ #membersGrid .clan-member-card{min-height:84px;padding:11px}
+ #membersGrid .member-avatar{width:52px;height:52px;min-width:52px}
+ .ff-v31-member-actions{flex-direction:column}
+ #membersGrid .ff-member-message,#membersGrid .ff-v31-view-profile{min-height:36px;padding:0 9px;font-size:11px}
+}
+@media(max-width:430px){
+ #membersGrid .clan-member-card{align-items:flex-start}
+ .ff-v31-member-actions{position:absolute;right:9px;bottom:9px;flex-direction:row}
+ #membersGrid .clan-member-card{padding-bottom:52px}
+}
+</style>
+<script id="duarte-members-directory-v31a-script">
+(()=>{
+ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+ function enhance(){
+   const grid=document.getElementById("membersGrid"), count=document.getElementById("membersCount");
+   if(!grid)return;
+   if(count && !document.getElementById("ffV31DirectorySummary")){
+     const bar=document.createElement("div");bar.id="ffV31DirectorySummary";bar.className="ff-v31-directory-summary";
+     bar.innerHTML=`<span class="ff-v31-chip"><strong id="ffV31MemberTotal">0</strong> approved members</span><span class="ff-v31-chip">🔎 Search by name or clan role</span>`;
+     count.insertAdjacentElement("afterend",bar);
+   }
+   document.querySelectorAll("#membersGrid .clan-member-card").forEach(card=>{
+     if(card.dataset.v31a==="1")return; card.dataset.v31a="1";
+     const uid=card.getAttribute("data-user-id"); if(!uid)return;
+     const existing=card.querySelector(".ff-member-message");
+     const actions=document.createElement("div");actions.className="ff-v31-member-actions";
+     const view=document.createElement("button");view.type="button";view.className="ff-v31-view-profile";view.textContent="View Profile";
+     view.onclick=e=>{e.stopPropagation();window.openClanProfile?.(uid)};
+     actions.appendChild(view);
+     if(existing){existing.remove();actions.appendChild(existing)}
+     card.appendChild(actions);
+   });
+   const total=document.getElementById("ffV31MemberTotal");
+   if(total) total.textContent=String(document.querySelectorAll("#membersGrid .clan-member-card").length);
+ }
+ const mo=new MutationObserver(enhance);
+ document.addEventListener("DOMContentLoaded",()=>{
+   enhance();const grid=document.getElementById("membersGrid");if(grid)mo.observe(grid,{childList:true});
+ });
+ window.ffDuarteMembersV31A={enhance};
+})();
+</script>
+
 </body>
 </html>
 

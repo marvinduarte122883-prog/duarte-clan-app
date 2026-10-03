@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-auth-health-v28">
+<meta name="duarte-build" content="production-family-stories-v29b">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-auth-health-v28";
+ window.DUARTE_BUILD="production-family-stories-v29b";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10148,7 +10148,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const swState=!r.serviceWorker.supported?"Not supported":r.serviceWorker.controlled?(r.serviceWorker.script||"Active"):"Not controlling page";
    const qState=r.queue.pending===null?"Unavailable":`${r.queue.pending} pending · ${r.queue.failed||0} failed`;
    grid.innerHTML=
-     item("App Build","V28 Auth & Offline Health")+
+     item("App Build","V29B Family Stories")+
      item("Network",r.online?"Online":"Offline",r.online?"ok":"warn")+
      item("Supabase",r.supabase.session,
        r.supabase.session==="authenticated"?"ok":
@@ -10172,6 +10172,192 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    catch(_){details.textContent=text}
  });
  window.ffDuarteHealthV25={run,open(){ $("ffHealthBtnV25")?.click(); }};
+})();
+</script>
+
+
+<!-- =========================================================
+     DUARTE CLAN V29B — FAMILY STORIES
+     ========================================================= -->
+<style id="duarte-family-stories-v29b">
+.ff-stories{margin:0 0 18px;background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:14px}
+.ff-stories-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ff-stories-head strong{font-size:14px}.ff-stories-head span{font-size:10px;color:var(--muted)}
+.ff-stories-strip{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.ff-stories-strip::-webkit-scrollbar{display:none}
+.ff-story-card{position:relative;flex:0 0 112px;height:178px;border:1px solid #353535;border-radius:12px;overflow:hidden;background:#202020;cursor:pointer;color:#fff}
+.ff-story-card img.ff-story-bg{width:100%;height:100%;object-fit:cover;display:block}
+.ff-story-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.08) 45%,rgba(0,0,0,.82))}
+.ff-story-avatar{position:absolute;left:8px;top:8px;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#292929;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.ff-story-avatar img{width:100%;height:100%;object-fit:cover}
+.ff-story-name{position:absolute;left:8px;right:8px;bottom:9px;font-size:10px;font-weight:800;line-height:1.2;text-shadow:0 1px 3px #000}
+.ff-story-create{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(145deg,#202020,#151515)}
+.ff-story-plus{width:38px;height:38px;border-radius:50%;background:var(--gold);color:#111;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin-bottom:8px}
+.ff-story-create span{font-size:10px;font-weight:800}
+.ff-story-empty{color:var(--muted);font-size:11px;padding:25px 12px;white-space:nowrap}
+.ff-story-modal{position:fixed;inset:0;z-index:3900;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:14px}
+.ff-story-modal.open{display:flex}
+.ff-story-view{position:relative;width:min(430px,100%);height:min(760px,92dvh);background:#111;border:1px solid #343434;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ff-story-view>img{width:100%;height:100%;object-fit:contain;background:#080808}
+.ff-story-view-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent 22%,transparent 62%,rgba(0,0,0,.78))}
+.ff-story-view-head{position:absolute;left:12px;right:12px;top:12px;display:flex;align-items:center;gap:9px;z-index:2}
+.ff-story-view-avatar{width:36px;height:36px;border-radius:50%;border:2px solid var(--gold);overflow:hidden;background:#292929;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+.ff-story-view-avatar img{width:100%;height:100%;object-fit:cover}
+.ff-story-view-meta{min-width:0;flex:1}.ff-story-view-name{font-size:12px;font-weight:800}.ff-story-view-time{font-size:9px;color:#ccc;margin-top:2px}
+.ff-story-view-close,.ff-story-delete{border:0;background:rgba(25,25,25,.8);color:#fff;border-radius:50%;width:34px;height:34px;cursor:pointer}
+.ff-story-caption{position:absolute;left:16px;right:16px;bottom:22px;text-align:center;font-size:14px;line-height:1.45;white-space:pre-wrap;text-shadow:0 1px 4px #000;z-index:2}
+.ff-story-compose{width:min(480px,100%);background:#181818;border:1px solid #383838;border-radius:15px;overflow:hidden}
+.ff-story-compose-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #303030;font-weight:900}
+.ff-story-compose-body{padding:16px}.ff-story-file{display:block;border:1px dashed #4a4a4a;border-radius:12px;padding:18px;text-align:center;cursor:pointer;color:#ccc;font-size:12px}.ff-story-file input{display:none}
+.ff-story-preview{width:100%;max-height:380px;object-fit:contain;background:#0b0b0b;border-radius:10px;margin-top:12px;display:none}
+.ff-story-caption-input{width:100%;margin-top:12px;background:#222;border:1px solid #3b3b3b;color:#fff;border-radius:10px;padding:11px;font-size:14px;resize:vertical;min-height:70px}
+.ff-story-compose-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}.ff-story-compose-actions button{border:0;border-radius:18px;padding:9px 14px;font-weight:800;cursor:pointer}.ff-story-cancel{background:#292929;color:#fff}.ff-story-publish{background:var(--gold);color:#111}
+.ff-story-status{font-size:10px;color:var(--gold);min-height:16px;margin-top:8px}
+@media(max-width:700px){
+ .ff-stories{border-radius:10px;padding:10px;margin-bottom:12px}
+ .ff-story-card{flex-basis:102px;height:162px}
+ .ff-story-modal{padding:0}.ff-story-view,.ff-story-compose{width:100%;height:100dvh;max-height:none;border:0;border-radius:0}
+ .ff-story-compose{overflow:auto}
+}
+</style>
+
+<div id="ffStoryViewer" class="ff-story-modal" aria-hidden="true">
+  <div class="ff-story-view">
+    <img id="ffStoryViewImage" alt="Family story">
+    <div class="ff-story-view-bg"></div>
+    <div class="ff-story-view-head">
+      <div id="ffStoryViewAvatar" class="ff-story-view-avatar">D</div>
+      <div class="ff-story-view-meta"><div id="ffStoryViewName" class="ff-story-view-name">Duarte Clan</div><div id="ffStoryViewTime" class="ff-story-view-time"></div></div>
+      <button id="ffStoryDelete" class="ff-story-delete" type="button" title="Delete story" style="display:none">🗑</button>
+      <button id="ffStoryClose" class="ff-story-view-close" type="button" aria-label="Close">×</button>
+    </div>
+    <div id="ffStoryViewCaption" class="ff-story-caption"></div>
+  </div>
+</div>
+
+<div id="ffStoryComposer" class="ff-story-modal" aria-hidden="true">
+  <div class="ff-story-compose">
+    <div class="ff-story-compose-head"><span>Create family story</span><button id="ffStoryComposeClose" class="ff-story-view-close" type="button">×</button></div>
+    <div class="ff-story-compose-body">
+      <label class="ff-story-file">📷 Choose a photo<input id="ffStoryFile" type="file" accept="image/*"></label>
+      <img id="ffStoryPreview" class="ff-story-preview" alt="Story preview">
+      <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
+      <div id="ffStoryStatus" class="ff-story-status"></div>
+      <div class="ff-story-compose-actions"><button id="ffStoryCancel" class="ff-story-cancel" type="button">Cancel</button><button id="ffStoryPublish" class="ff-story-publish" type="button">Share Story</button></div>
+    </div>
+  </div>
+</div>
+
+<script id="duarte-family-stories-v29b-script">
+(()=>{
+ const state={stories:[],profiles:new Map(),me:null,current:null};
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+ const sb=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
+ const ago=v=>{const n=Date.now()-new Date(v).getTime(),m=Math.max(0,Math.floor(n/60000));return m<1?"Just now":m<60?m+"m":Math.floor(m/60)+"h";};
+ function avatarHTML(p){const u=p?.avatar_url||p?.photo_url||p?.profile_photo_url||"";return u?`<img src="${esc(u)}" alt="">`:esc((p?.full_name||p?.name||p?.email||"D").trim().charAt(0).toUpperCase()||"D");}
+ function nameOf(p){return p?.full_name||p?.name||p?.display_name||p?.email||"Duarte member";}
+ function ensureHost(){
+   if($("ffStories"))return $("ffStories");
+   const feed=document.querySelector(".main-feed,.feed,main,.content")||document.querySelector(".create-post")?.parentElement;
+   const create=document.querySelector(".create-post");
+   if(!feed&&!create)return null;
+   const box=document.createElement("section");box.id="ffStories";box.className="ff-stories";
+   box.innerHTML=`<div class="ff-stories-head"><strong>Family Stories</strong><span>24 hours</span></div><div id="ffStoriesStrip" class="ff-stories-strip"></div>`;
+   if(create?.parentElement)create.parentElement.insertBefore(box,create);else feed.prepend(box);
+   return box;
+ }
+ async function getProfile(uid){
+   if(state.profiles.has(uid))return state.profiles.get(uid);
+   const client=sb(); if(!client)return null;
+   const {data}=await client.from("profiles").select("*").eq("id",uid).maybeSingle();
+   if(data)state.profiles.set(uid,data); return data||null;
+ }
+ async function load(){
+   ensureHost(); const strip=$("ffStoriesStrip"); if(!strip)return;
+   strip.innerHTML=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff-story-plus">+</div><span>Create Story</span></button><div class="ff-story-empty">Loading stories…</div>`;
+   $("ffCreateStory")?.addEventListener("click",openComposer);
+   const client=sb(); if(!client){render([]);return;}
+   try{
+     const sess=await client.auth.getSession(); state.me=sess?.data?.session?.user||null;
+     const {data,error}=await client.from("family_stories").select("id,user_id,caption,photo_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(60);
+     if(error)throw error;
+     state.stories=data||[];
+     const ids=[...new Set(state.stories.map(x=>x.user_id).filter(Boolean))];
+     if(ids.length){
+       const {data:ps}=await client.from("profiles").select("*").in("id",ids);
+       (ps||[]).forEach(p=>state.profiles.set(p.id,p));
+     }
+     render(state.stories);
+   }catch(e){console.warn("Stories:",e);render([],"Stories unavailable");}
+ }
+ function render(rows,msg){
+   const strip=$("ffStoriesStrip");if(!strip)return;
+   let h=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff-story-plus">+</div><span>Create Story</span></button>`;
+   if(!rows.length)h+=`<div class="ff-story-empty">${esc(msg||"No active stories yet.")}</div>`;
+   for(const s of rows){
+     const p=state.profiles.get(s.user_id)||{};
+     h+=`<button class="ff-story-card" type="button" data-story="${esc(s.id)}">${s.photo_url?`<img class="ff-story-bg" loading="lazy" decoding="async" src="${esc(s.photo_url)}" alt="">`:""}<div class="ff-story-shade"></div><div class="ff-story-avatar">${avatarHTML(p)}</div><div class="ff-story-name">${esc(nameOf(p))}</div></button>`;
+   }
+   strip.innerHTML=h;
+   $("ffCreateStory")?.addEventListener("click",openComposer);
+   strip.querySelectorAll("[data-story]").forEach(b=>b.addEventListener("click",()=>openStory(b.dataset.story)));
+ }
+ function openStory(id){
+   const s=state.stories.find(x=>x.id===id);if(!s)return;state.current=s;
+   const p=state.profiles.get(s.user_id)||{};
+   $("ffStoryViewImage").src=s.photo_url||"";
+   $("ffStoryViewName").textContent=nameOf(p);$("ffStoryViewTime").textContent=ago(s.created_at);
+   $("ffStoryViewAvatar").innerHTML=avatarHTML(p);$("ffStoryViewCaption").textContent=s.caption||"";
+   $("ffStoryDelete").style.display=state.me?.id===s.user_id?"inline-block":"none";
+   $("ffStoryViewer").classList.add("open");$("ffStoryViewer").setAttribute("aria-hidden","false");
+ }
+ function closeStory(){$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
+ function openComposer(){$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
+ function closeComposer(){$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";}
+ async function compress(file){
+   if(typeof window.ffStorageSaverImage==="function")try{return await window.ffStorageSaverImage(file,"feed");}catch(_){}
+   return file;
+ }
+ async function publish(){
+   const client=sb(),file=$("ffStoryFile").files?.[0],caption=$("ffStoryCaptionInput").value.trim(),status=$("ffStoryStatus"),btn=$("ffStoryPublish");
+   if(!client){status.textContent="Supabase is not ready.";return}
+   if(!navigator.onLine){status.textContent="Stories require internet for photo upload.";return}
+   if(!file){status.textContent="Choose a photo first.";return}
+   btn.disabled=true;status.textContent="Preparing photo…";
+   try{
+     const sess=await client.auth.getSession(),user=sess?.data?.session?.user;if(!user)throw new Error("Please sign in again.");
+     const blob=await compress(file),ext=(blob.type?.split("/")[1]||"webp").replace("jpeg","jpg"),path=`stories/${user.id}/${crypto.randomUUID()}.${ext}`;
+     status.textContent="Uploading…";
+     const up=await client.storage.from("family-gallery").upload(path,blob,{upsert:false,contentType:blob.type||file.type});
+     if(up.error)throw up.error;
+     const pub=client.storage.from("family-gallery").getPublicUrl(path);const photo=pub?.data?.publicUrl;
+     if(!photo)throw new Error("Photo URL could not be created.");
+     status.textContent="Sharing story…";
+     const ins=await client.from("family_stories").insert({user_id:user.id,caption:caption||null,photo_url:photo}).select("id").single();
+     if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
+     closeComposer();await load();
+   }catch(e){status.textContent=e?.message||"Story could not be shared."}finally{btn.disabled=false}
+ }
+ async function del(){
+   const client=sb(),s=state.current;if(!client||!s)return;
+   if(!confirm("Delete this story?"))return;
+   const {error}=await client.from("family_stories").delete().eq("id",s.id);
+   if(error){alert(error.message||"Story could not be deleted.");return}
+   closeStory();await load();
+ }
+ document.addEventListener("DOMContentLoaded",()=>{
+   ensureHost();load();
+   $("ffStoryClose")?.addEventListener("click",closeStory);
+   $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer"))closeStory()});
+   $("ffStoryDelete")?.addEventListener("click",del);
+   $("ffStoryComposeClose")?.addEventListener("click",closeComposer);
+   $("ffStoryCancel")?.addEventListener("click",closeComposer);
+   $("ffStoryPublish")?.addEventListener("click",publish);
+   $("ffStoryFile")?.addEventListener("change",e=>{const f=e.target.files?.[0],im=$("ffStoryPreview");if(!f){im.style.display="none";return}im.src=URL.createObjectURL(f);im.style.display="block";});
+   window.addEventListener("online",load);
+ });
+ window.ffLoadFamilyStoriesV29B=load;
 })();
 </script>
 

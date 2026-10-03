@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-members-directory-v31a">
+<meta name="duarte-build" content="production-mobile-smooth-v31m">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-members-directory-v31a";
+ window.DUARTE_BUILD="production-mobile-smooth-v31m";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-members-directory-v31a"};
+ window.ffDuarteV29C={version:"production-mobile-smooth-v31m"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-members-directory-v31a">
+<script id="duarte-production-mobile-smooth-v31m">
 (()=>{
  async function run(){
-  const r={build:"production-members-directory-v31a",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-smooth-v31m",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10659,6 +10659,79 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    enhance();const grid=document.getElementById("membersGrid");if(grid)mo.observe(grid,{childList:true});
  });
  window.ffDuarteMembersV31A={enhance};
+})();
+</script>
+
+
+<style id="duarte-mobile-smooth-v31m">
+/* Mobile performance hotfix: native scrolling, less paint work, no pull-to-refresh bounce. */
+@media (max-width: 760px){
+ html{scroll-behavior:auto!important;overscroll-behavior-y:none!important;background:#0f1012}
+ body{
+   overflow-x:hidden!important;overflow-y:auto!important;
+   height:auto!important;min-height:100dvh!important;max-height:none!important;
+   touch-action:pan-y pinch-zoom!important;overscroll-behavior-y:none!important;
+   -webkit-overflow-scrolling:touch!important;
+ }
+ body,body *{scroll-behavior:auto!important}
+ main,.main,.app-main,.dashboard,.content,.main-content,#homeSection,#homeFeed,#feed{
+   height:auto!important;max-height:none!important;overflow:visible!important;
+ }
+ /* Avoid expensive repaint effects while the phone is moving the page. */
+ .card,.post-card,.clan-member-card,.ff-story-card,.panel,.sidebar-card{
+   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ }
+ body.ff-mobile-scrolling *{
+   animation-play-state:paused!important;
+   transition:none!important;
+ }
+ body.ff-mobile-scrolling .card,
+ body.ff-mobile-scrolling .post-card,
+ body.ff-mobile-scrolling .clan-member-card{box-shadow:none!important}
+ /* Let long feeds skip off-screen layout/paint work. */
+ .post-card,.clan-member-card,.gallery-item,.event-card,.notification-item{
+   content-visibility:auto;
+   contain-intrinsic-size:auto 180px;
+ }
+ img{content-visibility:auto}
+ /* Fixed controls remain usable but do less compositing work. */
+ #ffHealthBtnV25,#ffSyncFab,.ff-v29c-mobile-nav{
+   backface-visibility:hidden;transform:translateZ(0);
+ }
+}
+@media (max-width:760px) and (prefers-reduced-motion:no-preference){
+ body.ff-mobile-lite-motion *{animation-duration:.12s!important;transition-duration:.12s!important}
+}
+</style>
+<script id="duarte-mobile-smooth-v31m-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ let scrollEnd=0;
+ const start=()=>{
+   document.body?.classList.add("ff-mobile-scrolling");
+   clearTimeout(scrollEnd);
+   scrollEnd=setTimeout(()=>document.body?.classList.remove("ff-mobile-scrolling"),140);
+ };
+ addEventListener("scroll",start,{passive:true});
+ addEventListener("touchmove",start,{passive:true});
+ document.documentElement.style.scrollBehavior="auto";
+
+ // Pause non-essential refresh work while the user is actively scrolling.
+ let lastScroll=0;
+ addEventListener("scroll",()=>{lastScroll=Date.now()},{passive:true});
+ window.ffMobileIsActivelyScrollingV31M=()=>Date.now()-lastScroll<220;
+
+ // Prevent image decode from blocking the first mobile paint where supported.
+ const lazy=()=>{
+   document.querySelectorAll("img").forEach(img=>{
+     if(!img.loading)img.loading="lazy";
+     img.decoding="async";
+   });
+ };
+ if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
+ else setTimeout(lazy,600);
+
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-smooth-v31m"};
 })();
 </script>
 

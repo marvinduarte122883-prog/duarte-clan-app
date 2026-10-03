@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-facebook-lite-v27">
+<meta name="duarte-build" content="production-auth-health-v28">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-facebook-lite-v27";
+ window.DUARTE_BUILD="production-auth-health-v28";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10109,23 +10109,51 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
        if(Array.isArray(q)){r.queue.pending=q.length;r.queue.failed=q.filter(x=>x&&x.last_error).length}
      }
    }catch(e){r.queue.error=safeErr(e)}
-   r.supabase={available:!!window.supabaseClient||!!window.supabase,session:"unknown"};
+   r.supabase={available:false,session:"unknown"};
+   r.offlineSession={ready:false,cachedUser:false,cachedProfile:false};
    try{
-     const sb=window.supabaseClient||window.supabase;
+     const cachedAuth=JSON.parse(localStorage.getItem("duarte_offline_auth_v26")||"null");
+     const cachedProfile=JSON.parse(localStorage.getItem("duarte_offline_profile_v26")||"null");
+     r.offlineSession.cachedUser=!!cachedAuth?.user_id;
+     r.offlineSession.cachedProfile=!!cachedProfile?.id;
+     r.offlineSession.ready=r.offlineSession.cachedUser&&r.offlineSession.cachedProfile;
+   }catch(e){r.offlineSession.error=safeErr(e)}
+   try{
+     const sb=(typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null;
+     r.supabase.available=!!sb;
      if(sb?.auth?.getSession){
-       const x=await Promise.race([sb.auth.getSession(),new Promise((_,rej)=>setTimeout(()=>rej(new Error("Session check timeout")),5000))]);
-       r.supabase.session=x?.data?.session?"authenticated":"no active session";
-       if(x?.error)r.supabase.error=safeErr(x.error);
+       const x=await Promise.race([
+         sb.auth.getSession(),
+         new Promise((_,rej)=>setTimeout(()=>rej(new Error("Session check timeout")),5000))
+       ]);
+       if(x?.error) r.supabase.error=safeErr(x.error);
+       const session=x?.data?.session||null;
+       if(session?.user){
+         r.supabase.session="authenticated";
+         r.supabase.user=session.user.email||session.user.id||"signed-in user";
+       }else{
+         r.supabase.session=navigator.onLine?"no active session":
+           (r.offlineSession.ready?"offline cached session":"no cached session");
+       }
+     }else if(!navigator.onLine&&r.offlineSession.ready){
+       r.supabase.session="offline cached session";
      }
-   }catch(e){r.supabase.error=safeErr(e)}
+   }catch(e){
+     r.supabase.error=safeErr(e);
+     if(!navigator.onLine&&r.offlineSession.ready) r.supabase.session="offline cached session";
+     else r.supabase.session="connection error";
+   }
    r.dataLite=window.ffDataLiteV24?{inflight:window.ffDataLiteV24.inflight?.(),profileCacheSize:window.ffDataLiteV24.profileCacheSize?.()}:null;
    lastReport=r;
    const swState=!r.serviceWorker.supported?"Not supported":r.serviceWorker.controlled?(r.serviceWorker.script||"Active"):"Not controlling page";
    const qState=r.queue.pending===null?"Unavailable":`${r.queue.pending} pending · ${r.queue.failed||0} failed`;
    grid.innerHTML=
-     item("App Build","V27 Facebook Lite")+
+     item("App Build","V28 Auth & Offline Health")+
      item("Network",r.online?"Online":"Offline",r.online?"ok":"warn")+
-     item("Supabase",r.supabase.error?("Check failed: "+r.supabase.error):r.supabase.session,r.supabase.error?"bad":(r.supabase.session==="authenticated"?"ok":"warn"))+
+     item("Supabase",r.supabase.session,
+       r.supabase.session==="authenticated"?"ok":
+       (r.supabase.session==="offline cached session"?"warn":"bad"))+
+     item("Offline Session",r.offlineSession.ready?"Ready":"Not ready",r.offlineSession.ready?"ok":"warn")+
      item("Service Worker",swState,r.serviceWorker.controlled?"ok":"warn")+
      item("Offline Queue",qState,(r.queue.failed||0)>0?"bad":((r.queue.pending||0)>0?"warn":"ok"))+
      item("Persistent Storage",r.storage.persistent===true?"Granted":r.storage.persistent===false?"Not granted":"Unknown",r.storage.persistent===true?"ok":"warn");

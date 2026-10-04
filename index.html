@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-white-chat-search-v33b">
+<meta name="duarte-build" content="production-duarte-report-dialog-v33c">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-white-chat-search-v33b";
+ window.DUARTE_BUILD="production-duarte-report-dialog-v33c";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-white-chat-search-v33b"};
+ window.ffDuarteV29C={version:"production-duarte-report-dialog-v33c"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-white-chat-search-v33b">
+<script id="duarte-production-duarte-report-dialog-v33c">
 (()=>{
  async function run(){
-  const r={build:"production-white-chat-search-v33b",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-duarte-report-dialog-v33c",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-white-chat-search-v33b"};
+ window.ffDuarteMobileSmoothV31M={version:"production-duarte-report-dialog-v33c"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-white-chat-search-v33b",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-duarte-report-dialog-v33c",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-white-chat-search-v33b"};
+ window.ffDuarteAntiFlickerV31P={version:"production-duarte-report-dialog-v33c"};
 })();
 </script>
 
@@ -12216,7 +12216,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
        if(error.code==="42P01") throw new Error("The message_reports table is not installed yet. Run the included SQL file in Supabase first.");
        throw error;
      }
-     alert("Report submitted to administrator.");
+     window.ffDuarteClanNotice ? window.ffDuarteClanNotice("Report submitted to administrator.") : alert("Report submitted to administrator.");
    }catch(e){
      console.error("Message report failed:",e);
      alert("Report could not be submitted: "+(e?.message||e));
@@ -12429,6 +12429,37 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
   -webkit-text-fill-color:#050505!important;
 }
 </style>
+
+
+<style id="duarte-clan-notice-v33c">
+#ffDuarteClanNotice{display:none;position:fixed;inset:0;z-index:2147483647;background:#0006;place-items:center;padding:18px}
+#ffDuarteClanNotice.open{display:grid}
+#ffDuarteClanNotice .notice{
+ width:min(430px,94vw);background:#fff;color:#050505;border-radius:14px;
+ box-shadow:0 10px 35px #0004;overflow:hidden;border:1px solid #d8dadf
+}
+#ffDuarteClanNotice .title{padding:16px 18px 8px;font-size:17px;font-weight:800}
+#ffDuarteClanNotice .message{padding:4px 18px 20px;font-size:14px}
+#ffDuarteClanNotice .actions{display:flex;justify-content:flex-end;padding:10px 16px 14px;border-top:1px solid #eee}
+#ffDuarteClanNotice button{border:0;border-radius:20px;background:#0866ff;color:#fff;font-weight:800;padding:9px 22px;cursor:pointer}
+</style>
+<script id="duarte-clan-notice-v33c-script">
+(()=>{
+ window.ffDuarteClanNotice=function(message){
+   let m=document.getElementById("ffDuarteClanNotice");
+   if(!m){
+     m=document.createElement("div");m.id="ffDuarteClanNotice";
+     m.innerHTML='<div class="notice" role="alertdialog" aria-modal="true" aria-labelledby="ffDCNTitle"><div class="title" id="ffDCNTitle">Duarte Clan says</div><div class="message"></div><div class="actions"><button type="button">OK</button></div></div>';
+     m.querySelector("button").onclick=()=>m.classList.remove("open");
+     m.onclick=e=>{if(e.target===m)m.classList.remove("open")};
+     document.body.appendChild(m);
+   }
+   m.querySelector(".message").textContent=String(message||"");
+   m.classList.add("open");
+   setTimeout(()=>m.querySelector("button")?.focus(),0);
+ };
+})();
+</script>
 
 </body>
 </html>

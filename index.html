@@ -4612,17 +4612,16 @@ async function openNotification(id, type, postId, eventId, actorId = null) {
 
     const kind = String(type || "").toLowerCase();
 
-    /* User-generated alerts should take the member directly to the person
-       who triggered the notification on both desktop and mobile. */
-    if (actorId && !/event|event_reminder/.test(kind)) {
+    // Route to the notification SUBJECT first.
+    if (/message|messenger|chat/.test(kind)) {
+        openMessenger();
         await loadNotifications();
-        return openClanProfile(actorId);
+        return;
     }
 
-    if (kind === "event" && eventId) {
+    if (/event|event_reminder|rsvp/.test(kind) && eventId) {
         showSection("events");
         await loadEvents();
-
         requestAnimationFrame(() => {
             const target = document.querySelector(`.event-list-card[data-event-id="${Number(eventId)}"]`);
             if (target) {
@@ -4631,27 +4630,38 @@ async function openNotification(id, type, postId, eventId, actorId = null) {
                 setTimeout(() => target.classList.remove("ff-notification-target"), 2400);
             }
         });
+        await loadNotifications();
+        return;
+    }
 
-    } else if (postId) {
+    if (postId) {
         showSection("home");
         await loadPosts();
 
-        const post = document.querySelector(`.post-card[data-post-id="${Number(postId)}-3"]`);
+        // Correct selector: previous code accidentally appended "-3" to the post id.
+        const post = document.querySelector(`.post-card[data-post-id="${Number(postId)}"]`);
         if (post) {
             post.scrollIntoView({ behavior:"smooth", block:"center" });
             post.classList.add("ff-notification-target");
             setTimeout(() => post.classList.remove("ff-notification-target"), 2400);
 
-            // Comment notifications open the Facebook-style comment thread for that exact post.
-            if (kind === "comment") {
+            // Comments/replies open the exact post's comment thread.
+            if (/comment|reply/.test(kind)) {
                 setTimeout(() => openFacebookComments(Number(postId)), 180);
             }
         }
+        await loadNotifications();
+        return;
+    }
+
+    // Profile/member notifications only fall back to the member profile.
+    if (actorId && /profile|member|birthday|relationship|friend/.test(kind)) {
+        await loadNotifications();
+        return openClanProfile(actorId);
     }
 
     await loadNotifications();
 }
-
 async function refreshNotificationBadgeLite() {
     if (!currentUser) return;
     const badge = document.getElementById("notificationBadge");
@@ -13318,6 +13328,72 @@ document.addEventListener("DOMContentLoaded",function(){
   document.addEventListener("DOMContentLoaded",startGlobalRealtime,{once:true});
   window.addEventListener("online",startGlobalRealtime,{passive:true});
   document.addEventListener("visibilitychange",()=>{if(!document.hidden){startGlobalRealtime();refreshAll()}});
+})();
+</script>
+
+
+<style id="duarte-mobile-messenger-fit-v38">
+@media(max-width:760px){
+ #ffMsgModal{
+   position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+   padding:0!important;margin:0!important;background:#101113!important;
+   z-index:2147483600!important;overflow:hidden!important;
+ }
+ #ffMsgModal.open{display:flex!important}
+ #ffMsgModal .ff-msg-shell{
+   position:relative!important;inset:auto!important;
+   display:flex!important;width:100vw!important;height:100dvh!important;
+   max-width:none!important;max-height:none!important;margin:0!important;
+   border:0!important;border-radius:0!important;overflow:hidden!important;
+   transform:none!important;will-change:auto!important;
+ }
+ #ffMsgModal .ff-msg-list,#ffMsgModal .ff-chat{
+   min-width:0!important;width:100%!important;height:100%!important;max-height:none!important;
+ }
+ #ffMsgModal .ff-msg-list{
+   overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+ }
+ #ffMsgModal .ff-chat{
+   display:flex!important;flex-direction:column!important;overflow:hidden!important;
+ }
+ #ffMsgModal .ff-chat-head{flex:0 0 auto!important;min-height:56px!important}
+ #ffMsgModal .ff-chat-messages{
+   flex:1 1 auto!important;min-height:0!important;height:auto!important;
+   overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+   overscroll-behavior:contain!important;scroll-behavior:auto!important;
+   padding-bottom:10px!important;
+ }
+ #ffMsgModal .ff-chat-compose{
+   position:relative!important;bottom:auto!important;flex:0 0 auto!important;
+   width:100%!important;margin:0!important;
+   padding:8px 8px max(8px,env(safe-area-inset-bottom))!important;
+   background:#101113!important;
+ }
+ #ffMsgModal textarea,#ffMsgModal input{font-size:16px!important;min-width:0!important}
+ #ffMsgModal .ff-bubble-row{
+   content-visibility:auto!important;contain-intrinsic-size:54px!important;
+   transform:none!important;will-change:auto!important;
+ }
+ #ffMsgModal .ff-v4-msg-photo{max-width:72vw!important;height:auto!important}
+ body.ff-v31x-chat-open .ff-v29c-mobile-nav{display:none!important}
+}
+</style>
+<script id="duarte-mobile-messenger-fit-v38-js">
+(function(){
+ function fit(){
+   if(!matchMedia("(max-width:760px)").matches)return;
+   const modal=document.getElementById("ffMsgModal");
+   if(!modal)return;
+   if(modal.classList.contains("open")){
+     modal.style.setProperty("height","100dvh","important");
+     modal.style.setProperty("width","100vw","important");
+   }
+ }
+ document.addEventListener("click",e=>{
+   if(e.target.closest?.('[data-v29c-nav="messenger"],.ff-msg-fab'))setTimeout(fit,30);
+ },true);
+ addEventListener("resize",fit,{passive:true});
+ addEventListener("orientationchange",()=>setTimeout(fit,150),{passive:true});
 })();
 </script>
 

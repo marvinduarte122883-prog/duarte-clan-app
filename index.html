@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-lite-v31w">
+<meta name="duarte-build" content="production-portrait-chatfit-v31x">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-lite-v31w";
+ window.DUARTE_BUILD="production-portrait-chatfit-v31x";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-lite-v31w"};
+ window.ffDuarteV29C={version:"production-portrait-chatfit-v31x"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-lite-v31w">
+<script id="duarte-production-portrait-chatfit-v31x">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-lite-v31w",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-portrait-chatfit-v31x",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-lite-v31w"};
+ window.ffDuarteMobileSmoothV31M={version:"production-portrait-chatfit-v31x"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-lite-v31w",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-portrait-chatfit-v31x",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-lite-v31w"};
+ window.ffDuarteAntiFlickerV31P={version:"production-portrait-chatfit-v31x"};
 })();
 </script>
 
@@ -11616,7 +11616,91 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-lite-v31w"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-portrait-chatfit-v31x"};
+})();
+</script>
+
+
+<style id="duarte-portrait-chatfit-v31x">
+@media(max-width:760px) and (orientation:portrait){
+ /* Portrait Messenger owns the viewport; bottom app nav is hidden only while chat is open. */
+ body.ff-v31x-chat-open .ff-v29c-mobile-nav{display:none!important}
+ body.ff-v31x-chat-open{overflow:hidden!important;height:100dvh!important}
+
+ #privateChatModal.ff-v31x-chat,
+ .messenger-chat.ff-v31x-chat,.private-chat-panel.ff-v31x-chat{
+   position:fixed!important;inset:0!important;z-index:2147483400!important;
+   width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;
+   margin:0!important;padding:0!important;border-radius:0!important;overflow:hidden!important;
+   background:#101113!important;
+ }
+
+ #privateChatModal.ff-v31x-chat .modal-content,
+ .ff-v31x-chat .private-chat-shell{
+   display:grid!important;
+   grid-template-rows:auto minmax(0,1fr) auto!important;
+   width:100%!important;height:100%!important;max-height:100dvh!important;
+   padding:0!important;margin:0!important;overflow:hidden!important;
+ }
+
+ .ff-v31x-chat .private-chat-header,
+ .ff-v31x-chat .messenger-chat-header,
+ .ff-v31x-chat .chat-header{
+   position:relative!important;top:auto!important;grid-row:1!important;
+ }
+
+ .ff-v31x-chat #privateMessages,
+ .ff-v31x-chat .private-messages,
+ .ff-v31x-chat .chat-messages,
+ .ff-v31x-chat .messages-thread{
+   grid-row:2!important;min-height:0!important;height:auto!important;max-height:none!important;
+   overflow-y:auto!important;padding-bottom:12px!important;
+ }
+
+ .ff-v31x-chat #privateMessageForm,
+ .ff-v31x-chat .private-message-form,
+ .ff-v31x-chat .chat-composer,
+ .ff-v31x-chat .message-composer,
+ .ff-v31x-chat form:has(#privateMessageInput),
+ .ff-v31x-chat form:has(textarea[name="message"]){
+   grid-row:3!important;position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;
+   width:100%!important;min-height:58px!important;margin:0!important;
+   padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important;
+   z-index:30!important;box-sizing:border-box!important;
+ }
+}
+</style>
+<script id="duarte-portrait-chatfit-v31x-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ const selectors="#privateChatModal,.messenger-chat,.private-chat-panel";
+ function visible(el){
+   if(!el)return false;
+   const s=getComputedStyle(el);
+   return s.display!=="none"&&s.visibility!=="hidden"&&el.getClientRects().length>0;
+ }
+ function fit(){
+   const chat=[...document.querySelectorAll(selectors)].find(visible);
+   document.querySelectorAll(selectors).forEach(x=>x.classList.remove("ff-v31x-chat"));
+   if(chat && matchMedia("(orientation:portrait)").matches){
+     chat.classList.add("ff-v31x-chat");
+     document.body.classList.add("ff-v31x-chat-open");
+     const input=chat.querySelector("#privateMessageInput,textarea[name='message'],.message-composer textarea,.chat-composer textarea");
+     if(input){input.hidden=false;input.disabled=false}
+     const box=chat.querySelector("#privateMessages,.private-messages,.chat-messages,.messages-thread");
+     if(box)requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
+   }else document.body.classList.remove("ff-v31x-chat-open");
+ }
+ let raf=0;
+ const schedule=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit)};
+ document.addEventListener("click",()=>{setTimeout(schedule,40);setTimeout(schedule,220)},true);
+ document.addEventListener("DOMContentLoaded",schedule);
+ addEventListener("resize",schedule,{passive:true});
+ addEventListener("orientationchange",()=>setTimeout(schedule,150),{passive:true});
+ if(window.visualViewport)visualViewport.addEventListener("resize",schedule,{passive:true});
+ const mo=new MutationObserver(schedule);
+ document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
+ window.ffDuartePortraitChatFitV31X={fit};
 })();
 </script>
 

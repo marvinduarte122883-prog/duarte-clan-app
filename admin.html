@@ -696,9 +696,12 @@ async function loadMembers() {
 
         const members = data || [];
 
+        /* Rejected requests remain linked to Supabase Auth, but are not
+           pending members and are not counted as clan members. */
         const pending =
             members.filter(member =>
-                member.approved === false
+                member.approved === false &&
+                member.clan_role !== "Rejected"
             );
 
         const approved =
@@ -713,7 +716,7 @@ async function loadMembers() {
             approved.length;
 
         totalCount.textContent =
-            members.length;
+            pending.length + approved.length;
 
         renderPending(pending);
         renderApproved(approved);
@@ -952,7 +955,8 @@ async function removeMember(id) {
         } = await supabaseClient
             .from("profiles")
             .update({
-                approved: false
+                approved: false,
+                clan_role: "Rejected"
             })
             .eq("id", id);
 
@@ -1001,9 +1005,9 @@ async function rejectMember(id) {
     /*
      * Keep the profile instead of deleting it.
      *
-     * The current profiles table has no separate rejected/status column,
-     * so a rejected request remains unapproved. This avoids orphaning the
-     * Supabase Auth user by deleting only the public profile row.
+     * Keep the Auth-linked profile but persist clan_role="Rejected".
+     * Rejected profiles are excluded from pending/member counts so the
+     * request stays gone after refresh without orphaning Supabase Auth.
      */
 
     try {
@@ -1024,7 +1028,7 @@ async function rejectMember(id) {
 
 
         showMessage(
-            "Membership request rejected. The account remains unapproved.",
+            "Membership request rejected and removed from Pending Membership Requests.",
             "success"
         );
 

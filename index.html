@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-facebook-message-actions-v32s">
+<meta name="duarte-build" content="production-working-actions-v32t">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-facebook-message-actions-v32s";
+ window.DUARTE_BUILD="production-working-actions-v32t";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-facebook-message-actions-v32s"};
+ window.ffDuarteV29C={version:"production-working-actions-v32t"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-facebook-message-actions-v32s">
+<script id="duarte-production-working-actions-v32t">
 (()=>{
  async function run(){
-  const r={build:"production-facebook-message-actions-v32s",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-working-actions-v32t",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-facebook-message-actions-v32s"};
+ window.ffDuarteMobileSmoothV31M={version:"production-working-actions-v32t"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-facebook-message-actions-v32s",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-working-actions-v32t",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-facebook-message-actions-v32s"};
+ window.ffDuarteAntiFlickerV31P={version:"production-working-actions-v32t"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-message-actions-v32s"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-working-actions-v32t"};
 })();
 </script>
 
@@ -13681,6 +13681,70 @@ html body .private-chat-panel > *{
  const mo=new MutationObserver(()=>requestAnimationFrame(enhance));
  document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("ffChatMessages");if(b)mo.observe(b,{childList:true,subtree:true})});
  window.ffDuarteMessageActionsV32S={enhance,openSheet};
+})();
+</script>
+
+
+<style id="duarte-working-actions-v32t">
+#ffMsgModal .ff-own-delete-row,#ffMsgModal .ff-v4-msg-tools,#ffMsgModal .ff-v32n-msg-actions{display:none!important}
+#ffMsgModal .ff-bubble-row{position:relative!important}
+.ff-v32t-bar{display:none;position:absolute;top:50%;transform:translateY(-50%);gap:4px;z-index:999}
+.ff-bubble-row.mine .ff-v32t-bar{right:calc(100% + 8px)}
+.ff-bubble-row:not(.mine) .ff-v32t-bar{left:calc(100% + 8px)}
+@media(min-width:761px){
+ #ffMsgModal .ff-bubble-row:hover .ff-v32t-bar{display:flex!important}
+ .ff-v32t-bar button{width:31px;height:31px;padding:0;border:1px solid #ddd;border-radius:50%;background:#fff;color:#000;cursor:pointer}
+}
+#ffV32TSheet{display:none;position:fixed;inset:0;z-index:2147483640;background:#0006;align-items:flex-end}
+#ffV32TSheet.open{display:flex}
+#ffV32TSheet .s{width:100%;background:#fff;color:#000;border-radius:18px 18px 0 0;padding:12px 12px max(14px,env(safe-area-inset-bottom))}
+#ffV32TSheet .r{display:flex;justify-content:space-around;margin-bottom:10px}
+#ffV32TSheet .r button{width:42px;height:42px;border:0;border-radius:50%;background:#f0f2f5;font-size:20px}
+#ffV32TSheet .a{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+#ffV32TSheet .a button{min-height:54px;border:0;border-radius:10px;background:#f5f6f7;color:#000;font-size:11px;font-weight:700}
+#ffV32TMore{display:none;border-top:1px solid #ddd;margin-top:8px;padding-top:5px}
+#ffV32TMore.open{display:block}
+#ffV32TMore button{display:block;width:100%;padding:12px;border:0;background:#fff;color:#000;text-align:left}
+#ffV32TMore .danger{color:#b42318;font-weight:800}
+@media(min-width:761px){#ffV32TSheet{display:none!important}}
+</style>
+<script id="duarte-working-actions-v32t-script">
+(()=>{
+ let active=null,timer=0,start=null;
+ const id=r=>Number(r?.dataset.messageId||0), mine=r=>r?.classList.contains("mine");
+ const photo=r=>r?.querySelector(".ff-v4-msg-photo")?.src||"";
+ const txt=r=>{const b=r?.querySelector(".ff-bubble");if(!b)return"";const c=b.cloneNode(true);c.querySelectorAll(".ff-bubble-time,.ff-seen-status,.ff-v4-msg-reactions,.ff-v4-msg-tools,.ff-own-delete-row").forEach(x=>x.remove());return c.textContent.trim()};
+ function react(r,e){const n=id(r);if(!n)return;try{if(typeof ffV4React==="function")return ffV4React(n,e)}catch(_){}}
+ function reply(r){const n=id(r);if(!n)return;try{if(typeof ffV4Reply==="function")return ffV4Reply(n,txt(r).slice(0,120)||"Photo")}catch(_){}}
+ function del(r){if(!mine(r))return;const n=id(r);if(!n)return;try{if(typeof ffV42DeleteOwnMessage==="function")return ffV42DeleteOwnMessage(n,photo(r))}catch(_){}}
+ async function copy(r){const t=txt(r);if(!t)return;try{await navigator.clipboard.writeText(t)}catch(_){}}
+ function pin(r){const n=id(r);if(!n)return;let a=[];try{a=JSON.parse(localStorage.getItem("duarte_pins_v32t")||"[]")}catch(_){};if(!a.includes(n))a.push(n);localStorage.setItem("duarte_pins_v32t",JSON.stringify(a));}
+ function report(r){const why=prompt("Reason for reporting this message:");if(!why)return;const s=`Message #${id(r)}\nReason: ${why}\nMessage: ${txt(r).slice(0,160)}`;navigator.clipboard?.writeText(s).catch(()=>{});alert("Report details copied. No server report table is configured yet.");}
+ function forward(r){const n=id(r);if(typeof window.forwardMessage==="function")return window.forwardMessage(n);if(typeof window.ffForwardMessage==="function")return window.ffForwardMessage(n);alert("Forward destination picker is not configured yet.");}
+ function bar(r){
+   r.querySelector(".ff-v32s-desktop-actions")?.remove(); if(r.querySelector(".ff-v32t-bar"))return;
+   const b=document.createElement("div");b.className="ff-v32t-bar";
+   [["☺","Reaction",()=>react(r,"👍")],["↗","Forward",()=>forward(r)],...(mine(r)?[["↶","Unsend",()=>del(r)]]:[]),["📌","Pin",()=>pin(r)],["⚑","Report",()=>report(r)]].forEach(([x,t,f])=>{const q=document.createElement("button");q.type="button";q.textContent=x;q.title=t;q.onclick=e=>{e.preventDefault();e.stopPropagation();f()};b.appendChild(q)});
+   r.appendChild(b)
+ }
+ function sheet(){
+   let m=document.getElementById("ffV32TSheet");if(m)return m;
+   m=document.createElement("div");m.id="ffV32TSheet";m.innerHTML=`<div class="s"><div class="r">${["👍","❤️","😂","😮","😢","😡"].map(x=>`<button data-r="${x}">${x}</button>`).join("")}</div><div class="a"><button data-a="reply">↩<br>Reply</button><button data-a="copy">▣<br>Copy</button><button data-a="translate">文<br>Translate</button><button data-a="react">☺<br>Reactions</button><button data-a="more">•••<br>More</button></div><div id="ffV32TMore"><button data-a="delete" class="danger">🗑 Delete / Unsend</button><button data-a="forward">↗ Forward</button><button data-a="details">ⓘ Details</button><button data-a="report">⚑ Report</button></div></div>`;
+   m.onclick=e=>{if(e.target===m){m.classList.remove("open");return}const b=e.target.closest("button");if(!b||!active)return;if(b.dataset.r){react(active,b.dataset.r);m.classList.remove("open");return}const a=b.dataset.a;if(a==="reply"){reply(active);m.classList.remove("open")}else if(a==="copy"){copy(active);m.classList.remove("open")}else if(a==="translate"){copy(active);alert("Message copied for translation.");m.classList.remove("open")}else if(a==="more"){m.querySelector("#ffV32TMore").classList.toggle("open")}else if(a==="delete"){del(active);m.classList.remove("open")}else if(a==="forward"){forward(active);m.classList.remove("open")}else if(a==="details"){alert("Message ID: "+id(active)+"\n"+(active.querySelector(".ff-bubble-time")?.textContent||""))}else if(a==="report")report(active)};
+   document.body.appendChild(m);return m
+ }
+ function open(r){active=r;const m=sheet();m.querySelector('[data-a="delete"]').style.display=mine(r)?"block":"none";m.querySelector("#ffV32TMore").classList.remove("open");m.classList.add("open")}
+ function bind(r){
+   bar(r);if(r.dataset.v32t)return;r.dataset.v32t="1";const b=r.querySelector(".ff-bubble");if(!b)return;
+   b.addEventListener("pointerdown",e=>{if(innerWidth>760||e.pointerType==="mouse")return;start={x:e.clientX,y:e.clientY};clearTimeout(timer);timer=setTimeout(()=>{navigator.vibrate?.(20);open(r)},500)},{passive:true});
+   b.addEventListener("pointermove",e=>{if(start&&Math.hypot(e.clientX-start.x,e.clientY-start.y)>10)clearTimeout(timer)},{passive:true});
+   ["pointerup","pointercancel"].forEach(v=>b.addEventListener(v,()=>{clearTimeout(timer);start=null},{passive:true}));
+   b.addEventListener("contextmenu",e=>{if(innerWidth<=760){e.preventDefault();open(r)}})
+ }
+ function run(){document.querySelectorAll("#ffChatMessages .ff-bubble-row[data-message-id]").forEach(bind)}
+ document.addEventListener("DOMContentLoaded",()=>{sheet();setTimeout(run,200)});
+ const mo=new MutationObserver(()=>requestAnimationFrame(run));document.addEventListener("DOMContentLoaded",()=>{const x=document.getElementById("ffChatMessages");if(x)mo.observe(x,{childList:true,subtree:true})});
+ window.ffDuarteWorkingActionsV32T={run,open};
 })();
 </script>
 

@@ -13730,6 +13730,83 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<style id="duarte-mobile-nav-fix-v43">
+@media(max-width:760px){
+ .ff-v29c-mobile-nav{
+   display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+   position:fixed!important;left:0!important;right:0!important;bottom:0!important;
+   width:100%!important;z-index:2147483000!important
+ }
+ .ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a{
+   min-width:0!important;touch-action:manipulation!important
+ }
+}
+</style>
+<script id="duarte-mobile-nav-fix-v43-js">
+(function(){
+ function closeMobileSurfaces(){
+   document.querySelectorAll(".mobile-menu.open,.ff-mobile-menu.open,.ff-menu-sheet.open").forEach(x=>x.classList.remove("open"));
+ }
+ async function goHome(){
+   closeMobileSurfaces();
+   if(typeof window.showSection==="function"){try{window.showSection("home")}catch(_){}}
+   if(typeof window.showHome==="function"){try{window.showHome()}catch(_){}}
+   document.querySelector("#home,#homeFeed,[data-page='home']")?.scrollIntoView({block:"start"});
+   window.scrollTo({top:0,behavior:"auto"});
+   if(typeof window.loadPosts==="function"){try{await window.loadPosts()}catch(_){}}
+ }
+ async function goProfile(){
+   closeMobileSurfaces();
+   try{
+     const {data}=await supabaseClient.auth.getSession();
+     const uid=data?.session?.user?.id||window.currentUser?.id;
+     if(uid&&typeof window.openClanProfile==="function") return window.openClanProfile(uid);
+   }catch(_){}
+ }
+ async function goMembers(){
+   closeMobileSurfaces();
+   const fns=["openMembers","showMembers","openFamilyDirectory","showFamilyDirectory"];
+   for(const n of fns){
+     if(typeof window[n]==="function"){try{return await window[n]()}catch(_){}}
+   }
+   if(typeof window.showSection==="function"){try{return window.showSection("members")}catch(_){}}
+   document.querySelector("#members,#familyDirectory,[data-page='members']")?.scrollIntoView({block:"start"});
+ }
+ function classify(el){
+   const txt=(el.textContent||"").trim().toLowerCase();
+   const aria=(el.getAttribute("aria-label")||"").toLowerCase();
+   const title=(el.getAttribute("title")||"").toLowerCase();
+   const all=txt+" "+aria+" "+title;
+   if(/\bhome\b/.test(all))return "home";
+   if(/\bmembers?\b|\bdirectory\b/.test(all))return "members";
+   if(/\bprofile\b|\bmy profile\b/.test(all))return "profile";
+   return "";
+ }
+ function bind(){
+   document.querySelectorAll(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a,[data-mobile-nav]").forEach(el=>{
+     const type=classify(el);
+     if(!type||el.dataset.v43Bound)return;
+     el.dataset.v43Bound="1";
+     el.addEventListener("click",e=>{
+       e.preventDefault();e.stopPropagation();
+       if(type==="home")goHome();
+       else if(type==="members")goMembers();
+       else if(type==="profile")goProfile();
+     },true);
+   });
+   /* Profile shortcuts elsewhere on mobile should always open the signed-in member's profile. */
+   document.querySelectorAll("[data-action='my-profile'],.my-profile-btn,.mobile-profile-btn").forEach(el=>{
+     if(el.dataset.v43Bound)return;el.dataset.v43Bound="1";
+     el.addEventListener("click",e=>{e.preventDefault();goProfile()},true);
+   });
+ }
+ document.addEventListener("DOMContentLoaded",()=>{bind();setTimeout(bind,500);setTimeout(bind,1600)},{once:true});
+ document.addEventListener("click",()=>setTimeout(bind,0),true);
+ window.DuarteMobileNavV43={home:goHome,profile:goProfile,members:goMembers};
+})();
+</script>
+
 </body>
 </html>
 

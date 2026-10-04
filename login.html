@@ -546,6 +546,111 @@ document
 <style id="duarte-login-facebook-v5">
 body{background-color:#0f1011!important}.login-side{background:rgba(15,16,17,.78)!important;backdrop-filter:blur(3px)}.login-box{background:#18191a!important;border:1px solid #303234!important;border-radius:16px!important;box-shadow:0 18px 55px rgba(0,0,0,.55)!important}.login-box input{background:#242526!important;border:1px solid #3e4042!important;color:#e4e6eb!important;border-radius:10px!important}.login-box input:focus{border-color:var(--gold,#d4af37)!important;box-shadow:0 0 0 2px rgba(212,175,55,.14)!important}.login-btn{background:var(--gold,#d4af37)!important;color:#111!important;border-radius:9px!important;font-weight:800!important}.dc-auth-card{background:#18191a!important;border:1px solid #303234!important}.dc-auth-card input{background:#242526!important;border-color:#3e4042!important}@media(max-width:700px){body{background-position:center!important}.login-side{width:100%!important;min-height:100dvh!important;padding:16px!important;display:flex!important;align-items:center!important;justify-content:center!important}.login-box{width:min(100%,420px)!important;padding:22px 18px!important}}
 </style>
+
+<script id="duarte-signup-rate-limit-guard-v33n">
+(function(){
+  const RATE_KEY="duarte_signup_rate_limit_until_v33n";
+  const COOLDOWN_MS=60*1000;
+
+  function friendlySignupError(message){
+    const m=String(message||"");
+    if(/rate limit|too many requests|429/i.test(m)){
+      return "Too many signup attempts. Please wait a few minutes before trying again.";
+    }
+    return m;
+  }
+
+  function remaining(){
+    const until=Number(localStorage.getItem(RATE_KEY)||0);
+    return Math.max(0,until-Date.now());
+  }
+
+  function showCooldown(){
+    const ms=remaining();
+    if(!ms)return;
+    const seconds=Math.max(1,Math.ceil(ms/1000));
+    document.querySelectorAll("button").forEach(btn=>{
+      if(/continue|create account|sign up|register/i.test((btn.textContent||"").trim())){
+        btn.disabled=true;
+        btn.dataset.duarteRateDisabled="1";
+        btn.style.opacity=".65";
+        btn.style.cursor="not-allowed";
+        const original=btn.dataset.duarteOriginalText||(btn.dataset.duarteOriginalText=(btn.textContent||"Continue").trim());
+        btn.textContent=`Wait ${seconds}s`;
+      }
+    });
+  }
+
+  function restoreButtons(){
+    document.querySelectorAll('button[data-duarte-rate-disabled="1"]').forEach(btn=>{
+      btn.disabled=false;
+      btn.style.opacity="";
+      btn.style.cursor="";
+      btn.textContent=btn.dataset.duarteOriginalText||"Continue";
+      delete btn.dataset.duarteRateDisabled;
+    });
+  }
+
+  const timer=setInterval(()=>{
+    if(remaining())showCooldown(); else restoreButtons();
+  },1000);
+
+  function install(){
+    const client=window.supabaseClient;
+    if(!client?.auth?.signUp || client.auth.signUp.__duarteRateGuard)return false;
+    const original=client.auth.signUp.bind(client.auth);
+    let inFlight=false;
+
+    async function guardedSignUp(args){
+      if(remaining()){
+        const error=new Error("Too many signup attempts. Please wait a few minutes before trying again.");
+        error.status=429;
+        return {data:{user:null,session:null},error};
+      }
+      if(inFlight){
+        const error=new Error("Signup is already being processed. Please wait.");
+        error.status=429;
+        return {data:{user:null,session:null},error};
+      }
+      inFlight=true;
+      showCooldown();
+      try{
+        const result=await original(args);
+        if(result?.error && /rate limit|too many requests|429/i.test(String(result.error.message||result.error))){
+          localStorage.setItem(RATE_KEY,String(Date.now()+COOLDOWN_MS));
+          result.error.message=friendlySignupError(result.error.message);
+          showCooldown();
+        }
+        return result;
+      }finally{
+        inFlight=false;
+        if(!remaining())restoreButtons();
+      }
+    }
+    guardedSignUp.__duarteRateGuard=true;
+    client.auth.signUp=guardedSignUp;
+    return true;
+  }
+
+  // Client is created by the existing login page. Install without changing its auth flow.
+  if(!install()){
+    const id=setInterval(()=>{if(install())clearInterval(id)},100);
+    setTimeout(()=>clearInterval(id),10000);
+  }
+
+  // Replace any raw rate-limit text already rendered by the existing page.
+  new MutationObserver(()=>{
+    document.querySelectorAll("body *").forEach(el=>{
+      if(el.children.length===0 && /email rate limit exceeded/i.test(el.textContent||"")){
+        el.textContent="Too many signup attempts. Please wait a few minutes before trying again.";
+      }
+    });
+  }).observe(document.body,{childList:true,subtree:true,characterData:true});
+
+  if(remaining())showCooldown();
+})();
+</script>
+
 </body>
 </html>
 

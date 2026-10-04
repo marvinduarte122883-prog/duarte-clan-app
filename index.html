@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-facebook-lite-menu-v32c">
+<meta name="duarte-build" content="production-top-menu-v32d">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-facebook-lite-menu-v32c";
+ window.DUARTE_BUILD="production-top-menu-v32d";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-facebook-lite-menu-v32c"};
+ window.ffDuarteV29C={version:"production-top-menu-v32d"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-facebook-lite-menu-v32c">
+<script id="duarte-production-top-menu-v32d">
 (()=>{
  async function run(){
-  const r={build:"production-facebook-lite-menu-v32c",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-top-menu-v32d",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-facebook-lite-menu-v32c"};
+ window.ffDuarteMobileSmoothV31M={version:"production-top-menu-v32d"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-facebook-lite-menu-v32c",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-top-menu-v32d",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-facebook-lite-menu-v32c"};
+ window.ffDuarteAntiFlickerV31P={version:"production-top-menu-v32d"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-lite-menu-v32c"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-top-menu-v32d"};
 })();
 </script>
 
@@ -12089,6 +12089,74 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(/\bmenu\b/.test(t))setTimeout(arrange,20);
  },true);
  window.ffDuarteFacebookLiteMenuV32C={arrange};
+})();
+</script>
+
+
+<style id="duarte-top-menu-v32d">
+@media(max-width:760px){
+ /* V32D: the MENU ENTRY POINT is now at the TOP, not in the bottom nav. */
+ #ffV32DTopMenu{
+   display:grid!important;place-items:center!important;
+   position:fixed!important;top:calc(8px + env(safe-area-inset-top))!important;left:10px!important;
+   z-index:2147482700!important;width:44px!important;height:44px!important;
+   padding:0!important;border:1px solid #36373a!important;border-radius:50%!important;
+   background:#202124!important;color:#fff!important;font-size:27px!important;line-height:1!important;
+   box-shadow:none!important;
+ }
+ /* Hide ONLY the old bottom Menu item. Keep Home/Members/Create/Messages/Alerts. */
+ .ff-v29c-mobile-nav [data-go="menu"],
+ .ff-v29c-mobile-nav [data-action="menu"],
+ .ff-v29c-mobile-nav .menu-item,
+ .ff-v29c-mobile-nav .ff-menu-item{
+   display:none!important;
+ }
+ /* If the nav has six columns because Menu was included, fit the remaining five. */
+ .ff-v29c-mobile-nav{grid-template-columns:repeat(5,1fr)!important}
+
+ /* Full-screen menu opens from the top. */
+ #ffV31OMenuBackdrop.open{inset:0!important}
+ #ffV31OMenuSheet{
+   top:0!important;bottom:0!important;
+   transform:none!important;
+ }
+}
+</style>
+<script id="duarte-top-menu-v32d-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+
+ function existingMenuButton(){
+   return [...document.querySelectorAll(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a")]
+     .find(x=>/\bmenu\b/i.test((x.textContent||"").trim()));
+ }
+ function ensureTopMenu(){
+   let b=document.getElementById("ffV32DTopMenu");
+   if(!b){
+     b=document.createElement("button");
+     b.id="ffV32DTopMenu"; b.type="button"; b.setAttribute("aria-label","Open menu");
+     b.textContent="☰";
+     document.body.appendChild(b);
+     b.addEventListener("click",()=>{
+       const old=existingMenuButton();
+       if(old){old.click();return}
+       const backdrop=document.getElementById("ffV31OMenuBackdrop");
+       if(backdrop){
+         backdrop.classList.add("open");
+         backdrop.hidden=false;
+         backdrop.removeAttribute("aria-hidden");
+         window.ffDuarteFacebookLiteMenuV32C?.arrange?.();
+         window.ffDuartePortraitLogoutV32B?.ensure?.();
+       }
+     });
+   }
+   const old=existingMenuButton();
+   if(old)old.style.setProperty("display","none","important");
+ }
+ document.addEventListener("DOMContentLoaded",ensureTopMenu);
+ addEventListener("pageshow",ensureTopMenu,{passive:true});
+ addEventListener("orientationchange",()=>setTimeout(ensureTopMenu,150),{passive:true});
+ window.ffDuarteTopMenuV32D={ensureTopMenu};
 })();
 </script>
 

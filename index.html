@@ -4409,6 +4409,13 @@ async function refreshMessengerUnread(){
 function updateMessengerBadge(n){
  const b=document.getElementById("ffMsgBadge");
  if(b){b.textContent=n>99?"99+":String(n);b.style.display=n?"inline-flex":"none"}
+ const mb=document.querySelector('.ff-v29c-mobile-nav [data-v29c-nav="messenger"]');
+ if(mb){
+   let badge=mb.querySelector(".ff-mobile-live-badge");
+   if(!badge){badge=document.createElement("span");badge.className="ff-mobile-live-badge";mb.appendChild(badge)}
+   badge.textContent=n>99?"99+":String(n);
+   badge.style.display=n?"inline-flex":"none";
+ }
 }
 
 function subscribeMessengerRealtime(){
@@ -4490,6 +4497,17 @@ async function loadNotifications() {
         if (badge) {
             badge.textContent = unread > 99 ? "99+" : String(unread);
             badge.style.display = unread ? "flex" : "none";
+        }
+        const mobileBell = document.querySelector('.ff-v29c-mobile-nav [data-v29c-nav="notifications"]');
+        if (mobileBell) {
+            let mobileBadge = mobileBell.querySelector(".ff-mobile-live-badge");
+            if (!mobileBadge) {
+                mobileBadge = document.createElement("span");
+                mobileBadge.className = "ff-mobile-live-badge";
+                mobileBell.appendChild(mobileBadge);
+            }
+            mobileBadge.textContent = unread > 99 ? "99+" : String(unread);
+            mobileBadge.style.display = unread ? "inline-flex" : "none";
         }
 
         if (!list) return;
@@ -13200,6 +13218,106 @@ document.addEventListener("DOMContentLoaded",function(){
     if(!document.hidden){refreshAlerts();refreshMessenger()}
   });
   document.addEventListener("DOMContentLoaded",start,{once:true});
+})();
+</script>
+
+
+<style id="duarte-mobile-live-badges-v36">
+@media(max-width:760px){
+ .ff-v29c-mobile-nav{display:flex!important;z-index:2147483000!important}
+ .ff-v29c-mobile-nav button{position:relative!important}
+ .ff-mobile-live-badge{
+   position:absolute;top:3px;left:calc(50% + 8px);
+   min-width:17px;height:17px;padding:0 4px;border-radius:10px;
+   align-items:center;justify-content:center;
+   background:#e41e3f;color:#fff;font:700 10px/1 Arial,sans-serif;
+   border:2px solid #101112;box-sizing:border-box;pointer-events:none;
+ }
+}
+</style>
+<script id="duarte-mobile-working-notifications-messenger-v36">
+(function(){
+ function openMobileAlerts(){
+   if(window.ffDuarteMobileAlertsV31S?.open){window.ffDuarteMobileAlertsV31S.open();return}
+   const panel=document.getElementById("ffV31SAlerts");
+   if(panel){panel.classList.add("open");panel.style.display="flex";return}
+   if(typeof window.loadNotifications==="function")window.loadNotifications();
+ }
+ function openMobileMessenger(){
+   if(typeof window.openMessenger==="function"){window.openMessenger();return}
+   const modal=document.getElementById("ffMsgModal");
+   if(modal){
+     modal.classList.add("open");
+     modal.style.display="flex";
+     modal.removeAttribute("hidden");
+     document.body.style.overflow="hidden";
+     if(typeof window.loadConversations==="function")window.loadConversations();
+     if(typeof window.subscribeMessengerRealtime==="function")window.subscribeMessengerRealtime();
+   }
+ }
+ function refreshLive(){
+   if(typeof window.loadNotifications==="function")window.loadNotifications();
+   if(typeof window.refreshMessengerUnread==="function")window.refreshMessengerUnread();
+   if(typeof window.loadConversations==="function")window.loadConversations();
+   if(typeof window.startDuarteV2Realtime==="function")window.startDuarteV2Realtime();
+   if(typeof window.subscribeMessengerRealtime==="function")window.subscribeMessengerRealtime();
+ }
+ document.addEventListener("click",function(e){
+   const b=e.target.closest?.(".ff-v29c-mobile-nav [data-v29c-nav]");
+   if(!b)return;
+   const a=b.dataset.v29cNav;
+   if(a==="notifications"){
+     e.preventDefault();e.stopImmediatePropagation();openMobileAlerts();
+   }else if(a==="messenger"){
+     e.preventDefault();e.stopImmediatePropagation();openMobileMessenger();
+   }
+ },true);
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(refreshLive,700),{once:true});
+ addEventListener("pageshow",()=>setTimeout(refreshLive,250),{passive:true});
+ addEventListener("online",()=>setTimeout(refreshLive,150),{passive:true});
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshLive()});
+})();
+</script>
+
+
+<script id="duarte-global-realtime-notifications-v37">
+(function(){
+  let ch=null, timer=0;
+  async function refreshAll(){
+    clearTimeout(timer);
+    timer=setTimeout(async()=>{
+      try{
+        if(typeof window.loadNotifications==="function") await window.loadNotifications();
+        if(typeof window.refreshMessengerUnread==="function") await window.refreshMessengerUnread();
+        if(typeof window.loadConversations==="function") await window.loadConversations();
+        if(window.ffDuarteMobileAlertsV31S?.refresh) await window.ffDuarteMobileAlertsV31S.refresh();
+      }catch(e){console.debug("Duarte realtime refresh:",e)}
+    },120);
+  }
+  async function startGlobalRealtime(){
+    try{
+      const {data}=await supabaseClient.auth.getSession();
+      const user=data?.session?.user;
+      if(!user)return;
+      if(ch){try{await supabaseClient.removeChannel(ch)}catch(_){}}
+      ch=supabaseClient.channel("duarte-global-live-"+user.id)
+        .on("postgres_changes",
+          {event:"INSERT",schema:"public",table:"notifications",filter:"user_id=eq."+user.id},
+          refreshAll)
+        .on("postgres_changes",
+          {event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+user.id},
+          refreshAll)
+        .on("postgres_changes",
+          {event:"INSERT",schema:"public",table:"messages"},
+          refreshAll)
+        .subscribe(status=>{
+          if(status==="SUBSCRIBED")refreshAll();
+        });
+    }catch(e){console.debug("Duarte realtime start:",e)}
+  }
+  document.addEventListener("DOMContentLoaded",startGlobalRealtime,{once:true});
+  window.addEventListener("online",startGlobalRealtime,{passive:true});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){startGlobalRealtime();refreshAll()}});
 })();
 </script>
 

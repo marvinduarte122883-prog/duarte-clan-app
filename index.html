@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-chatfix-v31q">
+<meta name="duarte-build" content="production-mobile-alerts-v31r">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-chatfix-v31q";
+ window.DUARTE_BUILD="production-mobile-alerts-v31r";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-chatfix-v31q"};
+ window.ffDuarteV29C={version:"production-mobile-alerts-v31r"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-chatfix-v31q">
+<script id="duarte-production-mobile-alerts-v31r">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-chatfix-v31q",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-alerts-v31r",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-chatfix-v31q"};
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-alerts-v31r"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-chatfix-v31q",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-mobile-alerts-v31r",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-mobile-chatfix-v31q"};
+ window.ffDuarteAntiFlickerV31P={version:"production-mobile-alerts-v31r"};
 })();
 </script>
 
@@ -11079,6 +11079,91 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  addEventListener("resize",()=>setTimeout(ensureComposer,80),{passive:true});
  document.addEventListener("DOMContentLoaded",ensureComposer);
  window.ffDuarteMobileChatFixV31Q={repair,ensureComposer};
+})();
+</script>
+
+
+<style id="duarte-mobile-alerts-v31r">
+@media(max-width:760px){
+ /* Full-screen Facebook-Lite-style Alerts view. */
+ #notificationsPanel.ff-v31r-fullscreen,
+ #notificationPanel.ff-v31r-fullscreen,
+ .notifications-panel.ff-v31r-fullscreen,
+ .notification-panel.ff-v31r-fullscreen{
+   display:block!important;visibility:visible!important;opacity:1!important;
+   position:fixed!important;inset:0!important;z-index:2147483200!important;
+   width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;
+   margin:0!important;border:0!important;border-radius:0!important;
+   background:#111214!important;overflow-y:auto!important;overflow-x:hidden!important;
+   padding:0 0 calc(84px + env(safe-area-inset-bottom))!important;
+   -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+ }
+ .ff-v31r-alert-head{
+   position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;
+   min-height:64px;padding:8px 12px;background:#111214;border-bottom:1px solid #303033;
+ }
+ .ff-v31r-alert-back{width:44px;height:44px;border:0;border-radius:50%;background:#252629;color:#fff;font-size:28px}
+ .ff-v31r-alert-title{flex:1;color:#fff;font-size:23px;font-weight:800}
+ .ff-v31r-alert-read{min-height:40px;border:1px solid #4b421f;border-radius:20px;background:#28230f;color:#e8c84c;padding:0 13px;font-weight:700}
+ .ff-v31r-fullscreen .notification-item{
+   margin:0!important;border-radius:0!important;border-left:0!important;border-right:0!important;
+   min-height:74px!important;padding:12px 14px!important;
+ }
+ .ff-v31r-fullscreen .notification-item.unread{background:#232116!important}
+}
+</style>
+<script id="duarte-mobile-alerts-v31r-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ let panel=null, oldParent=null, oldNext=null;
+ const candidates=()=>[
+   document.getElementById("notificationsPanel"),
+   document.getElementById("notificationPanel"),
+   document.querySelector(".notifications-panel"),
+   document.querySelector(".notification-panel")
+ ].filter(Boolean);
+ function findPanel(){return candidates()[0]||null}
+ function close(){
+   if(!panel)return;
+   panel.classList.remove("ff-v31r-fullscreen");
+   panel.querySelector(".ff-v31r-alert-head")?.remove();
+   if(oldParent){
+     if(oldNext&&oldNext.parentNode===oldParent)oldParent.insertBefore(panel,oldNext);
+     else oldParent.appendChild(panel);
+   }
+   panel=null;oldParent=null;oldNext=null;
+ }
+ function open(){
+   const p=findPanel();if(!p)return false;
+   if(p.classList.contains("ff-v31r-fullscreen"))return true;
+   panel=p;oldParent=p.parentNode;oldNext=p.nextSibling;
+   document.body.appendChild(p);
+   p.classList.add("ff-v31r-fullscreen");
+   p.hidden=false;p.removeAttribute("aria-hidden");
+   const h=document.createElement("div");h.className="ff-v31r-alert-head";
+   h.innerHTML=`<button type="button" class="ff-v31r-alert-back" aria-label="Back">‹</button>
+    <div class="ff-v31r-alert-title">Alerts</div>
+    <button type="button" class="ff-v31r-alert-read">✓ Read all</button>`;
+   p.prepend(h);
+   h.querySelector(".ff-v31r-alert-back").onclick=close;
+   h.querySelector(".ff-v31r-alert-read").onclick=()=>{
+     const old=[...document.querySelectorAll("button,a")].find(x=>/mark.*all.*read|read all/i.test((x.textContent||"").trim())&&!x.classList.contains("ff-v31r-alert-read"));
+     if(old)old.click();
+   };
+   try{window.loadNotifications?.()}catch(_){}
+   p.scrollTop=0;return true;
+ }
+ document.addEventListener("click",e=>{
+   const b=e.target.closest?.("button,a");
+   if(!b)return;
+   const t=(b.textContent||"").trim().toLowerCase();
+   const alertish=/^(alerts?|notifications?)$/.test(t)||b.matches("[data-action='notifications'],[data-section='notifications'],.notification-button,.alerts-button");
+   if(alertish&&!b.closest(".ff-v31r-fullscreen")){
+     setTimeout(open,0);
+   }
+ },true);
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&panel)close()});
+ window.ffDuarteMobileAlertsV31R={open,close};
 })();
 </script>
 

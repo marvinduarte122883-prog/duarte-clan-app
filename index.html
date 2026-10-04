@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-blue-force-v32a">
+<meta name="duarte-build" content="production-facebook-lite-menu-v32c">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-blue-force-v32a";
+ window.DUARTE_BUILD="production-facebook-lite-menu-v32c";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-blue-force-v32a"};
+ window.ffDuarteV29C={version:"production-facebook-lite-menu-v32c"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-blue-force-v32a">
+<script id="duarte-production-facebook-lite-menu-v32c">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-blue-force-v32a",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-facebook-lite-menu-v32c",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-blue-force-v32a"};
+ window.ffDuarteMobileSmoothV31M={version:"production-facebook-lite-menu-v32c"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-blue-force-v32a",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-facebook-lite-menu-v32c",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-blue-force-v32a"};
+ window.ffDuarteAntiFlickerV31P={version:"production-facebook-lite-menu-v32c"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-blue-force-v32a"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-lite-menu-v32c"};
 })();
 </script>
 
@@ -11934,6 +11934,161 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(box)mo.observe(box,{childList:true,subtree:true});
  });
  window.ffDuarteMessengerBlueForceV32A={paint};
+})();
+</script>
+
+
+<style id="duarte-portrait-menu-logout-v32b">
+@media(max-width:760px) and (orientation:portrait){
+ /* Keep the bottom Menu reachable in portrait. */
+ .ff-v29c-mobile-nav{
+   display:grid!important;
+   grid-template-columns:repeat(5,1fr)!important;
+   position:fixed!important;left:0!important;right:0!important;
+   bottom:0!important;z-index:2147482800!important;
+   padding-bottom:env(safe-area-inset-bottom)!important;
+ }
+ /* Only an active full-screen chat may hide the bottom nav. */
+ body:not(.ff-v31x-chat-open) .ff-v29c-mobile-nav{display:grid!important}
+
+ #ffV31OMenuBackdrop.open{
+   display:block!important;visibility:visible!important;pointer-events:auto!important;
+ }
+ #ffV31OMenuSheet{
+   bottom:calc(72px + env(safe-area-inset-bottom))!important;
+   max-height:calc(100dvh - 96px - env(safe-area-inset-bottom))!important;
+   overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+   padding-bottom:calc(12px + env(safe-area-inset-bottom))!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-item.logout{
+   display:block!important;visibility:visible!important;opacity:1!important;
+   position:sticky!important;bottom:0!important;z-index:3!important;
+   width:100%!important;min-height:56px!important;
+   background:#2b1c17!important;color:#ffd8c2!important;
+   border:1px solid #7a4933!important;
+ }
+}
+</style>
+<script id="duarte-portrait-menu-logout-v32b-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+
+ function findLogout(){
+   return [...document.querySelectorAll("#ffV31OMenuSheet button,#ffV31OMenuSheet a")]
+     .find(x=>/log\s*out|logout|sign\s*out/i.test((x.textContent||"").trim()));
+ }
+ function ensure(){
+   if(!matchMedia("(orientation:portrait)").matches)return;
+   const sheet=document.getElementById("ffV31OMenuSheet");
+   if(!sheet)return;
+   let logout=findLogout();
+   if(!logout){
+     logout=document.createElement("button");
+     logout.type="button";
+     logout.className="ff-v31o-menu-item logout";
+     logout.dataset.go="logout";
+     logout.innerHTML="↪ Log out<small>Sign out of Duarte Clan</small>";
+     (sheet.querySelector(".ff-v31o-menu-grid")||sheet).appendChild(logout);
+   }
+   logout.hidden=false;
+   logout.style.setProperty("display","block","important");
+   logout.style.setProperty("visibility","visible","important");
+ }
+ document.addEventListener("click",e=>{
+   const t=(e.target.closest?.("button,a")?.textContent||"").trim().toLowerCase();
+   if(/\bmenu\b/.test(t))setTimeout(ensure,30);
+ },true);
+ document.addEventListener("DOMContentLoaded",ensure);
+ addEventListener("orientationchange",()=>setTimeout(ensure,180),{passive:true});
+ window.ffDuartePortraitLogoutV32B={ensure};
+})();
+</script>
+
+
+<style id="duarte-facebook-lite-menu-v32c">
+@media(max-width:760px){
+ #ffV31OMenuBackdrop.open{
+   display:block!important;position:fixed!important;inset:0!important;
+   z-index:2147483500!important;background:#101113!important;
+   overflow:hidden!important;
+ }
+ #ffV31OMenuSheet{
+   position:absolute!important;inset:0!important;width:100%!important;height:100dvh!important;
+   max-width:none!important;max-height:none!important;margin:0!important;
+   border:0!important;border-radius:0!important;background:#101113!important;
+   padding:0 12px calc(22px + env(safe-area-inset-bottom))!important;
+   overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+ }
+ #ffV31OMenuSheet::before{
+   content:"Menu";display:block;position:sticky;top:0;z-index:8;
+   margin:0 -12px 12px;padding:17px 56px 14px 16px;
+   background:#101113;border-bottom:1px solid #292a2d;
+   color:#fff;font-size:25px;font-weight:800;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-close,
+ #ffV31OMenuSheet [data-action="close"],
+ #ffV31OMenuSheet .close{
+   position:fixed!important;right:12px!important;top:10px!important;z-index:20!important;
+   width:42px!important;height:42px!important;border-radius:50%!important;
+   background:#292a2d!important;color:#fff!important;border:0!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-grid{
+   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+   gap:10px!important;padding:2px 0 12px!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-item{
+   display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+   justify-content:center!important;gap:5px!important;
+   min-height:88px!important;padding:13px!important;margin:0!important;
+   border:1px solid #303135!important;border-radius:14px!important;
+   background:#1b1c1f!important;color:#fff!important;
+   box-shadow:none!important;text-align:left!important;font-size:15px!important;font-weight:750!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-item small{
+   display:block!important;color:#aeb0b5!important;font-size:11px!important;font-weight:500!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-item::first-letter{font-size:22px}
+ #ffV31OMenuSheet .ff-v31o-menu-item.logout{
+   grid-column:1/-1!important;position:relative!important;bottom:auto!important;
+   min-height:54px!important;display:flex!important;flex-direction:row!important;
+   align-items:center!important;justify-content:center!important;
+   background:#26272a!important;color:#fff!important;border-color:#3a3b3f!important;
+   margin-top:4px!important;
+ }
+ #ffV31OMenuSheet .ff-v31o-menu-item.logout small{display:none!important}
+}
+</style>
+<script id="duarte-facebook-lite-menu-v32c-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ function arrange(){
+   const sheet=document.getElementById("ffV31OMenuSheet");if(!sheet)return;
+   const grid=sheet.querySelector(".ff-v31o-menu-grid")||sheet;
+   // Preserve every current menu action; only add lightweight subtitles where absent.
+   [...grid.querySelectorAll(".ff-v31o-menu-item")].forEach(item=>{
+     const label=(item.childNodes[0]?.textContent||item.textContent||"").trim().toLowerCase();
+     if(item.querySelector("small")||item.classList.contains("logout"))return;
+     const hints=[
+       [/profile|account/,"View your Duarte profile"],
+       [/member|directory/,"Duarte Clan members"],
+       [/event|calendar/,"Family gatherings and dates"],
+       [/album|gallery|photo/,"Family photos and memories"],
+       [/poll/,"Vote with the family"],
+       [/history|memorial/,"Family history and remembrance"],
+       [/tree|relationship/,"Explore family connections"],
+       [/admin/,"Clan administration"],
+       [/health|system/,"App and sync status"]
+     ];
+     const hit=hints.find(([r])=>r.test(label));
+     if(hit){const s=document.createElement("small");s.textContent=hit[1];item.appendChild(s)}
+   });
+ }
+ document.addEventListener("DOMContentLoaded",arrange);
+ document.addEventListener("click",e=>{
+   const t=(e.target.closest?.("button,a")?.textContent||"").trim().toLowerCase();
+   if(/\bmenu\b/.test(t))setTimeout(arrange,20);
+ },true);
+ window.ffDuarteFacebookLiteMenuV32C={arrange};
 })();
 </script>
 

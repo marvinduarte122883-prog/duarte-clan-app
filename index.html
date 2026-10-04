@@ -13115,6 +13115,94 @@ document.addEventListener("DOMContentLoaded",function(){
 },{once:true});
 </script>
 
+
+<script id="duarte-mobile-live-notifications-messenger-v35">
+(function(){
+  let channel=null, refreshTimer=0, messageTimer=0;
+
+  function debounce(fn,kind){
+    const key=kind==="message"?"messageTimer":"refreshTimer";
+    clearTimeout(kind==="message"?messageTimer:refreshTimer);
+    const id=setTimeout(fn,180);
+    if(kind==="message")messageTimer=id; else refreshTimer=id;
+  }
+  async function sessionUser(){
+    try{
+      const {data}=await supabaseClient.auth.getSession();
+      return data?.session?.user||null;
+    }catch(_){return null}
+  }
+  async function refreshAlerts(){
+    try{
+      if(typeof loadNotifications==="function") await loadNotifications();
+      if(window.ffDuarteMobileAlertsV31S?.refresh) await window.ffDuarteMobileAlertsV31S.refresh();
+      document.dispatchEvent(new CustomEvent("duarte:notifications-changed"));
+    }catch(e){console.debug("Live notification refresh:",e)}
+  }
+  async function refreshMessenger(){
+    try{
+      /* Reuse existing app loaders instead of creating a second message UI. */
+      if(typeof loadConversations==="function") await loadConversations();
+      if(typeof loadMessengerConversations==="function") await loadMessengerConversations();
+      if(typeof updateUnreadMessages==="function") await updateUnreadMessages();
+      if(typeof updateMessengerBadge==="function") await updateMessengerBadge();
+      document.dispatchEvent(new CustomEvent("duarte:messages-changed"));
+    }catch(e){console.debug("Live messenger refresh:",e)}
+  }
+  function openAlerts(){
+    if(window.ffDuarteMobileAlertsV31S?.open) return window.ffDuarteMobileAlertsV31S.open();
+    const b=document.querySelector('[data-action="notifications"],[data-action="alerts"],#notificationWrap button,.notification-button,.alerts-button');
+    if(b){b.click();return true}
+    if(typeof loadNotifications==="function") loadNotifications();
+    return false;
+  }
+  function openMessengerLite(){
+    if(typeof openMessenger==="function"){openMessenger();return true}
+    if(typeof showMessenger==="function"){showMessenger();return true}
+    if(typeof openMessengerPanel==="function"){openMessengerPanel();return true}
+    const b=document.querySelector('[data-action="messenger"],#messengerBtn,.messenger-button,[aria-label*="messenger" i]');
+    if(b){b.click();return true}
+    return false;
+  }
+  async function start(){
+    const user=await sessionUser();
+    if(!user||!window.supabaseClient?.channel)return;
+    if(channel){try{await supabaseClient.removeChannel(channel)}catch(_){}}
+    channel=supabaseClient.channel("duarte-live-mobile-"+user.id)
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"notifications",filter:"user_id=eq."+user.id},
+          ()=>debounce(refreshAlerts,"alert"))
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"notifications",filter:"user_id=eq."+user.id},
+          ()=>debounce(refreshAlerts,"alert"))
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},
+          payload=>{
+            const row=payload?.new||{};
+            /* Existing conversation loaders decide visibility/membership. */
+            if(row.sender_id!==user.id) debounce(refreshMessenger,"message");
+          })
+      .subscribe(status=>{
+        if(status==="SUBSCRIBED"){
+          refreshAlerts();
+          refreshMessenger();
+        }
+      });
+  }
+
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest?.(".ff-v29c-bottom-nav [data-v29c-nav]");
+    if(!btn)return;
+    const a=btn.dataset.v29cNav;
+    if(a==="notifications"){e.preventDefault();e.stopImmediatePropagation();openAlerts()}
+    if(a==="messenger"){e.preventDefault();e.stopImmediatePropagation();openMessengerLite()}
+  },true);
+
+  window.addEventListener("online",()=>{start();refreshAlerts();refreshMessenger()});
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden){refreshAlerts();refreshMessenger()}
+  });
+  document.addEventListener("DOMContentLoaded",start,{once:true});
+})();
+</script>
+
 </body>
 </html>
 

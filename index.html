@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-scroll-unlock-v31y">
+<meta name="duarte-build" content="production-messenger-blue-v31z">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-scroll-unlock-v31y";
+ window.DUARTE_BUILD="production-messenger-blue-v31z";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-scroll-unlock-v31y"};
+ window.ffDuarteV29C={version:"production-messenger-blue-v31z"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-scroll-unlock-v31y">
+<script id="duarte-production-messenger-blue-v31z">
 (()=>{
  async function run(){
-  const r={build:"production-scroll-unlock-v31y",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-messenger-blue-v31z",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-scroll-unlock-v31y"};
+ window.ffDuarteMobileSmoothV31M={version:"production-messenger-blue-v31z"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-scroll-unlock-v31y",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-messenger-blue-v31z",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-scroll-unlock-v31y"};
+ window.ffDuarteAntiFlickerV31P={version:"production-messenger-blue-v31z"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-scroll-unlock-v31y"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-blue-v31z"};
 })();
 </script>
 
@@ -11774,6 +11774,72 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    setTimeout(normalize,100);
  });
  window.ffDuarteScrollUnlockV31Y={normalize,isActuallyVisible};
+})();
+</script>
+
+
+<style id="duarte-messenger-blue-v31z">
+@media(max-width:760px){
+ /* Messenger Lite: stronger contrast for outgoing messages. */
+ #privateMessages .message-bubble.own,
+ #privateMessages .private-message.own,
+ #privateMessages .chat-message.own,
+ #privateMessages .message-row.own,
+ #privateMessages .message-row.me,
+ #privateMessages [data-own="true"],
+ .private-messages .message-bubble.own,
+ .chat-messages .message-bubble.own,
+ .messages-thread .message-bubble.own{
+   background:#1769e8!important;
+   background-image:none!important;
+   color:#fff!important;
+   border-color:#1769e8!important;
+ }
+ #privateMessages .message-bubble.own *,
+ #privateMessages .private-message.own *,
+ #privateMessages .chat-message.own *,
+ #privateMessages .message-row.own *,
+ #privateMessages .message-row.me *,
+ #privateMessages [data-own="true"] *,
+ .private-messages .message-bubble.own *,
+ .chat-messages .message-bubble.own *,
+ .messages-thread .message-bubble.own *{
+   color:#fff!important;
+ }
+ #privateMessages .message-bubble.own .message-time,
+ #privateMessages .message-bubble.own .message-status,
+ #privateMessages .private-message.own .message-time,
+ #privateMessages .chat-message.own .message-time,
+ #privateMessages [data-own="true"] .message-time{
+   color:rgba(255,255,255,.78)!important;
+ }
+ /* Keep reactions readable without repaint-heavy effects. */
+ #privateMessages .own .message-reactions,
+ #privateMessages .own .message-actions,
+ #privateMessages [data-own="true"] .message-reactions{
+   color:#fff!important;
+   text-shadow:none!important;
+ }
+}
+</style>
+<script id="duarte-messenger-blue-v31z-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ const apply=()=>{
+   document.querySelectorAll(
+    '#privateMessages .message-bubble.own,#privateMessages .private-message.own,#privateMessages .chat-message.own,'+
+    '#privateMessages .message-row.own,#privateMessages .message-row.me,#privateMessages [data-own="true"],'+
+    '.private-messages .message-bubble.own,.chat-messages .message-bubble.own,.messages-thread .message-bubble.own'
+   ).forEach(el=>el.classList.add("ff-v31z-blue-own"));
+ };
+ document.addEventListener("DOMContentLoaded",apply);
+ let raf=0;
+ const mo=new MutationObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(apply)});
+ document.addEventListener("DOMContentLoaded",()=>{
+   const box=document.querySelector("#privateMessages,.private-messages,.chat-messages,.messages-thread");
+   if(box)mo.observe(box,{childList:true,subtree:false});
+ });
+ window.ffDuarteMessengerBlueV31Z={apply};
 })();
 </script>
 

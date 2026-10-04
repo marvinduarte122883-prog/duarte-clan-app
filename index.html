@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-unified-messenger-v32r">
+<meta name="duarte-build" content="production-facebook-message-actions-v32s">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-unified-messenger-v32r";
+ window.DUARTE_BUILD="production-facebook-message-actions-v32s";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-unified-messenger-v32r"};
+ window.ffDuarteV29C={version:"production-facebook-message-actions-v32s"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-unified-messenger-v32r">
+<script id="duarte-production-facebook-message-actions-v32s">
 (()=>{
  async function run(){
-  const r={build:"production-unified-messenger-v32r",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-facebook-message-actions-v32s",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-unified-messenger-v32r"};
+ window.ffDuarteMobileSmoothV31M={version:"production-facebook-message-actions-v32s"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-unified-messenger-v32r",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-facebook-message-actions-v32s",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-unified-messenger-v32r"};
+ window.ffDuarteAntiFlickerV31P={version:"production-facebook-message-actions-v32s"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-unified-messenger-v32r"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-message-actions-v32s"};
 })();
 </script>
 
@@ -13436,6 +13436,251 @@ html body .private-chat-panel > *{
  document.addEventListener("DOMContentLoaded",()=>setTimeout(bind,100));
  addEventListener("pageshow",()=>setTimeout(bind,100),{passive:true});
  window.ffDuarteUnifiedMessengerV32R={bind,send:doSend,photo:choosePhoto};
+})();
+</script>
+
+
+<style id="duarte-facebook-message-actions-v32s">
+/* Remove all legacy always-visible Delete/tool rows. */
+#ffMsgModal .ff-own-delete-row,
+#ffMsgModal .ff-v4-msg-tools,
+#ffMsgModal .ff-v32n-msg-actions{display:none!important}
+
+/* Desktop Facebook-Lite hover toolbar */
+.ff-v32s-desktop-actions{
+ display:none;position:absolute;top:50%;transform:translateY(-50%);
+ gap:4px;z-index:40;white-space:nowrap;
+}
+.ff-bubble-row.mine .ff-v32s-desktop-actions{right:calc(100% + 7px)}
+.ff-bubble-row:not(.mine) .ff-v32s-desktop-actions{left:calc(100% + 7px)}
+@media(min-width:761px){
+ #ffMsgModal .ff-bubble-row{position:relative}
+ #ffMsgModal .ff-bubble-row:hover .ff-v32s-desktop-actions{display:flex}
+ .ff-v32s-desktop-actions button{
+  width:30px;height:30px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;
+  background:#f0f2f5;color:#050505;cursor:pointer;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,.12)
+ }
+ .ff-v32s-desktop-actions button:hover{background:#e4e6eb}
+}
+
+/* Mobile long-press action sheet */
+#ffV32SMobileActions{
+ position:fixed;inset:0;z-index:2147483200;display:none;background:rgba(0,0,0,.32);
+ align-items:flex-end;justify-content:center
+}
+#ffV32SMobileActions.open{display:flex}
+#ffV32SMobileActions .sheet{
+ width:100%;max-width:560px;background:#fff;color:#050505;border-radius:18px 18px 0 0;
+ padding:10px 12px max(14px,env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.16)
+}
+#ffV32SMobileActions .reacts{display:flex;justify-content:center;gap:8px;padding:7px 0 12px}
+#ffV32SMobileActions button{
+ border:0;background:#fff;color:#050505;font-size:14px;cursor:pointer
+}
+#ffV32SMobileActions .reacts button{
+ width:42px;height:42px;border-radius:50%;background:#f0f2f5;font-size:21px
+}
+#ffV32SMobileActions .main-actions{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #e4e6eb;padding-top:9px}
+#ffV32SMobileActions .main-actions button{
+ min-height:54px;border-radius:10px;background:#f7f8fa;font-size:11px;font-weight:700
+}
+#ffV32SMore{
+ display:none;margin-top:8px;border-top:1px solid #e4e6eb;padding-top:6px
+}
+#ffV32SMore.open{display:block}
+#ffV32SMore button{display:block;width:100%;text-align:left;padding:12px;border-radius:8px}
+#ffV32SMore button:hover{background:#f0f2f5}
+#ffV32SMore .danger{color:#b42318;font-weight:700}
+@media(min-width:761px){#ffV32SMobileActions{display:none!important}}
+
+/* Forward chooser */
+#ffV32SForward{
+ position:fixed;inset:0;z-index:2147483300;display:none;place-items:center;background:rgba(0,0,0,.35)
+}
+#ffV32SForward.open{display:grid}
+#ffV32SForward .box{width:min(92vw,420px);max-height:70vh;overflow:auto;background:#fff;color:#000;border-radius:16px;padding:12px}
+#ffV32SForward .head{display:flex;justify-content:space-between;align-items:center;font-weight:800;padding:5px 4px 10px}
+#ffV32SForward .person{width:100%;text-align:left;padding:11px;border:0;border-top:1px solid #eee;background:#fff;color:#000;cursor:pointer}
+#ffV32SForward .person:hover{background:#f5f6f7}
+</style>
+
+<script id="duarte-facebook-message-actions-v32s-script">
+(()=>{
+ let activeRow=null, pressTimer=null, pressStart=null;
+
+ const getText=row=>{
+   const b=row?.querySelector(".ff-bubble"); if(!b)return "";
+   const clone=b.cloneNode(true);
+   clone.querySelectorAll(".ff-bubble-time,.ff-seen-status,.ff-v4-msg-reactions,.ff-v4-msg-tools,.ff-own-delete-row,.ff-v32s-desktop-actions").forEach(x=>x.remove());
+   return clone.textContent.trim();
+ };
+ const idOf=row=>Number(row?.dataset.messageId||0);
+ const isMine=row=>row?.classList.contains("mine");
+ const attachment=row=>row?.querySelector(".ff-v4-msg-photo")?.src||"";
+
+ function reply(row){ const id=idOf(row); if(id)window.ffV4Reply?.(id,getText(row).slice(0,120)||"Photo") }
+ function react(row,e){ const id=idOf(row); if(id)window.ffV4React?.(id,e) }
+ async function copyMsg(row){
+   const t=getText(row); if(!t)return;
+   try{await navigator.clipboard.writeText(t)}catch(_){
+     const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove()
+   }
+ }
+ function translate(row){
+   const t=getText(row); if(!t)return;
+   /* Use the browser/OS translation surface when available; otherwise copy for easy translation. */
+   if(navigator.share){ navigator.share({text:t}).catch(()=>{}) }
+   else copyMsg(row).then(()=>alert("Message copied. You can paste it into your translator."));
+ }
+ function details(row){
+   const id=idOf(row), time=row.querySelector(".ff-bubble-time")?.textContent?.trim()||"";
+   const state=row.querySelector(".ff-seen-status")?.textContent?.trim()||"";
+   alert(`Message details\n\nMessage ID: ${id}\nTime: ${time||"—"}\nStatus: ${state||"—"}\n${isMine(row)?"Sent by you":"Received message"}`);
+ }
+ function report(row){
+   const id=idOf(row), text=getText(row).slice(0,160);
+   const reason=prompt("Why are you reporting this message?"); if(!reason)return;
+   /* Do not invent a server report record when no report table is present. */
+   const payload=`Message #${id}\nReason: ${reason}\nMessage: ${text}`;
+   navigator.clipboard?.writeText(payload).catch(()=>{});
+   alert("Report details prepared and copied. An administrator reporting table is not configured yet, so no false report was submitted.");
+ }
+ function pin(row){
+   const id=idOf(row); if(!id)return;
+   const key="duarte_pinned_messages_v32s";
+   let a=[];try{a=JSON.parse(localStorage.getItem(key)||"[]")}catch(_){}
+   if(!a.includes(id))a.push(id);
+   localStorage.setItem(key,JSON.stringify(a.slice(-100)));
+   row.querySelector(".ff-bubble")?.setAttribute("data-pinned","true");
+ }
+ function unsend(row){
+   if(!isMine(row))return;
+   const id=idOf(row); if(id)window.ffV42DeleteOwnMessage?.(id,attachment(row))
+ }
+
+ async function forward(row){
+   activeRow=row;
+   const modal=ensureForward(); modal.classList.add("open");
+   const list=modal.querySelector(".list");list.innerHTML="Loading…";
+   try{
+     const mine=await supabaseClient.from("conversation_members").select("conversation_id").eq("user_id",currentUser.id);
+     if(mine.error)throw mine.error;
+     const ids=[...new Set((mine.data||[]).map(x=>x.conversation_id))];
+     const cm=await supabaseClient.from("conversation_members").select("conversation_id,user_id").in("conversation_id",ids);
+     if(cm.error)throw cm.error;
+     const others=(cm.data||[]).filter(x=>x.user_id!==currentUser.id);
+     const uids=[...new Set(others.map(x=>x.user_id))];
+     const pr=uids.length?await supabaseClient.from("profiles").select("id,full_name").in("id",uids):{data:[]};
+     const names=Object.fromEntries((pr.data||[]).map(p=>[p.id,p.full_name||"Clan Member"]));
+     list.innerHTML="";
+     others.forEach(x=>{
+       const b=document.createElement("button");b.className="person";b.textContent=names[x.user_id]||"Clan Member";
+       b.onclick=()=>forwardTo(row,x.conversation_id,b);
+       list.appendChild(b);
+     });
+     if(!others.length)list.textContent="No other conversations.";
+   }catch(e){list.textContent="Conversations could not be loaded."}
+ }
+ async function forwardTo(row,cid,btn){
+   btn.disabled=true;btn.textContent="Forwarding…";
+   try{
+     const r=await supabaseClient.from("messages").insert({
+       conversation_id:cid,sender_id:currentUser.id,
+       content:getText(row)||"",attachment_url:attachment(row)||null,reply_to_id:null
+     });
+     if(r.error)throw r.error;
+     document.getElementById("ffV32SForward")?.classList.remove("open");
+   }catch(e){alert("Message could not be forwarded: "+(e.message||e))}
+   finally{btn.disabled=false}
+ }
+
+ function ensureForward(){
+   let m=document.getElementById("ffV32SForward");if(m)return m;
+   m=document.createElement("div");m.id="ffV32SForward";
+   m.innerHTML='<div class="box"><div class="head"><span>Forward message</span><button type="button">✕</button></div><div class="list"></div></div>';
+   m.querySelector(".head button").onclick=()=>m.classList.remove("open");
+   m.onclick=e=>{if(e.target===m)m.classList.remove("open")};
+   document.body.appendChild(m);return m;
+ }
+
+ function ensureMobileSheet(){
+   let m=document.getElementById("ffV32SMobileActions");if(m)return m;
+   m=document.createElement("div");m.id="ffV32SMobileActions";
+   m.innerHTML=`<div class="sheet">
+    <div class="reacts">${["👍","❤️","😂","😮","😢","😡"].map(x=>`<button data-react="${x}">${x}</button>`).join("")}</div>
+    <div class="main-actions">
+      <button data-a="reply">↩<br>Reply</button><button data-a="copy">▣<br>Copy</button>
+      <button data-a="translate">文<br>Translate</button><button data-a="react">☺<br>Reactions</button>
+      <button data-a="more">•••<br>More</button>
+    </div>
+    <div id="ffV32SMore">
+      <button data-a="delete" class="danger">🗑 Delete / Unsend</button>
+      <button data-a="forward">↗ Forward</button>
+      <button data-a="details">ⓘ Details</button>
+      <button data-a="report">⚑ Report</button>
+    </div></div>`;
+   m.onclick=e=>{
+     if(e.target===m){closeSheet();return}
+     const b=e.target.closest("button");if(!b||!activeRow)return;
+     if(b.dataset.react){react(activeRow,b.dataset.react);closeSheet();return}
+     const a=b.dataset.a;
+     if(a==="reply"){reply(activeRow);closeSheet()}
+     if(a==="copy"){copyMsg(activeRow);closeSheet()}
+     if(a==="translate"){translate(activeRow);closeSheet()}
+     if(a==="react")m.querySelector(".reacts").scrollIntoView({behavior:"smooth",block:"nearest"});
+     if(a==="more")m.querySelector("#ffV32SMore").classList.toggle("open");
+     if(a==="delete"){unsend(activeRow);closeSheet()}
+     if(a==="forward"){const r=activeRow;closeSheet();forward(r)}
+     if(a==="details"){details(activeRow)}
+     if(a==="report"){report(activeRow)}
+   };
+   document.body.appendChild(m);return m;
+ }
+ function openSheet(row){
+   activeRow=row;const m=ensureMobileSheet();
+   const del=m.querySelector('[data-a="delete"]');del.style.display=isMine(row)?"block":"none";
+   m.querySelector("#ffV32SMore").classList.remove("open");m.classList.add("open");
+ }
+ function closeSheet(){document.getElementById("ffV32SMobileActions")?.classList.remove("open")}
+
+ function desktopBar(row){
+   if(row.querySelector(".ff-v32s-desktop-actions"))return;
+   const bar=document.createElement("div");bar.className="ff-v32s-desktop-actions";
+   const actions=[
+     ["☺","Reactions",()=>react(row,"👍")],
+     ["↗","Forward",()=>forward(row)],
+     ...(isMine(row)?[["↶","Unsend",()=>unsend(row)]]:[]),
+     ["📌","Pin",()=>pin(row)],
+     ["⚑","Report",()=>report(row)]
+   ];
+   actions.forEach(([icon,title,fn])=>{const b=document.createElement("button");b.type="button";b.textContent=icon;b.title=title;b.onclick=e=>{e.stopPropagation();fn()};bar.appendChild(b)});
+   row.appendChild(bar);
+ }
+ function bindRow(row){
+   if(row.dataset.v32sBound==="1")return;row.dataset.v32sBound="1";
+   desktopBar(row);
+   const bubble=row.querySelector(".ff-bubble");if(!bubble)return;
+   bubble.addEventListener("pointerdown",e=>{
+     if(innerWidth>760||e.pointerType==="mouse")return;
+     pressStart={x:e.clientX,y:e.clientY};clearTimeout(pressTimer);
+     pressTimer=setTimeout(()=>{navigator.vibrate?.(18);openSheet(row)},520);
+   },{passive:true});
+   bubble.addEventListener("pointermove",e=>{
+     if(!pressStart)return;
+     if(Math.hypot(e.clientX-pressStart.x,e.clientY-pressStart.y)>12)clearTimeout(pressTimer);
+   },{passive:true});
+   ["pointerup","pointercancel"].forEach(ev=>bubble.addEventListener(ev,()=>{clearTimeout(pressTimer);pressStart=null},{passive:true}));
+   bubble.addEventListener("contextmenu",e=>{if(innerWidth<=760){e.preventDefault();openSheet(row)}});
+ }
+ function enhance(){
+   document.querySelectorAll("#ffChatMessages .ff-bubble-row[data-message-id]").forEach(bindRow);
+   /* legacy visible delete stays hidden */
+   document.querySelectorAll("#ffMsgModal .ff-own-delete-row").forEach(x=>x.style.setProperty("display","none","important"));
+ }
+ document.addEventListener("DOMContentLoaded",()=>{ensureMobileSheet();ensureForward();enhance()});
+ const mo=new MutationObserver(()=>requestAnimationFrame(enhance));
+ document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("ffChatMessages");if(b)mo.observe(b,{childList:true,subtree:true})});
+ window.ffDuarteMessageActionsV32S={enhance,openSheet};
 })();
 </script>
 

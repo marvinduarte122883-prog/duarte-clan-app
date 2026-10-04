@@ -10479,7 +10479,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 <nav class="ff-v29c-mobile-nav" aria-label="Mobile navigation">
  <button type="button" data-v29c-nav="home"><span class="ico">⌂</span><span>Home</span></button>
  <button type="button" data-v29c-nav="members"><span class="ico">👥</span><span>Members</span></button>
- <button type="button" class="primary" data-v29c-nav="create"><span class="ico">+</span><span>Create</span></button>
+ <button type="button" data-v29c-nav="notifications" aria-label="Notifications"><span class="ico">🔔</span><span>Notifications</span></button>
  <button type="button" data-v29c-nav="messenger"><span class="ico">💬</span><span>Messenger</span></button>
  <button type="button" data-v29c-nav="menu"><span class="ico">☰</span><span>Menu</span></button>
 </nav>
@@ -10512,7 +10512,14 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("click",e=>{
    const b=e.target.closest("[data-v29c-nav]");if(!b)return;
    const a=b.dataset.v29cNav;
-   if(a==="home")goHome();else if(a==="members")members();else if(a==="create")createPost();else if(a==="messenger")messenger();else if(a==="menu")menu();
+   if(a==="home")goHome();
+   else if(a==="members")members();
+   else if(a==="notifications"){
+     if(window.ffDuarteMobileAlertsV31S?.open) window.ffDuarteMobileAlertsV31S.open();
+     else clickFirst(['[data-action="notifications"]','[data-action="alerts"]','.notification-button','.alerts-button','#notificationWrap button']);
+   }
+   else if(a==="messenger")messenger();
+   else if(a==="menu")menu();
  });
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
@@ -11806,7 +11813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(create)create.style.setProperty("display","none","important");
 
    // Prefer the app's existing Alerts/Notifications button. If absent, create a lightweight proxy.
-   let alert=byText(/alerts?|notifications?/i);
+   let alert=nav.querySelector('[data-v29c-nav="notifications"]') || byText(/alerts?|notifications?/i);
    if(!alert){
      alert=document.createElement("button");
      alert.type="button";alert.className="ff-v32e-notifications";

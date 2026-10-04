@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-duarte-report-dialog-v33c">
+<meta name="duarte-build" content="production-white-chat-header-v33d">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-duarte-report-dialog-v33c";
+ window.DUARTE_BUILD="production-white-chat-header-v33d";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-duarte-report-dialog-v33c"};
+ window.ffDuarteV29C={version:"production-white-chat-header-v33d"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-duarte-report-dialog-v33c">
+<script id="duarte-production-white-chat-header-v33d">
 (()=>{
  async function run(){
-  const r={build:"production-duarte-report-dialog-v33c",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-white-chat-header-v33d",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-duarte-report-dialog-v33c"};
+ window.ffDuarteMobileSmoothV31M={version:"production-white-chat-header-v33d"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-duarte-report-dialog-v33c",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-white-chat-header-v33d",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-duarte-report-dialog-v33c"};
+ window.ffDuarteAntiFlickerV31P={version:"production-white-chat-header-v33d"};
 })();
 </script>
 
@@ -12460,6 +12460,38 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  };
 })();
 </script>
+
+
+<style id="duarte-white-chat-header-v33d">
+/* Messenger only: remove the black strip behind "Search this conversation". */
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-header,
+#ffMsgModal [class*="chat-head"],
+#ffMsgModal [class*="chat-header"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  border-color:#e4e6eb!important;
+  box-shadow:none!important;
+}
+
+/* Keep the conversation search itself white too. */
+#ffMsgModal #ffChatSearch,
+#ffMsgModal input[placeholder*="Search this conversation"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  -webkit-text-fill-color:#050505!important;
+  border:1px solid #d8dadf!important;
+  color-scheme:light!important;
+}
+#ffMsgModal #ffChatSearch::placeholder,
+#ffMsgModal input[placeholder*="Search this conversation"]::placeholder{
+  color:#65676b!important;
+  -webkit-text-fill-color:#65676b!important;
+  opacity:1!important;
+}
+</style>
 
 </body>
 </html>

@@ -13461,6 +13461,83 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<style id="duarte-profile-social-v40">
+.profile-social-composer-v40{
+ display:flex;gap:8px;align-items:center;margin:12px 0;padding:10px;
+ background:#17181a;border:1px solid #303236;border-radius:12px
+}
+.profile-social-composer-v40 input{
+ flex:1;min-width:0;background:#242529;color:#fff;border:1px solid #3a3b3f;
+ border-radius:20px;padding:10px 14px;font-size:15px
+}
+.profile-social-composer-v40 button{
+ border:0;border-radius:18px;padding:9px 14px;font-weight:800;
+ background:#d4af37;color:#111;cursor:pointer
+}
+@media(max-width:760px){
+ .profile-social-composer-v40{position:relative!important;margin:8px 0!important}
+ .profile-social-composer-v40 input{font-size:16px!important}
+}
+</style>
+<script id="duarte-profile-social-v40-js">
+(function(){
+ let viewedProfileId=null;
+
+ const wait=setInterval(()=>{
+   if(typeof window.openClanProfile!=="function")return;
+   clearInterval(wait);
+   const original=window.openClanProfile;
+   window.openClanProfile=async function(userId){
+     viewedProfileId=userId;
+     const result=await original.apply(this,arguments);
+     setTimeout(()=>installComposer(userId),80);
+     return result;
+   };
+ },100);
+ setTimeout(()=>clearInterval(wait),10000);
+
+ function profileRoot(){
+   return document.getElementById("profileModal")||
+          document.querySelector(".profile-modal.open,[data-profile-modal].open");
+ }
+ function installComposer(userId){
+   const root=profileRoot();
+   if(!root || root.querySelector(".profile-social-composer-v40"))return;
+   const postsArea=[...root.querySelectorAll("h2,h3,.section-title")].find(x=>/posts/i.test(x.textContent||""));
+   const anchor=postsArea?.parentElement||root.querySelector(".profile-content")||root;
+   const box=document.createElement("div");
+   box.className="profile-social-composer-v40";
+   box.innerHTML='<input type="text" maxlength="1000" placeholder="Write something on this profile…"><button type="button">Post</button>';
+   box.querySelector("button").onclick=()=>writeToProfile(userId,box);
+   box.querySelector("input").addEventListener("keydown",e=>{
+     if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();writeToProfile(userId,box)}
+   });
+   if(postsArea) postsArea.insertAdjacentElement("afterend",box); else anchor.prepend(box);
+ }
+
+ async function writeToProfile(profileId,box){
+   const input=box.querySelector("input"),content=(input.value||"").trim();
+   if(!content)return;
+   const btn=box.querySelector("button");btn.disabled=true;
+   try{
+     /* Use the existing posts table. target_profile_id is attempted only when
+        the schema supports it; otherwise create a normal post mentioning the member. */
+     let payload={user_id:currentUser.id,content};
+     let res=await supabaseClient.from("posts").insert({...payload,target_profile_id:profileId}).select("id").single();
+     if(res.error && /target_profile_id|column/i.test(res.error.message||"")){
+       res=await supabaseClient.from("posts").insert(payload).select("id").single();
+     }
+     if(res.error)throw res.error;
+     input.value="";
+     if(typeof loadPosts==="function")await loadPosts();
+     if(typeof openClanProfile==="function")await openClanProfile(profileId);
+   }catch(e){alert("Post could not be saved: "+(e?.message||e))}
+   finally{btn.disabled=false}
+ }
+})();
+</script>
+
 </body>
 </html>
 

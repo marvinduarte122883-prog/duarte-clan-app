@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-menu-v31o">
+<meta name="duarte-build" content="production-mobile-antiflicker-v31p">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-menu-v31o";
+ window.DUARTE_BUILD="production-mobile-antiflicker-v31p";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-menu-v31o"};
+ window.ffDuarteV29C={version:"production-mobile-antiflicker-v31p"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-menu-v31o">
+<script id="duarte-production-mobile-antiflicker-v31p">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-menu-v31o",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-antiflicker-v31p",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-menu-v31o"};
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-antiflicker-v31p"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-menu-v31o",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-mobile-antiflicker-v31p",updateNow};
 })();
 </script>
 
@@ -10891,6 +10891,96 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  document.addEventListener("DOMContentLoaded",build);
  window.ffDuarteMobileMenuV31O={open,close};
+})();
+</script>
+
+
+<style id="duarte-mobile-antiflicker-v31p">
+@media(max-width:760px){
+ html,body{background:#0f1012!important}
+ body{transform:none!important;filter:none!important}
+ /* Stable compositor layers only for fixed UI. */
+ .ff-v29c-mobile-nav,#ffV31OMenuBackdrop,#ffV31OMenuSheet{
+   -webkit-transform:translateZ(0);transform:translateZ(0);
+   -webkit-backface-visibility:hidden;backface-visibility:hidden;
+ }
+ /* Feed/cards stay in normal document layer to prevent tile flashing. */
+ .post-card,.clan-member-card,.ff-story-card,.card,.panel{
+   transform:none!important;will-change:auto!important;
+ }
+ /* Avoid content-visibility repaint flashes on mobile WebView/PWA. */
+ .post-card,.clan-member-card,.gallery-item,.event-card,.notification-item,img{
+   content-visibility:visible!important;
+   contain:none!important;
+ }
+ /* Prevent image area collapsing/reappearing while decoding. */
+ .post-card img,.ff-story-card img,.gallery-item img{
+   opacity:1!important;visibility:visible!important;
+   animation:none!important;transition:none!important;
+ }
+ /* Do not remove shadows/content while finger is moving; this caused visible flashing. */
+ body.ff-mobile-scrolling .card,
+ body.ff-mobile-scrolling .post-card,
+ body.ff-mobile-scrolling .clan-member-card{
+   box-shadow:initial!important;
+ }
+ body.ff-mobile-scrolling *,
+ body.ff-v31n-scrolling *{
+   animation-play-state:paused!important;
+ }
+}
+</style>
+<script id="duarte-mobile-antiflicker-v31p-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+
+ // Stop MutationObserver render storms from stacking in the same frame.
+ const NativeMO=window.MutationObserver;
+ if(NativeMO && !window.__ffV31PMOPatched){
+   window.__ffV31PMOPatched=true;
+   window.MutationObserver=class extends NativeMO{
+     constructor(cb){
+       let queued=false,lastRecords=[];
+       super((records,obs)=>{
+         lastRecords=records;
+         if(queued)return;
+         queued=true;
+         requestAnimationFrame(()=>{
+           queued=false;
+           try{cb(lastRecords,obs)}catch(e){console.error(e)}
+         });
+       });
+     }
+   };
+ }
+
+ // Do not repeatedly re-apply lazy attributes during every render.
+ const seen=new WeakSet();
+ const settleImages=()=>{
+   document.querySelectorAll("img").forEach(img=>{
+     if(seen.has(img))return;seen.add(img);
+     img.decoding="async";
+     if(!img.closest(".ff-story-view") && !img.closest(".profile-cover")) img.loading="lazy";
+   });
+ };
+ document.addEventListener("DOMContentLoaded",settleImages);
+ const imageObserver=new NativeMO(()=>requestAnimationFrame(settleImages));
+ document.addEventListener("DOMContentLoaded",()=>{
+   imageObserver.observe(document.body,{childList:true,subtree:true});
+ });
+
+ // Avoid resize/visualViewport storms while browser chrome moves during scrolling.
+ let resizeRAF=0;
+ const stableViewport=()=>{
+   cancelAnimationFrame(resizeRAF);
+   resizeRAF=requestAnimationFrame(()=>{
+     document.documentElement.style.setProperty("--ff-stable-vh",`${window.innerHeight*.01}px`);
+   });
+ };
+ stableViewport();
+ addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
+
+ window.ffDuarteAntiFlickerV31P={version:"production-mobile-antiflicker-v31p"};
 })();
 </script>
 

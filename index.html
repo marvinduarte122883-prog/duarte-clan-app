@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-blue-all-devices-v32l">
+<meta name="duarte-build" content="production-facebook-chat-style-v32m">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-blue-all-devices-v32l";
+ window.DUARTE_BUILD="production-facebook-chat-style-v32m";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-blue-all-devices-v32l"};
+ window.ffDuarteV29C={version:"production-facebook-chat-style-v32m"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-blue-all-devices-v32l">
+<script id="duarte-production-facebook-chat-style-v32m">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-blue-all-devices-v32l",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-facebook-chat-style-v32m",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-blue-all-devices-v32l"};
+ window.ffDuarteMobileSmoothV31M={version:"production-facebook-chat-style-v32m"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-blue-all-devices-v32l",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-facebook-chat-style-v32m",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-blue-all-devices-v32l"};
+ window.ffDuarteAntiFlickerV31P={version:"production-facebook-chat-style-v32m"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-blue-all-devices-v32l"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-chat-style-v32m"};
 })();
 </script>
 
@@ -12761,6 +12761,109 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  const mo=new MutationObserver(()=>requestAnimationFrame(()=>applyBlue()));
  document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
  window.ffDuarteMessengerBlueAllDevicesV32L={apply:applyBlue};
+})();
+</script>
+
+
+<style id="duarte-facebook-chat-style-v32m">
+/* V32M — Facebook/Messenger-like chat styling, desktop + mobile */
+#ffMsgModal .ff-msg-bubble,
+#ffMsgModal .message-bubble,
+.messenger-chat .ff-msg-bubble,
+.messenger-chat .message-bubble,
+.private-chat-panel .ff-msg-bubble,
+.private-chat-panel .message-bubble{
+  max-width:min(72%,420px)!important;
+  width:max-content!important;
+  border-radius:18px!important;
+  padding:9px 12px!important;
+  line-height:1.32!important;
+  font-size:14px!important;
+  box-shadow:none!important;
+  word-break:break-word!important;
+}
+
+/* Incoming: soft neutral bubble like Messenger */
+#ffMsgModal .ff-msg-bubble:not(.me):not(.own),
+#ffMsgModal .message-bubble:not(.me):not(.own),
+.messenger-chat .ff-msg-bubble:not(.me):not(.own),
+.messenger-chat .message-bubble:not(.me):not(.own),
+.private-chat-panel .ff-msg-bubble:not(.me):not(.own){
+  background:#f0f2f5!important;
+  color:#050505!important;
+  border-color:transparent!important;
+}
+
+/* Own/sent: Facebook blue */
+#ffMsgModal .own .ff-msg-bubble,#ffMsgModal .me .ff-msg-bubble,
+#ffMsgModal [data-own="true"] .ff-msg-bubble,#ffMsgModal [data-is-own="true"] .ff-msg-bubble,
+#ffMsgModal .ff-msg-bubble.own,#ffMsgModal .ff-msg-bubble.me,
+.messenger-chat .own .ff-msg-bubble,.messenger-chat .me .ff-msg-bubble,
+.messenger-chat .own .message-bubble,.messenger-chat .me .message-bubble,
+.private-chat-panel .own .ff-msg-bubble,.private-chat-panel .me .ff-msg-bubble{
+  background:#0866ff!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  border-radius:18px!important;
+}
+
+/* Consecutive bubble shape */
+#ffMsgModal .own + .own .ff-msg-bubble,
+#ffMsgModal .me + .me .ff-msg-bubble,
+.messenger-chat .own + .own .ff-msg-bubble,
+.messenger-chat .me + .me .ff-msg-bubble{
+  border-top-right-radius:6px!important;
+}
+
+/* Time/meta stays small and unobtrusive */
+#ffMsgModal .ff-msg-bubble small,#ffMsgModal .message-bubble small,
+.messenger-chat .ff-msg-bubble small,.messenger-chat .message-bubble small{
+  display:block!important;font-size:10px!important;margin-top:4px!important;opacity:.7!important;
+}
+#ffMsgModal .own .ff-msg-bubble small,#ffMsgModal .me .ff-msg-bubble small,
+.messenger-chat .own .ff-msg-bubble small,.messenger-chat .me .ff-msg-bubble small{
+  color:rgba(255,255,255,.82)!important;
+}
+
+/* Compact Messenger-like reaction/reply/more action pills */
+#ffMsgModal .ff-v32m-actions,.messenger-chat .ff-v32m-actions{
+  display:flex;gap:5px;align-items:center;margin:3px 4px;
+}
+#ffMsgModal .ff-v32m-actions button,.messenger-chat .ff-v32m-actions button{
+  width:30px!important;height:30px!important;min-width:30px!important;padding:0!important;
+  display:grid!important;place-items:center!important;border-radius:50%!important;
+  border:1px solid #d8dadf!important;background:#fff!important;color:#1c1e21!important;
+  font-size:15px!important;box-shadow:0 1px 2px rgba(0,0,0,.08)!important;
+}
+
+/* Composer: rounded Messenger-style input */
+#ffMsgModal input[type="text"],#ffMsgModal textarea,
+.messenger-chat input[type="text"],.messenger-chat textarea{
+  border-radius:20px!important;
+}
+
+/* Mobile gets the same bubble language with a little more width. */
+@media(max-width:760px){
+ #ffMsgModal .ff-msg-bubble,#ffMsgModal .message-bubble,
+ .messenger-chat .ff-msg-bubble,.messenger-chat .message-bubble,
+ .private-chat-panel .ff-msg-bubble,.private-chat-panel .message-bubble{
+   max-width:78%!important;font-size:14px!important;
+ }
+}
+</style>
+<script id="duarte-facebook-chat-style-v32m-script">
+(()=>{
+ const bubbleSel=".ff-msg-bubble,.message-bubble";
+ function decorate(){
+   document.querySelectorAll("#ffMsgModal "+bubbleSel.split(",").join(",#ffMsgModal ")+
+     ",.messenger-chat "+bubbleSel.split(",").join(",.messenger-chat ")).forEach(b=>{
+       b.style.setProperty("border-radius","18px","important");
+     });
+ }
+ document.addEventListener("DOMContentLoaded",decorate);
+ const mo=new MutationObserver(()=>requestAnimationFrame(decorate));
+ document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
+ window.ffDuarteFacebookChatStyleV32M={apply:decorate};
 })();
 </script>
 

@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-white-search-strip-v33g">
+<meta name="duarte-build" content="production-white-messenger-area-v33h">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-white-search-strip-v33g";
+ window.DUARTE_BUILD="production-white-messenger-area-v33h";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-white-search-strip-v33g"};
+ window.ffDuarteV29C={version:"production-white-messenger-area-v33h"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-white-search-strip-v33g">
+<script id="duarte-production-white-messenger-area-v33h">
 (()=>{
  async function run(){
-  const r={build:"production-white-search-strip-v33g",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-white-messenger-area-v33h",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-white-search-strip-v33g"};
+ window.ffDuarteMobileSmoothV31M={version:"production-white-messenger-area-v33h"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-white-search-strip-v33g",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-white-messenger-area-v33h",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-white-search-strip-v33g"};
+ window.ffDuarteAntiFlickerV31P={version:"production-white-messenger-area-v33h"};
 })();
 </script>
 
@@ -12550,6 +12550,64 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
   -webkit-text-fill-color:#050505!important;
   border:1px solid #d8dadf!important;
   box-shadow:none!important;
+}
+</style>
+
+
+<style id="duarte-white-messenger-area-v33h">
+/* Messenger only: entire conversation area + search strip white, desktop and mobile. */
+#ffMsgModal,
+#ffMsgModal .ff-msg-shell,
+#ffMsgModal .ff-chat,
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-header,
+#ffMsgModal .ff-chat-messages,
+#ffMsgModal #ffChatMessages,
+#ffMsgModal .ff-chat-compose,
+#ffMsgModal [class*="chat-head"],
+#ffMsgModal [class*="chat-header"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+}
+
+/* Search this conversation stays white with readable text. */
+#ffMsgModal #ffChatSearch,
+#ffMsgModal input[placeholder*="Search this conversation"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  -webkit-text-fill-color:#050505!important;
+  border:1px solid #d8dadf!important;
+  box-shadow:none!important;
+  color-scheme:light!important;
+}
+#ffMsgModal #ffChatSearch::placeholder,
+#ffMsgModal input[placeholder*="Search this conversation"]::placeholder{
+  color:#65676b!important;
+  -webkit-text-fill-color:#65676b!important;
+  opacity:1!important;
+}
+
+/* Empty-state text remains visible on white. */
+#ffMsgModal .ff-chat-messages .empty,
+#ffMsgModal .ff-chat-messages .empty-state,
+#ffMsgModal #ffChatMessages .empty,
+#ffMsgModal #ffChatMessages [class*="empty"]{
+  color:#65676b!important;
+}
+
+/* Preserve message bubble colors. */
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble{
+  background:#0866ff!important;
+  color:#ffffff!important;
+}
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble *{
+  color:#ffffff!important;
+}
+#ffMsgModal #ffChatMessages .ff-bubble-row:not(.mine)>.ff-bubble{
+  background:#e4e6eb!important;
+  color:#050505!important;
 }
 </style>
 

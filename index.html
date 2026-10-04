@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-white-messenger-area-v33h">
+<meta name="duarte-build" content="production-remove-black-search-wrapper-v33i">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-white-messenger-area-v33h";
+ window.DUARTE_BUILD="production-remove-black-search-wrapper-v33i";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-white-messenger-area-v33h"};
+ window.ffDuarteV29C={version:"production-remove-black-search-wrapper-v33i"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-white-messenger-area-v33h">
+<script id="duarte-production-remove-black-search-wrapper-v33i">
 (()=>{
  async function run(){
-  const r={build:"production-white-messenger-area-v33h",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-remove-black-search-wrapper-v33i",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-white-messenger-area-v33h"};
+ window.ffDuarteMobileSmoothV31M={version:"production-remove-black-search-wrapper-v33i"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-white-messenger-area-v33h",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-remove-black-search-wrapper-v33i",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-white-messenger-area-v33h"};
+ window.ffDuarteAntiFlickerV31P={version:"production-remove-black-search-wrapper-v33i"};
 })();
 </script>
 
@@ -12610,6 +12610,69 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
   color:#050505!important;
 }
 </style>
+
+
+<style id="duarte-remove-black-search-wrapper-v33i">
+/* Messenger only: force the complete search row/wrapper to white. */
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-header,
+#ffMsgModal .ff-chat-head > *,
+#ffMsgModal .ff-chat-header > *,
+#ffMsgModal .ff-chat-head > div,
+#ffMsgModal .ff-chat-header > div,
+#ffMsgModal [class*="chat-head"],
+#ffMsgModal [class*="chat-head"] > *,
+#ffMsgModal [class*="chat-header"],
+#ffMsgModal [class*="chat-header"] > *,
+#ffMsgModal #ffChatSearch,
+#ffMsgModal #ffChatSearchWrapper,
+#ffMsgModal [class*="search"][class*="chat"],
+#ffMsgModal [class*="chat"][class*="search"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  box-shadow:none!important;
+}
+
+/* Search field itself. */
+#ffMsgModal input[placeholder*="Search this conversation"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  -webkit-text-fill-color:#050505!important;
+  border:1px solid #d8dadf!important;
+  box-shadow:none!important;
+  color-scheme:light!important;
+}
+#ffMsgModal input[placeholder*="Search this conversation"]::placeholder{
+  color:#65676b!important;
+  -webkit-text-fill-color:#65676b!important;
+  opacity:1!important;
+}
+</style>
+<script id="duarte-remove-black-search-wrapper-v33i-script">
+(()=>{
+ function fix(){
+   const input=[...document.querySelectorAll("#ffMsgModal input")].find(x=>
+     /search this conversation/i.test(x.placeholder||"")
+   );
+   if(!input)return;
+   input.style.setProperty("background","#fff","important");
+   input.style.setProperty("color","#050505","important");
+   /* Explicitly whiten the immediate wrappers that produced the black strip. */
+   let p=input.parentElement;
+   for(let i=0;p&&i<3&&p.id!=="ffMsgModal";i++,p=p.parentElement){
+     p.style.setProperty("background","#fff","important");
+     p.style.setProperty("background-color","#fff","important");
+     p.style.setProperty("box-shadow","none","important");
+   }
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(fix,100));
+ document.addEventListener("click",()=>setTimeout(fix,40),true);
+ addEventListener("pageshow",()=>setTimeout(fix,100),{passive:true});
+ window.ffFixMessengerSearchWhiteV33I=fix;
+})();
+</script>
 
 </body>
 </html>

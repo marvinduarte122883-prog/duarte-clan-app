@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-composers-v31v">
+<meta name="duarte-build" content="production-messenger-lite-v31w">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-composers-v31v";
+ window.DUARTE_BUILD="production-messenger-lite-v31w";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-composers-v31v"};
+ window.ffDuarteV29C={version:"production-messenger-lite-v31w"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-composers-v31v">
+<script id="duarte-production-messenger-lite-v31w">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-composers-v31v",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-messenger-lite-v31w",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-composers-v31v"};
+ window.ffDuarteMobileSmoothV31M={version:"production-messenger-lite-v31w"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-composers-v31v",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-messenger-lite-v31w",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-mobile-composers-v31v"};
+ window.ffDuarteAntiFlickerV31P={version:"production-messenger-lite-v31w"};
 })();
 </script>
 
@@ -11524,6 +11524,99 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
 
  window.ffDuarteMobileComposersV31V={repair};
+})();
+</script>
+
+
+<style id="duarte-messenger-lite-v31w">
+@media(max-width:760px){
+ /* Lightweight Messenger-style conversation shell; Duarte black/gold branding. */
+ #privateChatModal .modal-content,.private-chat-shell,.messenger-chat,.private-chat-panel{
+   background:#101113!important;color:#fff!important;border-radius:0!important;
+ }
+ .private-chat-header,.messenger-chat-header,.chat-header{
+   position:sticky!important;top:0!important;z-index:20!important;
+   min-height:60px!important;background:#151618!important;border-bottom:1px solid #292a2d!important;
+   padding:7px 10px!important;box-shadow:none!important;
+ }
+ .private-chat-header img,.messenger-chat-header img,.chat-header img{
+   width:38px!important;height:38px!important;border-radius:50%!important;object-fit:cover!important;
+ }
+ #privateMessages,.private-messages,.chat-messages,.messages-thread{
+   background:#101113!important;padding:10px 10px 112px!important;
+   display:flex!important;flex-direction:column!important;gap:5px!important;
+ }
+ .message-bubble,.private-message,.chat-message,.message-row{
+   max-width:78%!important;border-radius:18px!important;box-shadow:none!important;
+   font-size:14px!important;line-height:1.32!important;
+ }
+ .message-bubble.own,.private-message.own,.chat-message.own,
+ .message-row.own,.message-row.me,[data-own="true"]{
+   align-self:flex-end!important;background:#dfb92d!important;color:#151515!important;
+   border-bottom-right-radius:5px!important;
+ }
+ .message-bubble:not(.own),.private-message:not(.own),.chat-message:not(.own){
+   background:#28292c!important;color:#f4f4f4!important;border-bottom-left-radius:5px!important;
+ }
+ .message-time,.message-status,.chat-time{font-size:10px!important;opacity:.68!important}
+ .message-reactions,.message-actions,.message-reaction-bar{
+   box-shadow:none!important;background:transparent!important;gap:5px!important;
+ }
+ #privateMessageForm,.private-message-form,.chat-composer,.message-composer,
+ form:has(#privateMessageInput),form:has(textarea[name="message"]){
+   min-height:56px!important;border-radius:0!important;border:0!important;border-top:1px solid #292a2d!important;
+   left:0!important;right:0!important;padding:6px 8px!important;background:#151618!important;box-shadow:none!important;
+   align-items:center!important;
+ }
+ #privateMessageInput,.private-message-form textarea,.chat-composer textarea,.message-composer textarea{
+   min-height:42px!important;max-height:86px!important;border-radius:22px!important;background:#28292c!important;
+   padding:10px 14px!important;color:#fff!important;font-size:16px!important;
+ }
+ #privateMessageForm button[type="submit"],.private-message-form button[type="submit"],
+ .chat-composer button[type="submit"],.message-composer button[type="submit"]{
+   width:44px!important;min-width:44px!important;height:44px!important;border-radius:50%!important;
+   background:#dfb92d!important;color:#111!important;box-shadow:none!important;
+ }
+ /* Lite: no expensive visual effects in Messenger. */
+ #privateChatModal *, .messenger-chat *{
+   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+   text-shadow:none!important;
+ }
+}
+</style>
+<script id="duarte-messenger-lite-v31w-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ const MAX_DOM=80;
+ function trimMessages(){
+   const box=document.querySelector("#privateMessages,.private-messages,.chat-messages,.messages-thread");
+   if(!box)return;
+   const rows=[...box.children].filter(x=>x.nodeType===1);
+   if(rows.length>MAX_DOM){
+     rows.slice(0,rows.length-MAX_DOM).forEach(x=>x.remove());
+   }
+ }
+ function settle(){
+   trimMessages();
+   document.querySelectorAll("#privateMessages img,.private-messages img,.chat-messages img").forEach(img=>{
+     img.loading="lazy";img.decoding="async";
+   });
+ }
+ let raf=0;
+ const mo=new MutationObserver(()=>{
+   cancelAnimationFrame(raf);raf=requestAnimationFrame(settle);
+ });
+ document.addEventListener("DOMContentLoaded",()=>{
+   const box=document.querySelector("#privateMessages,.private-messages,.chat-messages,.messages-thread");
+   if(box)mo.observe(box,{childList:true});
+   settle();
+ });
+ // Pause legacy chat refresh work while hidden by exposing a common visibility hint.
+ document.addEventListener("visibilitychange",()=>{
+   window.ffMessengerLiteVisibleV31W=!document.hidden;
+ });
+ window.ffMessengerLiteVisibleV31W=!document.hidden;
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-lite-v31w"};
 })();
 </script>
 

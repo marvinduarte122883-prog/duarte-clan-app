@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-white-v32o">
+<meta name="duarte-build" content="production-force-white-messenger-v32p">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-white-v32o";
+ window.DUARTE_BUILD="production-force-white-messenger-v32p";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-white-v32o"};
+ window.ffDuarteV29C={version:"production-force-white-messenger-v32p"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-white-v32o">
+<script id="duarte-production-force-white-messenger-v32p">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-white-v32o",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-force-white-messenger-v32p",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-white-v32o"};
+ window.ffDuarteMobileSmoothV31M={version:"production-force-white-messenger-v32p"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-white-v32o",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-force-white-messenger-v32p",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-white-v32o"};
+ window.ffDuarteAntiFlickerV31P={version:"production-force-white-messenger-v32p"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-white-v32o"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-force-white-messenger-v32p"};
 })();
 </script>
 
@@ -13124,6 +13124,117 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const r=document.getElementById("ffMsgModal");if(r)mo.observe(r,{childList:true,subtree:true});
  });
  window.ffDuarteMessengerWhiteV32O={apply:forceWhite};
+})();
+</script>
+
+
+<style id="duarte-force-white-messenger-v32p">
+/* FINAL OVERRIDE — loaded last. Force the complete Messenger surface white. */
+html body #ffMsgModal,
+html body #ffMsgModal > *,
+html body #ffMsgModal .ff-msg-shell,
+html body #ffMsgModal .ff-msg-layout,
+html body #ffMsgModal .ff-msg-sidebar,
+html body #ffMsgModal .ff-msg-main,
+html body #ffMsgModal .ff-msg-thread,
+html body #ffMsgModal .ff-msg-messages,
+html body #ffMsgModal .ff-msg-list,
+html body #ffMsgModal .ff-msg-conversations,
+html body #ffMsgModal .ff-msg-header,
+html body #ffMsgModal .ff-msg-chat-header,
+html body #ffMsgModal .ff-msg-composer,
+html body #ffMsgModal [class*="chat"],
+html body #ffMsgModal [class*="thread"],
+html body #ffMsgModal [class*="message-list"],
+html body #ffMsgModal [class*="conversation"],
+html body #ffMsgModal [class*="sidebar"],
+html body #ffMsgModal [class*="content"],
+html body #ffMsgModal [class*="panel"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#000000!important;
+  border-color:#d9dce1!important;
+}
+
+/* Force text black everywhere except explicitly colored controls. */
+html body #ffMsgModal h1,html body #ffMsgModal h2,html body #ffMsgModal h3,
+html body #ffMsgModal p,html body #ffMsgModal span,html body #ffMsgModal div,
+html body #ffMsgModal label,html body #ffMsgModal strong,html body #ffMsgModal small{
+  color:#000!important;
+}
+
+/* Received messages */
+html body #ffMsgModal .ff-msg-bubble,
+html body #ffMsgModal .message-bubble{
+  background:#e4e6eb!important;
+  background-color:#e4e6eb!important;
+  color:#000!important;
+}
+/* Own messages */
+html body #ffMsgModal .own .ff-msg-bubble,
+html body #ffMsgModal .me .ff-msg-bubble,
+html body #ffMsgModal [data-own="true"] .ff-msg-bubble,
+html body #ffMsgModal [data-is-own="true"] .ff-msg-bubble,
+html body #ffMsgModal .ff-msg-bubble.own,
+html body #ffMsgModal .ff-msg-bubble.me{
+  background:#dbeafe!important;
+  background-color:#dbeafe!important;
+  color:#000!important;
+}
+html body #ffMsgModal input,
+html body #ffMsgModal textarea{
+  background:#f0f2f5!important;background-color:#f0f2f5!important;
+  color:#000!important;border:1px solid #d9dce1!important;
+}
+html body #ffMsgModal input::placeholder,
+html body #ffMsgModal textarea::placeholder{color:#65676b!important}
+
+/* Also target the alternate mobile chat shells. */
+html body .messenger-chat,
+html body .messenger-chat > *,
+html body .private-chat-panel,
+html body .private-chat-panel > *{
+  background-color:#fff!important;color:#000!important;
+}
+</style>
+<script id="duarte-force-white-messenger-v32p-script">
+(()=>{
+ const white="#ffffff", black="#000000";
+ function isBubble(el){
+   return el.matches?.(".ff-msg-bubble,.message-bubble") ||
+          el.closest?.(".ff-msg-bubble,.message-bubble");
+ }
+ function force(){
+   const root=document.getElementById("ffMsgModal"); if(!root)return;
+   root.style.setProperty("background-color",white,"important");
+   root.style.setProperty("color",black,"important");
+
+   root.querySelectorAll("*").forEach(el=>{
+     if(isBubble(el)) return;
+     const cs=getComputedStyle(el);
+     const bg=cs.backgroundColor;
+     /* Replace actual dark surfaces left behind by old theme rules. */
+     const m=bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+     if(m){
+       const r=+m[1],g=+m[2],b=+m[3];
+       if(r<70&&g<70&&b<70){
+         el.style.setProperty("background-color",white,"important");
+         el.style.setProperty("background-image","none","important");
+       }
+     }
+     if(["DIV","SPAN","P","H1","H2","H3","LABEL","STRONG","SMALL"].includes(el.tagName))
+       el.style.setProperty("color",black,"important");
+   });
+ }
+ function schedule(){requestAnimationFrame(()=>requestAnimationFrame(force))}
+ document.addEventListener("DOMContentLoaded",schedule);
+ addEventListener("pageshow",schedule,{passive:true});
+ const mo=new MutationObserver(schedule);
+ document.addEventListener("DOMContentLoaded",()=>{
+   const root=document.getElementById("ffMsgModal");
+   if(root)mo.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]});
+ });
+ window.ffDuarteForceWhiteMessengerV32P={apply:force};
 })();
 </script>
 

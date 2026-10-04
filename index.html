@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-top-messenger-admin-health-v32h">
+<meta name="duarte-build" content="production-remove-floating-messenger-v32i">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-top-messenger-admin-health-v32h";
+ window.DUARTE_BUILD="production-remove-floating-messenger-v32i";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-top-messenger-admin-health-v32h"};
+ window.ffDuarteV29C={version:"production-remove-floating-messenger-v32i"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-top-messenger-admin-health-v32h">
+<script id="duarte-production-remove-floating-messenger-v32i">
 (()=>{
  async function run(){
-  const r={build:"production-top-messenger-admin-health-v32h",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-remove-floating-messenger-v32i",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-top-messenger-admin-health-v32h"};
+ window.ffDuarteMobileSmoothV31M={version:"production-remove-floating-messenger-v32i"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-top-messenger-admin-health-v32h",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-remove-floating-messenger-v32i",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-top-messenger-admin-health-v32h"};
+ window.ffDuarteAntiFlickerV31P={version:"production-remove-floating-messenger-v32i"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-top-messenger-admin-health-v32h"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-remove-floating-messenger-v32i"};
 })();
 </script>
 
@@ -12489,6 +12489,76 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,120));
  addEventListener("pageshow",()=>setTimeout(apply,120),{passive:true});
  window.ffDuarteTopMessengerAdminHealthV32H={apply};
+})();
+</script>
+
+
+<style id="duarte-remove-floating-messenger-v32i">
+@media(min-width:761px){
+  /* Desktop: permanently suppress every legacy floating Messenger launcher. */
+  #ffMessengerFab,
+  #messengerFab,
+  #floatingMessenger,
+  .messenger-fab,
+  .ff-messenger-fab,
+  .floating-messenger,
+  .messenger-floating,
+  .floating-chat,
+  .chat-fab,
+  [data-floating="messenger"],
+  [class*="messenger"][class*="float"],
+  [class*="messenger"][class*="fab"]{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  /* Keep the intended top Messenger button usable beside Notifications. */
+  #ffV32HMessengerTop{
+    display:inline-grid!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+</style>
+
+<script id="duarte-remove-floating-messenger-v32i-script">
+(()=>{
+ if(!matchMedia("(min-width:761px)").matches)return;
+
+ function removeLegacyFloatingMessenger(){
+   const keep=document.getElementById("ffV32HMessengerTop");
+   const nodes=[...document.querySelectorAll("button,a,[role='button']")];
+
+   nodes.forEach(el=>{
+     if(el===keep)return;
+     const txt=((el.textContent||"")+" "+(el.getAttribute("aria-label")||"")+" "+(el.title||"")).trim();
+     const cs=getComputedStyle(el);
+     const r=el.getBoundingClientRect();
+     const messenger=/messenger|messages/i.test(txt);
+     const floating=(cs.position==="fixed"||cs.position==="absolute") &&
+                    (r.bottom>innerHeight-180 || r.right>innerWidth-180);
+     if(messenger&&floating){
+       el.style.setProperty("display","none","important");
+       el.style.setProperty("visibility","hidden","important");
+       el.style.setProperty("pointer-events","none","important");
+       el.dataset.v32iFloatingMessengerHidden="true";
+     }
+   });
+ }
+
+ function ensureTopMessenger(){
+   window.ffDuarteTopMessengerAdminHealthV32H?.apply?.();
+   setTimeout(removeLegacyFloatingMessenger,80);
+ }
+
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(ensureTopMessenger,180));
+ addEventListener("pageshow",()=>setTimeout(ensureTopMessenger,180),{passive:true});
+
+ const mo=new MutationObserver(()=>requestAnimationFrame(removeLegacyFloatingMessenger));
+ document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
+
+ window.ffDuarteRemoveFloatingMessengerV32I={apply:ensureTopMessenger};
 })();
 </script>
 

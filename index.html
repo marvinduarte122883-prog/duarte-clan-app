@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-alerts-fix-v31s">
+<meta name="duarte-build" content="production-notification-deeplink-v31t">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-alerts-fix-v31s";
+ window.DUARTE_BUILD="production-notification-deeplink-v31t";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-alerts-fix-v31s"};
+ window.ffDuarteV29C={version:"production-notification-deeplink-v31t"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-alerts-fix-v31s">
+<script id="duarte-production-notification-deeplink-v31t">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-alerts-fix-v31s",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-notification-deeplink-v31t",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-alerts-fix-v31s"};
+ window.ffDuarteMobileSmoothV31M={version:"production-notification-deeplink-v31t"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-alerts-fix-v31s",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-notification-deeplink-v31t",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-mobile-alerts-fix-v31s"};
+ window.ffDuarteAntiFlickerV31P={version:"production-notification-deeplink-v31t"};
 })();
 </script>
 
@@ -11237,6 +11237,126 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  },true);
  document.addEventListener("keydown",e=>{if(e.key==="Escape")document.getElementById("ffV31SAlerts")?.classList.remove("open")});
  window.ffDuarteMobileAlertsV31S={open,sync};
+})();
+</script>
+
+
+<script id="duarte-notification-deeplink-v31t">
+(()=>{
+ const sb=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.from)?supabaseClient:null);
+ const val=(o,...ks)=>{for(const k of ks){if(o&&o[k]!=null&&o[k]!=="")return o[k]}return null};
+
+ async function markRead(n){
+   const c=sb(),id=val(n,"id","notification_id");if(!c||!id)return;
+   try{await c.from("notifications").update({read:true}).eq("id",id)}catch(_){
+     try{await c.from("notifications").update({is_read:true}).eq("id",id)}catch(__){}
+   }
+   try{window.refreshNotificationBadgeLite?.()}catch(_){}
+ }
+ function clickSel(sels){
+   for(const s of sels){const e=document.querySelector(s);if(e){e.click();return true}}
+   return false;
+ }
+ function openPost(id,commentId){
+   if(!id)return false;
+   clickSel(["[data-section='home']","[data-target='home']"]);
+   const p=document.querySelector(`[data-post-id="${CSS.escape(String(id))}"],#post-${CSS.escape(String(id))}`);
+   if(p){
+     p.scrollIntoView({behavior:"smooth",block:"start"});
+     if(commentId) setTimeout(()=>p.querySelector("[data-action='comment'],.comment-button")?.click(),250);
+     return true;
+   }
+   try{if(typeof window.openPostDetails==="function"){window.openPostDetails(id,commentId);return true}}catch(_){}
+   return false;
+ }
+ function openConversation(id,userId){
+   if(id){
+     try{if(typeof window.openPrivateConversation==="function"){window.openPrivateConversation(id);return true}}catch(_){}
+     const row=document.querySelector(`[data-conversation-id="${CSS.escape(String(id))}"]`);
+     if(row){row.click();return true}
+   }
+   if(userId){
+     try{if(typeof window.startPrivateChat==="function"){window.startPrivateChat(userId);return true}}catch(_){}
+     const row=document.querySelector(`[data-user-id="${CSS.escape(String(userId))}"] .ff-member-message`);
+     if(row){row.click();return true}
+   }
+   clickSel(["[data-section='messenger']","[data-action='messenger']",".messenger-button"]);
+   return true;
+ }
+ function openProfile(uid){
+   if(!uid)return false;
+   try{if(typeof window.openClanProfile==="function"){window.openClanProfile(uid);return true}}catch(_){}
+   return false;
+ }
+ function openEvent(id){
+   clickSel(["[data-section='events']","[data-target='events']"]);
+   if(id)setTimeout(()=>document.querySelector(`[data-event-id="${CSS.escape(String(id))}"]`)?.click(),120);
+   return true;
+ }
+ function openStory(id){
+   if(!id)return false;
+   const card=document.querySelector(`[data-story="${CSS.escape(String(id))}"]`);
+   if(card){card.click();return true}
+   return false;
+ }
+ async function route(n){
+   if(!n)return false;
+   await markRead(n);
+   document.getElementById("ffV31SAlerts")?.classList.remove("open");
+   const type=String(val(n,"type","notification_type","kind","category")||"").toLowerCase();
+   const postId=val(n,"post_id","target_post_id","reference_id");
+   const commentId=val(n,"comment_id","target_comment_id");
+   const convId=val(n,"conversation_id","target_conversation_id");
+   const userId=val(n,"actor_id","user_id","profile_id","target_user_id");
+   const eventId=val(n,"event_id","target_event_id");
+   const storyId=val(n,"story_id","target_story_id");
+
+   if(/message|messenger|chat/.test(type)||convId)return openConversation(convId,userId);
+   if(/story/.test(type)||storyId)return openStory(storyId);
+   if(/event|rsvp/.test(type)||eventId)return openEvent(eventId);
+   if(/profile|member|birthday|relationship/.test(type))return openProfile(userId);
+   if(/post|comment|reply|reaction|like|photo|share/.test(type)||postId)return openPost(postId,commentId);
+   return false;
+ }
+
+ // Read the clicked notification's actual DB row when its id is available.
+ async function fromElement(el){
+   const row=el.closest?.("[data-notification-id],.notification-item,.notification-row");
+   if(!row)return false;
+   const id=row.dataset.notificationId||row.getAttribute("data-id");
+   let n=null;
+   if(id&&sb()){
+     try{
+       const q=await sb().from("notifications").select("*").eq("id",id).maybeSingle();
+       if(!q.error)n=q.data;
+     }catch(_){}
+   }
+   // Fallback to data attributes already rendered into the notification row.
+   n=n||{
+     id,
+     type:row.dataset.type||row.dataset.notificationType,
+     post_id:row.dataset.postId,
+     comment_id:row.dataset.commentId,
+     conversation_id:row.dataset.conversationId,
+     actor_id:row.dataset.actorId||row.dataset.userId,
+     event_id:row.dataset.eventId,
+     story_id:row.dataset.storyId
+   };
+   return route(n);
+ }
+
+ // Capture notification taps before the cloned V31S row forwards to legacy handlers.
+ document.addEventListener("click",async e=>{
+   const root=e.target.closest?.("#ffV31SAlerts");
+   if(!root)return;
+   if(e.target.closest(".ff-v31s-back,.ff-v31s-read"))return;
+   const row=e.target.closest("[data-notification-id],.notification-item,.notification-row");
+   if(!row)return;
+   const routed=await fromElement(row);
+   if(routed){e.preventDefault();e.stopImmediatePropagation()}
+ },true);
+
+ window.ffDuarteNotificationDeepLinkV31T={route,fromElement};
 })();
 </script>
 

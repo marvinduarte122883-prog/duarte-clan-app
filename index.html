@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-facebook-actions-blue-v32v">
+<meta name="duarte-build" content="production-visible-message-actions-v32w">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-facebook-actions-blue-v32v";
+ window.DUARTE_BUILD="production-visible-message-actions-v32w";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-facebook-actions-blue-v32v"};
+ window.ffDuarteV29C={version:"production-visible-message-actions-v32w"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-facebook-actions-blue-v32v">
+<script id="duarte-production-visible-message-actions-v32w">
 (()=>{
  async function run(){
-  const r={build:"production-facebook-actions-blue-v32v",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-visible-message-actions-v32w",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-facebook-actions-blue-v32v"};
+ window.ffDuarteMobileSmoothV31M={version:"production-visible-message-actions-v32w"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-facebook-actions-blue-v32v",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-visible-message-actions-v32w",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-facebook-actions-blue-v32v"};
+ window.ffDuarteAntiFlickerV31P={version:"production-visible-message-actions-v32w"};
 })();
 </script>
 
@@ -11617,7 +11617,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-facebook-actions-blue-v32v"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-visible-message-actions-v32w"};
 })();
 </script>
 
@@ -13892,6 +13892,124 @@ html body .private-chat-panel > *{
  const mo=new MutationObserver(()=>requestAnimationFrame(run));
  document.addEventListener("DOMContentLoaded",()=>{const x=document.getElementById("ffChatMessages");if(x)mo.observe(x,{childList:true,subtree:true})});
  window.ffDuarteFacebookActionsBlueV32V={run,open};
+})();
+</script>
+
+
+<style id="duarte-visible-message-actions-v32w">
+/* Final authoritative message appearance */
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble{
+ background:#0866ff!important;background-color:#0866ff!important;color:#fff!important;
+}
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble *{color:#fff!important}
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble .ff-bubble-time,
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble .ff-seen-status{color:rgba(255,255,255,.82)!important}
+
+/* Hide all previous tool implementations so there is only one. */
+#ffMsgModal .ff-own-delete-row,#ffMsgModal .ff-v4-msg-tools,#ffMsgModal .ff-v32n-msg-actions,
+#ffMsgModal .ff-v32s-desktop-actions,#ffMsgModal .ff-v32t-bar,#ffMsgModal .ff-v32v-toolbar{display:none!important}
+
+/* Desktop toolbar is positioned inside the message viewport, so it cannot be clipped. */
+.ff-v32w-tools{display:none!important;align-items:center;gap:4px;margin:3px 4px}
+@media(min-width:761px){
+ #ffMsgModal .ff-bubble-row:hover .ff-v32w-tools{display:flex!important}
+ #ffMsgModal .ff-bubble-row.mine{align-items:center!important}
+ #ffMsgModal .ff-bubble-row.mine .ff-v32w-tools{order:-1!important;margin-left:auto!important;margin-right:7px!important}
+ #ffMsgModal .ff-bubble-row:not(.mine){align-items:center!important}
+ #ffMsgModal .ff-bubble-row:not(.mine) .ff-v32w-tools{margin-left:7px!important}
+ .ff-v32w-tools button{
+  width:31px!important;height:31px!important;min-width:31px!important;padding:0!important;
+  display:grid!important;place-items:center!important;border:1px solid #d8dadf!important;border-radius:50%!important;
+  background:#fff!important;color:#050505!important;cursor:pointer!important;box-shadow:0 1px 3px #0002!important;
+  font-size:14px!important;pointer-events:auto!important
+ }
+}
+
+/* Reaction picker on desktop */
+#ffV32WReactPicker{
+ display:none;position:fixed;z-index:2147483646;background:#fff;border:1px solid #ddd;border-radius:24px;
+ padding:5px;gap:3px;box-shadow:0 4px 18px #0003
+}
+#ffV32WReactPicker.open{display:flex}
+#ffV32WReactPicker button{width:35px;height:35px;border:0;border-radius:50%;background:#f0f2f5;font-size:19px;cursor:pointer}
+
+/* Mobile long-press sheet */
+#ffV32WSheet{display:none;position:fixed;inset:0;z-index:2147483646;background:#0006;align-items:flex-end}
+#ffV32WSheet.open{display:flex!important}
+#ffV32WSheet .sheet{width:100%;background:#fff;color:#050505;border-radius:20px 20px 0 0;padding:10px 12px max(14px,env(safe-area-inset-bottom))}
+#ffV32WSheet .reactions{display:flex;justify-content:space-around;padding:4px 0 12px}
+#ffV32WSheet .reactions button{width:43px;height:43px;border:0;border-radius:50%;background:#f0f2f5;font-size:21px}
+#ffV32WSheet .primary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #ddd;padding-top:9px}
+#ffV32WSheet .primary button{min-height:55px;border:0;border-radius:10px;background:#f6f7f8;color:#050505;font-size:11px;font-weight:700}
+#ffV32WMore{display:none;border-top:1px solid #ddd;margin-top:8px;padding-top:5px}
+#ffV32WMore.open{display:block}
+#ffV32WMore button{display:block;width:100%;padding:12px;border:0;background:#fff;color:#050505;text-align:left}
+#ffV32WMore .danger{color:#b42318;font-weight:800}
+@media(min-width:761px){#ffV32WSheet{display:none!important}}
+</style>
+
+<script id="duarte-visible-message-actions-v32w-script">
+(()=>{
+ let active=null,hold=0,start=null;
+ const id=r=>Number(r?.dataset.messageId||0), mine=r=>r?.classList.contains("mine");
+ const photo=r=>r?.querySelector(".ff-v4-msg-photo")?.src||"";
+ const text=r=>{const b=r?.querySelector(".ff-bubble");if(!b)return"";const c=b.cloneNode(true);c.querySelectorAll(".ff-bubble-time,.ff-seen-status,.ff-v4-msg-reactions,.ff-v4-msg-tools").forEach(x=>x.remove());return c.textContent.trim()};
+ const invoke=(name,args)=>{const f=window[name];if(typeof f==="function")return f(...args)};
+ const react=(r,e)=>{const n=id(r);if(n)return invoke("ffV4React",[n,e])};
+ const reply=r=>{const n=id(r);if(n)return invoke("ffV4Reply",[n,text(r).slice(0,120)||(photo(r)?"Photo":"Message")])};
+ const unsend=r=>{const n=id(r);if(n&&mine(r))return invoke("ffV42DeleteOwnMessage",[n,photo(r)])};
+ async function copy(r){const t=text(r);if(!t)return;try{await navigator.clipboard.writeText(t)}catch(_){}}
+ function pin(r){const n=id(r);if(!n)return;let a=[];try{a=JSON.parse(localStorage.getItem("duarte_pins_v32w")||"[]")}catch(_){};if(!a.includes(n))a.push(n);localStorage.setItem("duarte_pins_v32w",JSON.stringify(a))}
+ function report(r){const why=prompt("Reason for reporting this message:");if(!why)return;const s=`Message #${id(r)}\nReason: ${why}\nMessage: ${text(r).slice(0,180)}`;navigator.clipboard?.writeText(s).catch(()=>{});alert("Report details copied. Server-side message reports are not configured yet.")}
+ function details(r){alert("Message details\n\nID: "+id(r)+"\n"+(r.querySelector(".ff-bubble-time")?.textContent?.trim()||""))}
+ function forward(r){const n=id(r);if(typeof window.forwardMessage==="function")return window.forwardMessage(n);if(typeof window.ffForwardMessage==="function")return window.ffForwardMessage(n);alert("Forward destination picker is not configured yet.")}
+
+ function picker(){
+  let p=document.getElementById("ffV32WReactPicker");if(p)return p;
+  p=document.createElement("div");p.id="ffV32WReactPicker";
+  ["👍","❤️","😂","😮","😢","😡"].forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{if(active)react(active,e);p.classList.remove("open")};p.appendChild(b)});
+  document.body.appendChild(p);return p
+ }
+ function openPicker(r,button){
+  active=r;const p=picker(),q=button.getBoundingClientRect();
+  p.style.left=Math.max(8,Math.min(innerWidth-250,q.left-90))+"px";p.style.top=Math.max(8,q.top-48)+"px";p.classList.add("open")
+ }
+
+ function tools(r){
+  r.querySelector(".ff-v32w-tools")?.remove();
+  const t=document.createElement("div");t.className="ff-v32w-tools";
+  [["☺","Reactions",e=>openPicker(r,e.currentTarget)],["↗","Forward",()=>forward(r)],
+   ...(mine(r)?[["↶","Unsend",()=>unsend(r)]]:[]),["📌","Pin",()=>pin(r)],["⚑","Report",()=>report(r)]]
+   .forEach(([x,title,fn])=>{const b=document.createElement("button");b.type="button";b.textContent=x;b.title=title;b.setAttribute("aria-label",title);b.onclick=e=>{e.preventDefault();e.stopPropagation();fn(e)};t.appendChild(b)});
+  const bubble=r.querySelector(".ff-bubble");
+  if(mine(r))r.insertBefore(t,bubble); else bubble?.insertAdjacentElement("afterend",t)
+ }
+
+ function sheet(){
+  let s=document.getElementById("ffV32WSheet");if(s)return s;
+  s=document.createElement("div");s.id="ffV32WSheet";
+  s.innerHTML=`<div class="sheet"><div class="reactions">${["👍","❤️","😂","😮","😢","😡"].map(e=>`<button data-r="${e}">${e}</button>`).join("")}</div><div class="primary"><button data-a="reply">↩<br>Reply</button><button data-a="copy">▣<br>Copy</button><button data-a="translate">文<br>Translate</button><button data-a="react">☺<br>Reactions</button><button data-a="more">•••<br>More</button></div><div id="ffV32WMore"><button data-a="delete" class="danger">🗑 Delete / Unsend</button><button data-a="forward">↗ Forward</button><button data-a="details">ⓘ Details</button><button data-a="report">⚑ Report</button></div></div>`;
+  s.onclick=e=>{if(e.target===s){s.classList.remove("open");return}const b=e.target.closest("button");if(!b||!active)return;if(b.dataset.r){react(active,b.dataset.r);s.classList.remove("open");return}const a=b.dataset.a;if(a==="reply"){reply(active);s.classList.remove("open")}else if(a==="copy"){copy(active);s.classList.remove("open")}else if(a==="translate"){copy(active);alert("Message copied for translation.");s.classList.remove("open")}else if(a==="more")s.querySelector("#ffV32WMore").classList.toggle("open");else if(a==="delete"){unsend(active);s.classList.remove("open")}else if(a==="forward"){forward(active);s.classList.remove("open")}else if(a==="details")details(active);else if(a==="report")report(active)};
+  document.body.appendChild(s);return s
+ }
+ function openSheet(r){active=r;const s=sheet();s.querySelector('[data-a="delete"]').style.display=mine(r)?"block":"none";s.querySelector("#ffV32WMore").classList.remove("open");s.classList.add("open")}
+
+ function bind(r){
+  tools(r);
+  const b=r.querySelector(".ff-bubble");if(!b)return;
+  /* Force sent text white at runtime too, defeating old global black-text rules. */
+  if(mine(r)){b.style.setProperty("background","#0866ff","important");b.style.setProperty("color","#fff","important");b.querySelectorAll("*").forEach(x=>x.style.setProperty("color","#fff","important"))}
+  if(r.dataset.v32w)return;r.dataset.v32w="1";
+  b.addEventListener("pointerdown",e=>{if(innerWidth>760||e.pointerType==="mouse")return;start={x:e.clientX,y:e.clientY};clearTimeout(hold);hold=setTimeout(()=>{navigator.vibrate?.(20);openSheet(r)},480)},{passive:true});
+  b.addEventListener("pointermove",e=>{if(start&&Math.hypot(e.clientX-start.x,e.clientY-start.y)>10)clearTimeout(hold)},{passive:true});
+  ["pointerup","pointercancel"].forEach(v=>b.addEventListener(v,()=>{clearTimeout(hold);start=null},{passive:true}));
+  b.addEventListener("contextmenu",e=>{if(innerWidth<=760){e.preventDefault();openSheet(r)}})
+ }
+ function run(){document.querySelectorAll("#ffChatMessages .ff-bubble-row[data-message-id]").forEach(bind)}
+ document.addEventListener("click",e=>{const p=document.getElementById("ffV32WReactPicker");if(p&&!p.contains(e.target)&&!e.target.closest(".ff-v32w-tools"))p.classList.remove("open")});
+ document.addEventListener("DOMContentLoaded",()=>{picker();sheet();setTimeout(run,200)});
+ const mo=new MutationObserver(()=>requestAnimationFrame(run));document.addEventListener("DOMContentLoaded",()=>{const x=document.getElementById("ffChatMessages");if(x)mo.observe(x,{childList:true,subtree:true})});
+ window.ffDuarteVisibleMessageActionsV32W={run,openSheet};
 })();
 </script>
 

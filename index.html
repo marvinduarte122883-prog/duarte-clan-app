@@ -4395,7 +4395,7 @@ async function loadNotifications() {
     try {
         const { data, error } = await supabaseClient
             .from("notifications")
-            .select("id,type,post_id,event_id,message,is_read,created_at")
+            .select("id,type,post_id,event_id,actor_id,message,is_read,created_at")
             .eq("user_id", currentUser.id)
             .order("created_at", { ascending: false })
             .limit(25);
@@ -4458,7 +4458,8 @@ function openNotificationFromElement(el) {
     const type = el.dataset.notificationType || "";
     const postId = el.dataset.postId ? Number(el.dataset.postId) : null;
     const eventId = el.dataset.eventId ? Number(el.dataset.eventId) : null;
-    openNotification(id, type, postId, eventId);
+    const actorId = el.dataset.actorId || null;
+    openNotification(id, type, postId, eventId, actorId);
 }
 
 function formatNotificationTime(value) {
@@ -4510,6 +4511,13 @@ async function openNotification(id, type, postId, eventId, actorId = null) {
     document.getElementById("notificationWrap")?.classList.remove("open");
 
     const kind = String(type || "").toLowerCase();
+
+    /* User-generated alerts should take the member directly to the person
+       who triggered the notification on both desktop and mobile. */
+    if (actorId && !/event|event_reminder/.test(kind)) {
+        await loadNotifications();
+        return openClanProfile(actorId);
+    }
 
     if (kind === "event" && eventId) {
         showSection("events");
@@ -11300,9 +11308,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const storyId=val(n,"story_id","target_story_id");
 
    if(/message|messenger|chat/.test(type)||convId)return openConversation(convId,userId);
-   if(/story/.test(type)||storyId)return openStory(storyId);
    if(/event|rsvp/.test(type)||eventId)return openEvent(eventId);
-   if(/profile|member|birthday|relationship/.test(type))return openProfile(userId);
+   if(userId)return openProfile(userId);
+   if(/story/.test(type)||storyId)return openStory(storyId);
    if(/post|comment|reply|reaction|like|photo|share/.test(type)||postId)return openPost(postId,commentId);
    return false;
  }

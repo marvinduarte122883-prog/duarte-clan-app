@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-click-actions-v32y">
+<meta name="duarte-build" content="production-server-message-reports-v33a">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-click-actions-v32y";
+ window.DUARTE_BUILD="production-server-message-reports-v33a";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-click-actions-v32y"};
+ window.ffDuarteV29C={version:"production-server-message-reports-v33a"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-click-actions-v32y">
+<script id="duarte-production-server-message-reports-v33a">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-click-actions-v32y",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-server-message-reports-v33a",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-click-actions-v32y"};
+ window.ffDuarteMobileSmoothV31M={version:"production-server-message-reports-v33a"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-click-actions-v32y",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-server-message-reports-v33a",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-click-actions-v32y"};
+ window.ffDuarteAntiFlickerV31P={version:"production-server-message-reports-v33a"};
 })();
 </script>
 
@@ -12195,11 +12195,32 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    catch(_){const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();document.execCommand("copy");x.remove()}
  }
  function details(r){alert("Message details\n\nID: "+mid(r)+"\n"+(r.querySelector(".ff-bubble-time")?.textContent?.trim()||""))}
- function report(r){
-   const why=prompt("Reason for reporting this message:");if(!why)return;
-   const s=`Message #${mid(r)}\nReason: ${why}\nMessage: ${msgText(r).slice(0,180)}`;
-   navigator.clipboard?.writeText(s).catch(()=>{});
-   alert("Report details copied. Server-side message reports are not configured yet.");
+ async function report(r){
+   const why=prompt("Why are you reporting this message?\n\nExamples: Spam, Harassment, Inappropriate content, Scam, Other");
+   if(!why||!why.trim())return;
+   const messageId=mid(r);
+   if(!messageId){alert("This message cannot be reported because its message ID is unavailable.");return;}
+   try{
+     const {data:{user},error:userErr}=await supabaseClient.auth.getUser();
+     if(userErr||!user)throw userErr||new Error("Please sign in again.");
+     const payload={
+       message_id:messageId,
+       reporter_id:user.id,
+       reason:why.trim(),
+       message_snapshot:msgText(r).slice(0,1000)||null,
+       status:"Pending"
+     };
+     const {error}=await supabaseClient.from("message_reports").insert(payload);
+     if(error){
+       if(error.code==="23505") throw new Error("You already reported this message.");
+       if(error.code==="42P01") throw new Error("The message_reports table is not installed yet. Run the included SQL file in Supabase first.");
+       throw error;
+     }
+     alert("Report submitted to administrator.");
+   }catch(e){
+     console.error("Message report failed:",e);
+     alert("Report could not be submitted: "+(e?.message||e));
+   }
  }
  function pin(r){
    const n=mid(r);if(!n)return;
@@ -12284,6 +12305,95 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>setTimeout(init,80));
  addEventListener("pageshow",()=>setTimeout(init,80),{passive:true});
  window.ffDuarteMessengerV32Y={init,openTools,closeTools};
+})();
+</script>
+
+
+<style id="duarte-white-conversation-search-v32z">
+/* Messenger only: Search this conversation must stay white on desktop + mobile. */
+#ffMsgModal #ffChatSearch,
+#ffMsgModal input[placeholder="Search this conversation..."],
+#ffMsgModal input[placeholder*="Search this conversation"]{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  border:1px solid #d8dadf!important;
+  box-shadow:none!important;
+  -webkit-text-fill-color:#050505!important;
+}
+#ffMsgModal #ffChatSearch::placeholder,
+#ffMsgModal input[placeholder="Search this conversation..."]::placeholder,
+#ffMsgModal input[placeholder*="Search this conversation"]::placeholder{
+  color:#65676b!important;
+  opacity:1!important;
+  -webkit-text-fill-color:#65676b!important;
+}
+#ffMsgModal #ffChatSearch:focus,
+#ffMsgModal input[placeholder*="Search this conversation"]:focus{
+  background:#ffffff!important;
+  background-color:#ffffff!important;
+  color:#050505!important;
+  outline:2px solid rgba(8,102,255,.18)!important;
+}
+</style>
+
+
+<style id="duarte-message-reports-admin-v33a">
+#ffV33AReportBtn{border:1px solid #c9a227;background:#111;color:#f4d35e;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer;margin:8px}
+#ffV33AReports{display:none;position:fixed;inset:0;z-index:2147483645;background:#0009;place-items:center;padding:18px}
+#ffV33AReports.open{display:grid}
+#ffV33AReports .box{width:min(900px,96vw);max-height:86vh;overflow:auto;background:#fff;color:#111;border-radius:16px;padding:14px}
+#ffV33AReports .head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#ffV33AReports .row{border-top:1px solid #ddd;padding:12px 4px}
+#ffV33AReports .meta{font-size:12px;color:#65676b;margin:3px 0 7px}
+#ffV33AReports select{background:#fff;color:#111;border:1px solid #ccc;border-radius:8px;padding:6px}
+</style>
+<script id="duarte-message-reports-admin-v33a-script">
+(()=>{
+ async function isAdmin(){
+   try{
+     const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return false;
+     const {data}=await supabaseClient.from("profiles").select("is_admin,clan_role").eq("id",user.id).maybeSingle();
+     return !!(data?.is_admin||data?.clan_role==="Administrator");
+   }catch(_){return false}
+ }
+ function modal(){
+   let m=document.getElementById("ffV33AReports");if(m)return m;
+   m=document.createElement("div");m.id="ffV33AReports";
+   m.innerHTML='<div class="box"><div class="head"><h2>Reported Messages</h2><button type="button" data-close>✕</button></div><div data-list>Loading…</div></div>';
+   m.querySelector("[data-close]").onclick=()=>m.classList.remove("open");
+   m.onclick=e=>{if(e.target===m)m.classList.remove("open")};
+   document.body.appendChild(m);return m;
+ }
+ async function load(){
+   const m=modal(),list=m.querySelector("[data-list]");m.classList.add("open");list.textContent="Loading…";
+   const {data,error}=await supabaseClient.from("message_reports")
+     .select("id,message_id,reporter_id,reason,message_snapshot,status,created_at,reviewed_at")
+     .order("created_at",{ascending:false}).limit(100);
+   if(error){list.textContent="Reports could not be loaded: "+error.message;return}
+   list.innerHTML="";
+   if(!data?.length){list.textContent="No reported messages.";return}
+   data.forEach(x=>{
+     const r=document.createElement("div");r.className="row";
+     const safe=document.createElement("div");safe.textContent=x.message_snapshot||"(No message text snapshot)";
+     const reason=document.createElement("div");reason.innerHTML="<b>Reason:</b> ";reason.append(document.createTextNode(x.reason||""));
+     const meta=document.createElement("div");meta.className="meta";meta.textContent=`Message #${x.message_id} · Reporter ${x.reporter_id} · ${new Date(x.created_at).toLocaleString()}`;
+     const sel=document.createElement("select");
+     ["Pending","Reviewed","Dismissed"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;o.selected=x.status===v;sel.appendChild(o)});
+     sel.onchange=async()=>{const {error}=await supabaseClient.from("message_reports").update({status:sel.value,reviewed_at:sel.value==="Pending"?null:new Date().toISOString()}).eq("id",x.id);if(error)alert("Status update failed: "+error.message)};
+     r.append(reason,safe,meta,sel);list.appendChild(r);
+   });
+ }
+ async function mount(){
+   if(!(await isAdmin()))return;
+   const admin=document.querySelector("#admin,.admin-dashboard,[data-page='admin'],[data-section='admin']");
+   if(!admin||document.getElementById("ffV33AReportBtn"))return;
+   const b=document.createElement("button");b.id="ffV33AReportBtn";b.type="button";b.textContent="⚑ Reported Messages";b.onclick=load;
+   admin.prepend(b);
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(mount,800));
+ addEventListener("pageshow",()=>setTimeout(mount,800),{passive:true});
+ window.ffDuarteMessageReportsV33A={load,mount};
 })();
 </script>
 

@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-working-top-messenger-v32j">
+<meta name="duarte-build" content="production-messenger-blue-all-devices-v32l">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-working-top-messenger-v32j";
+ window.DUARTE_BUILD="production-messenger-blue-all-devices-v32l";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-working-top-messenger-v32j"};
+ window.ffDuarteV29C={version:"production-messenger-blue-all-devices-v32l"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-working-top-messenger-v32j">
+<script id="duarte-production-messenger-blue-all-devices-v32l">
 (()=>{
  async function run(){
-  const r={build:"production-working-top-messenger-v32j",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-messenger-blue-all-devices-v32l",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-working-top-messenger-v32j"};
+ window.ffDuarteMobileSmoothV31M={version:"production-messenger-blue-all-devices-v32l"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-working-top-messenger-v32j",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-messenger-blue-all-devices-v32l",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-working-top-messenger-v32j"};
+ window.ffDuarteAntiFlickerV31P={version:"production-messenger-blue-all-devices-v32l"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-working-top-messenger-v32j"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-blue-all-devices-v32l"};
 })();
 </script>
 
@@ -12605,6 +12605,162 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>setTimeout(fixTopMessenger,250));
  addEventListener("pageshow",()=>setTimeout(fixTopMessenger,250),{passive:true});
  window.ffDuarteWorkingTopMessengerV32J={apply:fixTopMessenger};
+})();
+</script>
+
+
+<style id="duarte-messenger-blue-v32k">
+/* Messenger readability: replace the yellow/gold outgoing message UI with blue. */
+#ffMsgModal .ff-msg-bubble.me,
+#ffMsgModal .ff-msg-bubble.own,
+#ffMsgModal .message.own,
+#ffMsgModal .message.me,
+#ffMsgModal [data-own="true"] .ff-msg-bubble,
+#ffMsgModal [data-is-own="true"] .ff-msg-bubble,
+#ffMsgModal .sent-message,
+#ffMsgModal .outgoing-message{
+  background:#1769e8!important;
+  color:#fff!important;
+  border-color:#1769e8!important;
+}
+#ffMsgModal .ff-msg-bubble.me *,
+#ffMsgModal .ff-msg-bubble.own *,
+#ffMsgModal .message.own *,
+#ffMsgModal .message.me *,
+#ffMsgModal [data-own="true"] .ff-msg-bubble *,
+#ffMsgModal [data-is-own="true"] .ff-msg-bubble *,
+#ffMsgModal .sent-message *,
+#ffMsgModal .outgoing-message *{
+  color:#fff!important;
+}
+/* Reply/quoted area inside your outgoing message: darker blue for separation. */
+#ffMsgModal .ff-msg-bubble.me [class*="reply"],
+#ffMsgModal .ff-msg-bubble.me [class*="quote"],
+#ffMsgModal .ff-msg-bubble.own [class*="reply"],
+#ffMsgModal .ff-msg-bubble.own [class*="quote"],
+#ffMsgModal .message.own [class*="reply"],
+#ffMsgModal .message.own [class*="quote"]{
+  background:#0f55c7!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.25)!important;
+}
+/* Delete/action chip: remove yellow-on-yellow appearance. */
+#ffMsgModal .ff-msg-bubble.me button,
+#ffMsgModal .ff-msg-bubble.own button,
+#ffMsgModal .message.own button,
+#ffMsgModal .sent-message button,
+#ffMsgModal .outgoing-message button{
+  background:rgba(0,0,0,.18)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.30)!important;
+}
+/* Keep incoming messages neutral/dark. */
+#ffMsgModal .ff-msg-bubble:not(.me):not(.own){
+  color:#fff;
+}
+</style>
+<script id="duarte-messenger-blue-v32k-script">
+(()=>{
+ function blueOwnMessages(){
+   const root=document.getElementById("ffMsgModal"); if(!root)return;
+   root.querySelectorAll(".ff-msg-bubble,.message,.message-bubble").forEach(el=>{
+     const row=el.closest("[data-own],[data-is-own],.own,.me,.sent-message,.outgoing-message");
+     const own=el.classList.contains("own")||el.classList.contains("me")||
+       row?.classList.contains("own")||row?.classList.contains("me")||
+       row?.classList.contains("sent-message")||row?.classList.contains("outgoing-message")||
+       row?.dataset.own==="true"||row?.dataset.isOwn==="true";
+     if(own){
+       el.style.setProperty("background","#1769e8","important");
+       el.style.setProperty("color","#fff","important");
+       el.style.setProperty("border-color","#1769e8","important");
+     }
+   });
+ }
+ document.addEventListener("DOMContentLoaded",blueOwnMessages);
+ const mo=new MutationObserver(()=>requestAnimationFrame(blueOwnMessages));
+ document.addEventListener("DOMContentLoaded",()=>{
+   const r=document.getElementById("ffMsgModal");if(r)mo.observe(r,{childList:true,subtree:true});
+ });
+ window.ffDuarteMessengerBlueV32K={apply:blueOwnMessages};
+})();
+</script>
+
+
+<style id="duarte-messenger-blue-all-devices-v32l">
+/* ALL DEVICES — desktop + mobile */
+#ffMsgModal .own,
+#ffMsgModal .me,
+#ffMsgModal [data-own="true"],
+#ffMsgModal [data-is-own="true"],
+#ffMsgModal .sent-message,
+#ffMsgModal .outgoing-message,
+.messenger-chat .own,
+.messenger-chat .me,
+.messenger-chat [data-own="true"],
+.messenger-chat [data-is-own="true"],
+.private-chat-panel .own,
+.private-chat-panel .me{
+  --ff-own-message-bg:#1769e8!important;
+}
+#ffMsgModal .own .ff-msg-bubble,
+#ffMsgModal .me .ff-msg-bubble,
+#ffMsgModal [data-own="true"] .ff-msg-bubble,
+#ffMsgModal [data-is-own="true"] .ff-msg-bubble,
+#ffMsgModal .sent-message .ff-msg-bubble,
+#ffMsgModal .outgoing-message .ff-msg-bubble,
+#ffMsgModal .ff-msg-bubble.own,
+#ffMsgModal .ff-msg-bubble.me,
+.messenger-chat .own .ff-msg-bubble,
+.messenger-chat .me .ff-msg-bubble,
+.messenger-chat .own .message-bubble,
+.messenger-chat .me .message-bubble,
+.private-chat-panel .own .ff-msg-bubble,
+.private-chat-panel .me .ff-msg-bubble{
+  background:#1769e8!important;
+  background-color:#1769e8!important;
+  color:#fff!important;
+  border-color:#1769e8!important;
+}
+#ffMsgModal .own .ff-msg-bubble *,
+#ffMsgModal .me .ff-msg-bubble *,
+#ffMsgModal [data-own="true"] .ff-msg-bubble *,
+#ffMsgModal [data-is-own="true"] .ff-msg-bubble *,
+.messenger-chat .own .ff-msg-bubble *,
+.messenger-chat .me .ff-msg-bubble *,
+.private-chat-panel .own .ff-msg-bubble *,
+.private-chat-panel .me .ff-msg-bubble *{color:#fff!important}
+
+/* Reply/quote inside own messages on BOTH layouts */
+#ffMsgModal .own [class*="reply"],#ffMsgModal .me [class*="reply"],
+#ffMsgModal .own [class*="quote"],#ffMsgModal .me [class*="quote"],
+.messenger-chat .own [class*="reply"],.messenger-chat .me [class*="reply"],
+.messenger-chat .own [class*="quote"],.messenger-chat .me [class*="quote"],
+.private-chat-panel .own [class*="reply"],.private-chat-panel .me [class*="reply"]{
+  background:#0f55c7!important;color:#fff!important;
+  border-color:rgba(255,255,255,.25)!important;
+}
+</style>
+<script id="duarte-messenger-blue-all-devices-v32l-script">
+(()=>{
+ function applyBlue(root=document){
+   root.querySelectorAll(
+    "#ffMsgModal .own .ff-msg-bubble,#ffMsgModal .me .ff-msg-bubble,"+
+    "#ffMsgModal [data-own='true'] .ff-msg-bubble,#ffMsgModal [data-is-own='true'] .ff-msg-bubble,"+
+    "#ffMsgModal .ff-msg-bubble.own,#ffMsgModal .ff-msg-bubble.me,"+
+    ".messenger-chat .own .ff-msg-bubble,.messenger-chat .me .ff-msg-bubble,"+
+    ".messenger-chat .own .message-bubble,.messenger-chat .me .message-bubble,"+
+    ".private-chat-panel .own .ff-msg-bubble,.private-chat-panel .me .ff-msg-bubble"
+   ).forEach(el=>{
+      el.style.setProperty("background","#1769e8","important");
+      el.style.setProperty("background-color","#1769e8","important");
+      el.style.setProperty("color","#fff","important");
+      el.style.setProperty("border-color","#1769e8","important");
+   });
+ }
+ document.addEventListener("DOMContentLoaded",()=>applyBlue());
+ const mo=new MutationObserver(()=>requestAnimationFrame(()=>applyBlue()));
+ document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
+ window.ffDuarteMessengerBlueAllDevicesV32L={apply:applyBlue};
 })();
 </script>
 

@@ -5063,12 +5063,7 @@ function openProfile() {
 ========================= */
 
 async function logout(skipConfirm = false) {
-
-    const confirmLogout =
-        skipConfirm || confirm("Are you sure you want to log out?");
-
-    if (!confirmLogout) return;
-
+    /* Logout immediately without the browser "workers.dev says" confirmation dialog. */
     try {
         await supabaseClient.auth.signOut();
     } catch (error) {

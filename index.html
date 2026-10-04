@@ -13397,6 +13397,70 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<script id="duarte-home-profile-post-sync-v39">
+(function(){
+ let activeProfileId=null, syncTimer=0, channel=null;
+
+ function visibleProfileId(){
+   const modal=document.getElementById("profileModal")||document.querySelector(".profile-modal.open,[data-profile-modal].open");
+   if(!modal || getComputedStyle(modal).display==="none") return null;
+   return activeProfileId;
+ }
+ function scheduleSync(){
+   clearTimeout(syncTimer);
+   syncTimer=setTimeout(async()=>{
+     try{
+       /* Home and Profile must always read the same canonical post rows. */
+       if(typeof window.loadPosts==="function") await window.loadPosts();
+       const id=visibleProfileId();
+       if(id && typeof window.openClanProfile==="function"){
+         await window.openClanProfile(id);
+       }
+     }catch(e){console.debug("Home/Profile sync:",e)}
+   },180);
+ }
+
+ // Remember whose profile is open without changing the existing profile renderer.
+ const wait=setInterval(()=>{
+   if(typeof window.openClanProfile!=="function")return;
+   clearInterval(wait);
+   const original=window.openClanProfile;
+   window.openClanProfile=async function(userId){
+     activeProfileId=userId;
+     return await original.apply(this,arguments);
+   };
+ },100);
+ setTimeout(()=>clearInterval(wait),10000);
+
+ async function startRealtime(){
+   try{
+     const {data}=await supabaseClient.auth.getSession();
+     if(!data?.session?.user || !supabaseClient?.channel)return;
+     if(channel){try{await supabaseClient.removeChannel(channel)}catch(_){}}
+     channel=supabaseClient.channel("duarte-home-profile-sync-"+data.session.user.id)
+       .on("postgres_changes",{event:"*",schema:"public",table:"posts"},scheduleSync)
+       .on("postgres_changes",{event:"*",schema:"public",table:"comments"},scheduleSync)
+       .on("postgres_changes",{event:"*",schema:"public",table:"reactions"},scheduleSync)
+       .on("postgres_changes",{event:"*",schema:"public",table:"comment_reactions"},scheduleSync)
+       .subscribe();
+   }catch(e){console.debug("Profile sync realtime:",e)}
+ }
+
+ /* Local actions update Profile immediately too, even before realtime returns. */
+ document.addEventListener("click",e=>{
+   if(e.target.closest?.('[data-action*="comment"],[onclick*="comment"],[onclick*="reaction"],[onclick*="like"],[onclick*="deletePost"],[onclick*="editPost"]')){
+     setTimeout(scheduleSync,250);
+   }
+ },true);
+ document.addEventListener("duarte:posts-changed",scheduleSync);
+ document.addEventListener("duarte:comments-changed",scheduleSync);
+ document.addEventListener("DOMContentLoaded",startRealtime,{once:true});
+ window.addEventListener("online",()=>{startRealtime();scheduleSync()},{passive:true});
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleSync()});
+})();
+</script>
+
 </body>
 </html>
 

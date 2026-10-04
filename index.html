@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-stable-v31n">
+<meta name="duarte-build" content="production-mobile-menu-v31o">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-stable-v31n";
+ window.DUARTE_BUILD="production-mobile-menu-v31o";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-stable-v31n"};
+ window.ffDuarteV29C={version:"production-mobile-menu-v31o"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-stable-v31n">
+<script id="duarte-production-mobile-menu-v31o">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-stable-v31n",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-menu-v31o",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-stable-v31n"};
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-menu-v31o"};
 })();
 </script>
 
@@ -10812,7 +10812,85 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-stable-v31n",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-mobile-menu-v31o",updateNow};
+})();
+</script>
+
+
+<style id="duarte-mobile-menu-v31o">
+@media(max-width:760px){
+ /* Remove right-side floating stack that blocks feed/photos. */
+ #ffHealthBtnV25,#ffSyncFab,.floating-menu,.floating-actions,.fab-menu,.quick-fab{
+   display:none!important;
+ }
+ /* New clean mobile menu sheet. */
+ #ffV31OMenuBackdrop{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.62);display:none}
+ #ffV31OMenuBackdrop.open{display:block}
+ #ffV31OMenuSheet{position:absolute;left:10px;right:10px;bottom:calc(74px + env(safe-area-inset-bottom));max-height:72dvh;overflow:auto;
+   background:#18191b;border:1px solid #3b3520;border-radius:18px;padding:10px;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+ .ff-v31o-menu-head{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 12px;color:#fff;font-weight:800;font-size:17px}
+ .ff-v31o-menu-close{width:40px;height:40px;border:0;border-radius:50%;background:#292a2d;color:#fff;font-size:22px}
+ .ff-v31o-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .ff-v31o-menu-item{min-height:54px;border:1px solid #343434;border-radius:12px;background:#222326;color:#eee;text-align:left;padding:10px 12px;font-weight:700}
+ .ff-v31o-menu-item small{display:block;color:#aaa;font-size:10px;font-weight:500;margin-top:3px}
+ .ff-v31o-menu-item.logout{grid-column:1/-1;border-color:#68442e;color:#ffd8c2}
+ .ff-v31o-menu-item.sync{color:#f1d15a}
+}
+</style>
+<script id="duarte-mobile-menu-v31o-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+ const clickFirst=(sels)=>{
+   for(const s of sels){const e=document.querySelector(s);if(e){e.click();return true}}
+   return false;
+ };
+ const close=()=>document.getElementById("ffV31OMenuBackdrop")?.classList.remove("open");
+ const open=()=>document.getElementById("ffV31OMenuBackdrop")?.classList.add("open");
+
+ function build(){
+   if(document.getElementById("ffV31OMenuBackdrop"))return;
+   const wrap=document.createElement("div");wrap.id="ffV31OMenuBackdrop";
+   wrap.innerHTML=`<div id="ffV31OMenuSheet" role="dialog" aria-modal="true" aria-label="Duarte Clan menu">
+    <div class="ff-v31o-menu-head"><span>☰ Duarte Clan Menu</span><button class="ff-v31o-menu-close" type="button" aria-label="Close">×</button></div>
+    <div class="ff-v31o-menu-grid">
+     <button class="ff-v31o-menu-item" data-go="profile">👤 My Profile<small>View or edit your profile</small></button>
+     <button class="ff-v31o-menu-item" data-go="events">📅 Events<small>Clan events and RSVP</small></button>
+     <button class="ff-v31o-menu-item" data-go="gallery">🖼️ Gallery<small>Family albums and photos</small></button>
+     <button class="ff-v31o-menu-item" data-go="family">🌳 Family<small>Directory, history and polls</small></button>
+     <button class="ff-v31o-menu-item sync" data-go="sync">↻ Sync<small>Offline changes and status</small></button>
+     <button class="ff-v31o-menu-item" data-go="health">⚙ System Health<small>App and connection checks</small></button>
+     <button class="ff-v31o-menu-item logout" data-go="logout">↪ Log out<small>Sign out of Duarte Clan</small></button>
+    </div></div>`;
+   document.body.appendChild(wrap);
+   wrap.addEventListener("click",e=>{if(e.target===wrap||e.target.closest(".ff-v31o-menu-close"))close()});
+   wrap.querySelector(".ff-v31o-menu-grid").addEventListener("click",e=>{
+    const b=e.target.closest("[data-go]");if(!b)return;const go=b.dataset.go;close();
+    if(go==="profile")clickFirst(["[data-action='profile']","#myProfileBtn",".profile-link","[onclick*='Profile']"]);
+    if(go==="events")clickFirst(["[data-section='events']","[data-target='events']","[onclick*='events']"]);
+    if(go==="gallery")clickFirst(["[data-section='gallery']","[data-target='gallery']","[onclick*='gallery']"]);
+    if(go==="family")clickFirst(["[data-section='family']","[data-target='family']","[onclick*='family']"]);
+    if(go==="sync"){const e=document.getElementById("ffSyncFab");if(e)e.click();else window.ffSyncOfflineQueue?.()}
+    if(go==="health")document.getElementById("ffHealthBtnV25")?.click();
+    if(go==="logout"){
+      const old=[...document.querySelectorAll("button,a")].find(x=>/^(log\s*out|logout|sign\s*out)$/i.test((x.textContent||"").trim()));
+      if(old)old.click();
+      else if(typeof supabaseClient!=="undefined")supabaseClient.auth.signOut().then(()=>location.href="login.html");
+    }
+   });
+
+   // Convert the bottom-right Alerts slot into Menu; Alerts remains available from existing notifications UI.
+   const nav=[...document.querySelectorAll(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a")];
+   const alerts=nav.find(x=>/alerts|menu/i.test((x.textContent||"").trim()));
+   if(alerts){
+     alerts.innerHTML="<span aria-hidden='true'>☰</span><span>Menu</span>";
+     alerts.onclick=e=>{e.preventDefault();e.stopPropagation();open()};
+   }else{
+     const bar=document.querySelector(".ff-v29c-mobile-nav");
+     if(bar){const b=document.createElement("button");b.type="button";b.innerHTML="<span>☰</span><span>Menu</span>";b.onclick=open;bar.appendChild(b)}
+   }
+ }
+ document.addEventListener("DOMContentLoaded",build);
+ window.ffDuarteMobileMenuV31O={open,close};
 })();
 </script>
 

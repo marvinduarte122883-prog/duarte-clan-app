@@ -13668,6 +13668,68 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<style id="duarte-presence-visible-fix-v42">
+.ff-presence-avatar-v41{overflow:visible!important}
+.member-avatar.ff-presence-avatar-v41,.ff-directory-avatar.ff-presence-avatar-v41,
+.ff-conversation-avatar.ff-presence-avatar-v41{position:relative!important}
+.ff-presence-avatar-v41>.ff-online-dot-v41{
+ display:block!important;position:absolute!important;right:-1px!important;bottom:-1px!important;
+ z-index:20!important;box-shadow:0 0 0 1px #111!important
+}
+</style>
+<script id="duarte-presence-visible-fix-v42-js">
+(function(){
+ function cleanId(v){
+   v=String(v||"");
+   return v.replace(/-(?:2|3)$/,"");
+ }
+ function repaint(){
+   const api=window.duartePresenceV41;if(!api)return;
+   document.querySelectorAll(".clan-member-card,.member-row,.ff-directory-card,.ff-conversation-row,[data-user-id],[data-member-id]").forEach(row=>{
+     const id=cleanId(row.dataset.userId||row.dataset.memberId||row.querySelector("[data-user-id]")?.dataset.userId);
+     if(!id)return;
+     const avatar=row.matches(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar")?row:
+       row.querySelector(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar,[class*='avatar']");
+     if(!avatar)return;
+     avatar.classList.add("ff-presence-avatar-v41");
+     let dot=avatar.querySelector(":scope > .ff-online-dot-v41");
+     if(api.isOnline(id)){
+       if(!dot){dot=document.createElement("span");dot.className="ff-online-dot-v41";dot.title="Online";avatar.appendChild(dot)}
+     }else dot?.remove();
+   });
+ }
+ function hook(name){
+   const fn=window[name];if(typeof fn!=="function"||fn.__presenceV42)return;
+   const wrapped=function(){const r=fn.apply(this,arguments);setTimeout(repaint,0);setTimeout(repaint,180);return r};
+   wrapped.__presenceV42=true;window[name]=wrapped;
+ }
+ function boot(){
+   ["renderMembersDirectory","renderSidebarMembers","renderFamilyDirectory","renderMessengerConversations","loadMessengerConversations"].forEach(hook);
+   const old=window.openClanProfile;
+   if(typeof old==="function"&&!old.__presenceV42){
+     const wrapped=async function(uid){
+       const r=await old.apply(this,arguments);
+       const id=cleanId(uid);
+       ["ffMemberProfileModal","ffFullProfile"].forEach(x=>{const el=document.getElementById(x);if(el)el.dataset.userId=id});
+       const label=document.querySelector("#ffFullProfile .ff-full-role,#ffMemberProfileModal .ff-member-profile-role");
+       if(label&&window.duartePresenceV41){
+         let st=label.parentElement.querySelector(".ff-profile-presence-v42");
+         if(!st){st=document.createElement("div");st.className="ff-profile-presence-v42 ff-presence-label-v41";label.insertAdjacentElement("afterend",st)}
+         const on=window.duartePresenceV41.isOnline(id);st.textContent=on?"● Online":"Offline";st.classList.toggle("offline",!on);
+       }
+       setTimeout(repaint,0);return r;
+     };wrapped.__presenceV42=true;window.openClanProfile=wrapped;
+   }
+   repaint();
+ }
+ document.addEventListener("DOMContentLoaded",()=>{setTimeout(boot,250);setTimeout(boot,1200)},{once:true});
+ document.addEventListener("click",()=>setTimeout(repaint,100),true);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(repaint,250)});
+ window.addEventListener("online",()=>setTimeout(repaint,500),{passive:true});
+})();
+</script>
+
 </body>
 </html>
 

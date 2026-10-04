@@ -1819,6 +1819,57 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 }
 </style>
 
+
+<style id="duarte-mobile-facebook-lite-clean-v34">
+@media (max-width:760px){
+  html,body{max-width:100%;overflow-x:hidden!important;background:#000!important}
+  body{padding-bottom:72px!important;-webkit-overflow-scrolling:touch}
+  /* Facebook-Lite-style simple header: title only; no duplicate action icons/menu. */
+  header,.topbar,.mobile-header{
+    min-height:58px!important;
+    background:#0d0d0d!important;
+    border-bottom:1px solid #2b2b2b!important;
+    box-shadow:none!important;
+  }
+  header .menu-btn,header .hamburger,header [aria-label*="menu" i],
+  .topbar .menu-btn,.topbar .hamburger,.mobile-header .menu-btn,.mobile-header .hamburger,
+  #menuBtn,#mobileMenuBtn,
+  header .header-icon,.topbar .header-icon,.mobile-header .header-icon,
+  .header-right .header-icon,.top-right .header-icon,
+  header .top-actions,.topbar .top-actions,.mobile-header .top-actions,.header-actions,.top-actions{
+    display:none!important;
+  }
+  /* Keep one mobile bottom navigation only. */
+  .ff-v29c-bottom-nav{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    position:fixed!important;left:0!important;right:0!important;bottom:0!important;
+    height:64px!important;padding:4px 4px max(4px,env(safe-area-inset-bottom))!important;
+    background:#101112!important;border-top:1px solid #2b2b2b!important;
+    z-index:2147483000!important;box-shadow:none!important;
+  }
+  .ff-v29c-bottom-nav button{
+    min-width:0!important;border:0!important;background:transparent!important;
+    padding:4px 2px!important;margin:0!important;border-radius:0!important;
+    display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+    gap:2px!important;font-size:11px!important;line-height:1.1!important;color:#e8e8e8!important;
+  }
+  .ff-v29c-bottom-nav .ico{font-size:21px!important;line-height:1!important}
+  .ff-v29c-bottom-nav [data-v29c-nav="notifications"] .ico{font-size:22px!important}
+  /* Hide superseded/floating mobile nav controls that can duplicate buttons. */
+  .mobile-bottom-nav:not(.ff-v29c-bottom-nav),
+  .bottom-nav:not(.ff-v29c-bottom-nav),
+  .floating-mobile-menu,.mobile-floating-menu,.floating-menu-button,
+  .ff-mobile-fab,.ff-v31o-fab,.ff-v32c-fab{display:none!important}
+  /* Native scrolling and cheaper rendering. */
+  main,.main,.main-content,.content,.feed,.feed-column{
+    transform:none!important;will-change:auto!important;contain:none!important;
+  }
+  img{max-width:100%;height:auto}
+  .post-card,.card,.story-panel{box-shadow:none!important}
+}
+</style>
+
 </head>
 
 
@@ -13044,6 +13095,26 @@ background:#000!important;background-color:#000!important;
 }
 </style>
 <!-- V33L: durable pending member Accept/Reject fix -->
+
+<script id="duarte-mobile-nav-dedupe-v34">
+document.addEventListener("DOMContentLoaded",function(){
+  if(!matchMedia("(max-width:760px)").matches)return;
+  const navs=[...document.querySelectorAll(".ff-v29c-bottom-nav")];
+  navs.slice(1).forEach(n=>n.remove());
+  const nav=navs[0];
+  if(nav){
+    const wanted=["home","members","notifications","messenger"];
+    [...nav.querySelectorAll("[data-v29c-nav]")].forEach(b=>{
+      if(!wanted.includes(b.dataset.v29cNav)) b.remove();
+    });
+    wanted.forEach(k=>{
+      const same=[...nav.querySelectorAll('[data-v29c-nav="'+k+'"]')];
+      same.slice(1).forEach(b=>b.remove());
+    });
+  }
+},{once:true});
+</script>
+
 </body>
 </html>
 

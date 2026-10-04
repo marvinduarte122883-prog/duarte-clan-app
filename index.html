@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-lite-clean-v32n">
+<meta name="duarte-build" content="production-messenger-white-v32o">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-lite-clean-v32n";
+ window.DUARTE_BUILD="production-messenger-white-v32o";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-lite-clean-v32n"};
+ window.ffDuarteV29C={version:"production-messenger-white-v32o"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-lite-clean-v32n">
+<script id="duarte-production-messenger-white-v32o">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-lite-clean-v32n",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-messenger-white-v32o",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-lite-clean-v32n"};
+ window.ffDuarteMobileSmoothV31M={version:"production-messenger-white-v32o"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-lite-clean-v32n",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-messenger-white-v32o",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-lite-clean-v32n"};
+ window.ffDuarteAntiFlickerV31P={version:"production-messenger-white-v32o"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-lite-clean-v32n"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-messenger-white-v32o"};
 })();
 </script>
 
@@ -13036,6 +13036,94 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const root=document.querySelector(ROOT);if(root)mo.observe(root,{childList:true,subtree:true});
  });
  window.ffDuarteMessengerLiteV32N={apply:enhance};
+})();
+</script>
+
+
+<style id="duarte-messenger-white-v32o">
+/* V32O — clean white Messenger, desktop + mobile */
+#ffMsgModal,
+#ffMsgModal .ff-msg-main,
+#ffMsgModal .ff-msg-thread,
+#ffMsgModal .ff-msg-list,
+#ffMsgModal .ff-msg-conversations,
+#ffMsgModal .ff-msg-header,
+#ffMsgModal .ff-msg-chat-header,
+#ffMsgModal [class*="panel"],
+#ffMsgModal [class*="body"],
+#ffMsgModal [class*="content"]{
+  background:#fff!important;
+  background-color:#fff!important;
+  color:#000!important;
+  border-color:#d9d9d9!important;
+}
+#ffMsgModal *{color:#000!important}
+#ffMsgModal input,#ffMsgModal textarea{
+  background:#f0f2f5!important;color:#000!important;border:1px solid #e1e3e6!important;
+}
+#ffMsgModal input::placeholder,#ffMsgModal textarea::placeholder{color:#65676b!important}
+
+/* Incoming bubbles: light gray with black text */
+#ffMsgModal .ff-msg-bubble,#ffMsgModal .message-bubble{
+  background:#e4e6eb!important;color:#000!important;border-color:transparent!important;
+}
+/* Sent bubbles: very light blue so BLACK text stays clear */
+#ffMsgModal .own .ff-msg-bubble,#ffMsgModal .me .ff-msg-bubble,
+#ffMsgModal [data-own="true"] .ff-msg-bubble,#ffMsgModal [data-is-own="true"] .ff-msg-bubble,
+#ffMsgModal .ff-msg-bubble.own,#ffMsgModal .ff-msg-bubble.me,
+#ffMsgModal .sent-message .ff-msg-bubble,#ffMsgModal .outgoing-message .ff-msg-bubble{
+  background:#dbeafe!important;color:#000!important;
+}
+#ffMsgModal .ff-msg-bubble *,#ffMsgModal .message-bubble *,
+#ffMsgModal .own .ff-msg-bubble *,#ffMsgModal .me .ff-msg-bubble *{color:#000!important}
+
+/* Like / reply / delete controls */
+#ffMsgModal .ff-v32n-msg-actions button{
+  background:#f0f2f5!important;color:#000!important;border:1px solid #d9d9d9!important;
+}
+#ffMsgModal .ff-v32n-msg-actions .ff-v32n-delete{color:#b42318!important}
+
+/* Composer and Send area */
+#ffMsgModal [class*="composer"],#ffMsgModal [class*="input-area"],
+#ffMsgModal [class*="footer"]{background:#fff!important;border-color:#e4e6eb!important}
+#ffMsgModal button{color:#000}
+#ffMsgModal button[type="submit"],#ffMsgModal .send-btn,#ffMsgModal [class*="send"]{
+  color:#000!important;
+}
+
+/* Scrollbars remain subtle on white */
+#ffMsgModal *{scrollbar-color:#b9bdc5 #fff}
+
+/* Same white theme on alternate mobile Messenger containers */
+.messenger-chat,.private-chat-panel{
+  background:#fff!important;color:#000!important;
+}
+.messenger-chat input,.messenger-chat textarea,
+.private-chat-panel input,.private-chat-panel textarea{
+  background:#f0f2f5!important;color:#000!important;
+}
+@media(max-width:760px){
+ #ffMsgModal,#ffMsgModal [class*="panel"],#ffMsgModal [class*="body"],
+ .messenger-chat,.private-chat-panel{background:#fff!important;color:#000!important}
+}
+</style>
+<script id="duarte-messenger-white-v32o-script">
+(()=>{
+ function forceWhite(){
+   const r=document.getElementById("ffMsgModal");if(!r)return;
+   r.style.setProperty("background","#fff","important");
+   r.style.setProperty("color","#000","important");
+   r.querySelectorAll(".ff-msg-main,.ff-msg-thread,.ff-msg-list,.ff-msg-conversations").forEach(el=>{
+     el.style.setProperty("background","#fff","important");
+     el.style.setProperty("color","#000","important");
+   });
+ }
+ document.addEventListener("DOMContentLoaded",forceWhite);
+ const mo=new MutationObserver(()=>requestAnimationFrame(forceWhite));
+ document.addEventListener("DOMContentLoaded",()=>{
+   const r=document.getElementById("ffMsgModal");if(r)mo.observe(r,{childList:true,subtree:true});
+ });
+ window.ffDuarteMessengerWhiteV32O={apply:forceWhite};
 })();
 </script>
 

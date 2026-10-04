@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-send-fix-v32q">
+<meta name="duarte-build" content="production-unified-messenger-v32r">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -5115,7 +5115,7 @@ protectPrivateClan();
 <button class="ff-msg-fab" onclick="openMessenger()">💬 Messenger <span class="ff-msg-badge" id="ffMsgBadge">0</span></button>
 <div class="ff-msg-modal" id="ffMsgModal" onclick="if(event.target===this)closeMessenger()"><div class="ff-msg-shell" id="ffMsgShell">
 <div class="ff-msg-list"><div class="ff-msg-title"><span>💬 Messages</span><button class="ff-msg-close" onclick="closeMessenger()">×</button></div><div class="ff-msg-search"><input id="ffConversationSearch" placeholder="Search conversations..." oninput="filterMessengerConversations(this.value)"></div><div id="ffConversationList"><div class="ff-chat-empty" style="padding:25px">No conversations yet.</div></div></div>
-<div class="ff-chat"><div class="ff-chat-head"><button class="ff-chat-back" onclick="messengerBack()">‹</button><span id="ffChatName">Select a conversation</span></div><div class="ff-chat-messages" id="ffChatMessages"><div class="ff-chat-empty">Choose a clan member to start chatting.</div></div><div class="ff-v4-reply-preview" id="ffV4ReplyPreview" hidden></div><div class="ff-chat-compose"><input id="ffV4MsgPhoto" type="file" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="ff-v4-attach" onclick="document.getElementById('ffV4MsgPhoto').click()" title="Attach photo">📷</button><input id="ffChatInput" maxlength="2000" placeholder="Write a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendPrivateMessage()}"><button type="button" id="ffMessengerSendButton" onclick="sendPrivateMessage()">Send</button></div></div>
+<div class="ff-chat"><div class="ff-chat-head"><button class="ff-chat-back" onclick="messengerBack()">‹</button><span id="ffChatName">Select a conversation</span></div><div class="ff-chat-messages" id="ffChatMessages"><div class="ff-chat-empty">Choose a clan member to start chatting.</div></div><div class="ff-v4-reply-preview" id="ffV4ReplyPreview" hidden></div><div class="ff-chat-compose" id="ffUnifiedComposer"><input id="ffV4MsgPhoto" type="file" accept="image/jpeg,image/png,image/webp"><button type="button" id="ffMessengerPhotoButton" class="ff-v4-attach" title="Attach photo" aria-label="Attach photo">📷</button><div id="ffMessengerPhotoName" hidden></div><input id="ffChatInput" maxlength="2000" placeholder="Write a message..." autocomplete="off"><button type="button" id="ffMessengerSendButton">Send</button></div></div>
 </div></div>
 
 
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-send-fix-v32q";
+ window.DUARTE_BUILD="production-unified-messenger-v32r";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-send-fix-v32q"};
+ window.ffDuarteV29C={version:"production-unified-messenger-v32r"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-send-fix-v32q">
+<script id="duarte-production-unified-messenger-v32r">
 (()=>{
  async function run(){
-  const r={build:"production-send-fix-v32q",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-unified-messenger-v32r",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-send-fix-v32q"};
+ window.ffDuarteMobileSmoothV31M={version:"production-unified-messenger-v32r"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-send-fix-v32q",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-unified-messenger-v32r",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-send-fix-v32q"};
+ window.ffDuarteAntiFlickerV31P={version:"production-unified-messenger-v32r"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-send-fix-v32q"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-unified-messenger-v32r"};
 })();
 </script>
 
@@ -13277,6 +13277,165 @@ html body .private-chat-panel > *{
  document.addEventListener("DOMContentLoaded",()=>setTimeout(repairSend,150));
  addEventListener("pageshow",()=>setTimeout(repairSend,150),{passive:true});
  window.ffDuarteMessengerSendFixV32Q={apply:repairSend};
+})();
+</script>
+
+
+<style id="duarte-unified-messenger-v32r">
+/* One authoritative Messenger UI for BOTH desktop and mobile. */
+#ffMsgModal .ff-msg-shell,
+#ffMsgModal .ff-msg-list,
+#ffMsgModal .ff-chat,
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-messages,
+#ffMsgModal .ff-chat-compose{
+  background:#fff!important;background-color:#fff!important;color:#000!important;
+  border-color:#dfe3e8!important;
+}
+#ffMsgModal .ff-msg-title,#ffMsgModal .ff-chat-head,#ffMsgModal .ff-conversation-name,
+#ffMsgModal .ff-conversation-preview,#ffMsgModal .ff-conversation-time,
+#ffMsgModal .ff-chat-empty{color:#000!important}
+#ffMsgModal .ff-conversation{background:#fff!important;color:#000!important;border-color:#e4e6eb!important}
+#ffMsgModal .ff-conversation:hover{background:#f5f6f7!important}
+
+/* Actual message classes used by this app. */
+#ffMsgModal .ff-bubble-row .ff-bubble{
+  background:#e4e6eb!important;color:#000!important;border:0!important;
+  border-radius:18px!important;box-shadow:none!important;max-width:min(72%,430px)!important;
+}
+#ffMsgModal .ff-bubble-row.mine .ff-bubble{
+  background:#dbeafe!important;color:#000!important;
+}
+#ffMsgModal .ff-bubble,#ffMsgModal .ff-bubble *{color:#000!important}
+#ffMsgModal .ff-bubble-time,#ffMsgModal .ff-seen-status{color:#65676b!important}
+
+/* Compact Messenger Lite actions */
+#ffMsgModal .ff-v4-msg-tools{gap:3px!important}
+#ffMsgModal .ff-v4-msg-tools button{
+  background:#f0f2f5!important;color:#000!important;border:1px solid #d9dce1!important;
+  width:28px!important;height:28px!important;min-width:28px!important;padding:0!important;
+  border-radius:50%!important;box-shadow:none!important;
+}
+#ffMsgModal .ff-v42-msg-delete{color:#b42318!important}
+
+/* Unified working composer */
+#ffUnifiedComposer{
+  display:flex!important;align-items:center!important;gap:7px!important;
+  position:sticky!important;bottom:0!important;z-index:20!important;
+  padding:9px!important;background:#fff!important;border-top:1px solid #e4e6eb!important;
+}
+#ffV4MsgPhoto{
+  position:fixed!important;left:-10000px!important;top:-10000px!important;
+  width:1px!important;height:1px!important;opacity:0!important;
+  pointer-events:auto!important;
+}
+#ffMessengerPhotoButton{
+  display:grid!important;place-items:center!important;flex:0 0 38px!important;
+  width:38px!important;height:38px!important;padding:0!important;border-radius:50%!important;
+  background:#f0f2f5!important;color:#000!important;border:0!important;cursor:pointer!important;
+  pointer-events:auto!important;
+}
+#ffChatInput{
+  flex:1 1 auto!important;min-width:0!important;height:40px!important;
+  background:#f0f2f5!important;color:#000!important;border:1px solid #dfe3e8!important;
+  border-radius:20px!important;padding:9px 13px!important;pointer-events:auto!important;
+}
+#ffChatInput::placeholder{color:#65676b!important}
+#ffMessengerSendButton{
+  display:block!important;flex:0 0 auto!important;min-width:62px!important;height:40px!important;
+  padding:0 14px!important;border:0!important;border-radius:20px!important;
+  background:#0866ff!important;color:#fff!important;font-weight:700!important;
+  cursor:pointer!important;pointer-events:auto!important;position:relative!important;z-index:25!important;
+}
+#ffMessengerSendButton:disabled{opacity:.55!important;cursor:wait!important}
+#ffMessengerPhotoName{
+  position:absolute!important;left:52px!important;bottom:52px!important;max-width:220px!important;
+  padding:5px 8px!important;border:1px solid #dfe3e8!important;border-radius:10px!important;
+  background:#fff!important;color:#000!important;font-size:11px!important;
+}
+
+/* Same Messenger setup on mobile: only dimensions adapt. */
+@media(max-width:760px){
+ #ffMsgModal .ff-msg-shell{width:100%!important;height:100dvh!important;max-width:none!important;max-height:none!important;border-radius:0!important}
+ #ffMsgModal .ff-chat{height:100%!important}
+ #ffMsgModal .ff-bubble-row .ff-bubble{max-width:80%!important}
+ #ffUnifiedComposer{padding-bottom:max(9px,env(safe-area-inset-bottom))!important}
+}
+</style>
+
+<script id="duarte-unified-messenger-v32r-script">
+(()=>{
+ let sending=false;
+
+ function activeConversationReady(){
+   try{return !!ffActiveConversationId}catch(_){return false}
+ }
+
+ async function doSend(){
+   if(sending)return;
+   const input=document.getElementById("ffChatInput");
+   const fileInput=document.getElementById("ffV4MsgPhoto");
+   const btn=document.getElementById("ffMessengerSendButton");
+   const hasText=!!input?.value.trim(), hasFile=!!fileInput?.files?.length;
+   if(!hasText&&!hasFile)return;
+   if(!activeConversationReady()){
+     alert("Please select a conversation first.");
+     return;
+   }
+   if(typeof sendPrivateMessage!=="function"){
+     alert("Messenger send function is unavailable. Please reload the app.");
+     return;
+   }
+   sending=true;
+   if(btn){btn.disabled=true;btn.textContent="Sending…"}
+   try{
+     await sendPrivateMessage();
+     const n=document.getElementById("ffMessengerPhotoName");
+     if(n){n.hidden=true;n.textContent=""}
+   }catch(e){
+     console.error("Messenger send failed:",e);
+     alert("Message could not be sent: "+(e?.message||e));
+   }finally{
+     sending=false;
+     if(btn){btn.disabled=false;btn.textContent="Send"}
+   }
+ }
+
+ function choosePhoto(){
+   const fi=document.getElementById("ffV4MsgPhoto");if(!fi)return;
+   try{
+     if(typeof fi.showPicker==="function")fi.showPicker();
+     else fi.click();
+   }catch(_){fi.click()}
+ }
+
+ function bind(){
+   const btn=document.getElementById("ffMessengerSendButton");
+   const photo=document.getElementById("ffMessengerPhotoButton");
+   const fi=document.getElementById("ffV4MsgPhoto");
+   const input=document.getElementById("ffChatInput");
+   if(!btn||!photo||!fi||!input)return;
+
+   /* Properties replace any conflicting late-version handlers. */
+   btn.onclick=e=>{e.preventDefault();e.stopPropagation();doSend()};
+   photo.onclick=e=>{e.preventDefault();e.stopPropagation();choosePhoto()};
+   input.onkeydown=e=>{
+     if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend()}
+   };
+   fi.onchange=()=>{
+     const n=document.getElementById("ffMessengerPhotoName");
+     if(n){
+       const f=fi.files?.[0];
+       n.textContent=f?"📷 "+f.name:"";
+       n.hidden=!f;
+     }
+   };
+   btn.disabled=false;
+ }
+
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(bind,100));
+ addEventListener("pageshow",()=>setTimeout(bind,100),{passive:true});
+ window.ffDuarteUnifiedMessengerV32R={bind,send:doSend,photo:choosePhoto};
 })();
 </script>
 

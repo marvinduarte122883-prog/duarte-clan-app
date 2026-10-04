@@ -5765,7 +5765,7 @@ async function loadAdminDashboard(){
  const jobs=[
   ffADCount("profiles"),
   ffADCount("profiles",q=>q.eq("approved",true)),
-  ffADCount("profiles",q=>q.eq("approved",false)),
+  ffADCount("profiles",q=>q.eq("approved",false).or("clan_role.is.null,clan_role.neq.Rejected")),
   ffADCount("posts"),
   ffADCount("comments"),
   ffADCount("events",q=>q.gte("event_date",now)),
@@ -5796,9 +5796,78 @@ async function loadAdminDashboard(){
  await Promise.all([ffADPending(),ffADEvents(),ffADPolls(),ffADActivity()]);
 }
 async function ffADPending(){
- const box=document.getElementById("ffAdminPending");const {data,error}=await supabaseClient.from("profiles").select("id,full_name,clan_role,created_at").eq("approved",false).order("created_at",{ascending:false}).limit(20);
- if(error){box.innerHTML='<div class="ff-admin-empty">'+ffADesc(error.message)+'</div>';return;}if(!data?.length){box.innerHTML='<div class="ff-admin-empty">No pending members.</div>';return;}
- box.innerHTML=data.map(x=>`<div class="ff-admin-row"><div><div class="main">${ffADesc(x.full_name)}</div><div class="sub">${new Date(x.created_at).toLocaleString()}</div></div><span class="ff-admin-badge">Pending</span></div>`).join("");
+ const box=document.getElementById("ffAdminPending");
+ const {data,error}=await supabaseClient.from("profiles")
+   .select("id,full_name,clan_role,created_at")
+   .eq("approved",false)
+   .or("clan_role.is.null,clan_role.neq.Rejected")
+   .order("created_at",{ascending:false})
+   .limit(20);
+ if(error){box.innerHTML='<div class="ff-admin-empty">'+ffADesc(error.message)+'</div>';return;}
+ if(!data?.length){box.innerHTML='<div class="ff-admin-empty">No pending members.</div>';return;}
+ box.innerHTML=data.map(x=>`<div class="ff-admin-row" data-member-id="${ffADesc(x.id)}">
+   <div>
+     <div class="main">${ffADesc(x.full_name||"Pending member")}</div>
+     <div class="sub">${new Date(x.created_at).toLocaleString()}${x.clan_role?" · "+ffADesc(x.clan_role):""}</div>
+   </div>
+   <div class="ff-admin-member-actions" style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+     <button type="button" onclick="ffADApproveMember('${ffADesc(x.id)}',this)" style="border:0;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer;background:#d4af37;color:#111">Accept</button>
+     <button type="button" onclick="ffADRejectMember('${ffADesc(x.id)}',this)" style="border:1px solid #7a3030;border-radius:9px;padding:8px 11px;font-weight:800;cursor:pointer;background:#321919;color:#ffd6d6">Reject</button>
+   </div>
+ </div>`).join("");
+}
+async function ffADApproveMember(memberId,btn){
+ if(!ffAdminDashIsAdmin())return alert("Administrator access required.");
+ if(!memberId)return;
+ if(!confirm("Accept this pending member?"))return;
+ const row=btn?.closest?.(".ff-admin-row");
+ const buttons=row?.querySelectorAll?.("button")||[];
+ buttons.forEach(b=>b.disabled=true);
+ try{
+   const {data,error}=await supabaseClient.from("profiles")
+     .update({approved:true,clan_role:"Member"})
+     .eq("id",memberId)
+     .eq("approved",false)
+     .select("id")
+     .maybeSingle();
+   if(error)throw error;
+   if(!data)throw new Error("This request is no longer pending or could not be updated.");
+   row?.remove();
+   await Promise.allSettled([
+     ffADPending(),
+     typeof loadMembersDirectory==="function"?loadMembersDirectory():Promise.resolve()
+   ]);
+   await loadAdminDashboard();
+ }catch(e){
+   alert("Member could not be accepted: "+(e?.message||e));
+   buttons.forEach(b=>b.disabled=false);
+ }
+}
+async function ffADRejectMember(memberId,btn){
+ if(!ffAdminDashIsAdmin())return alert("Administrator access required.");
+ if(!memberId)return;
+ if(!confirm("Reject this membership request? The account will remain unable to enter the clan community."))return;
+ const row=btn?.closest?.(".ff-admin-row");
+ const buttons=row?.querySelectorAll?.("button")||[];
+ buttons.forEach(b=>b.disabled=true);
+ try{
+   /* Keep a durable rejected state instead of deleting the profile.
+      Deleting only the profile can let an existing Auth account create a new
+      pending profile and make the rejected request appear again. */
+   const {data,error}=await supabaseClient.from("profiles")
+     .update({approved:false,clan_role:"Rejected"})
+     .eq("id",memberId)
+     .eq("approved",false)
+     .select("id")
+     .maybeSingle();
+   if(error)throw error;
+   if(!data)throw new Error("This request is no longer pending or could not be rejected.");
+   row?.remove();
+   await loadAdminDashboard();
+ }catch(e){
+   alert("Request could not be rejected: "+(e?.message||e));
+   buttons.forEach(b=>b.disabled=false);
+ }
 }
 async function ffADEvents(){
  const box=document.getElementById("ffAdminEvents");const {data,error}=await supabaseClient.from("events").select("id,title,event_date,location").gte("event_date",new Date().toISOString()).order("event_date").limit(10);
@@ -12919,6 +12988,7 @@ background:#000!important;background-color:#000!important;
 }
 }
 </style>
+<!-- V33L: durable pending member Accept/Reject fix -->
 </body>
 </html>
 

@@ -13807,6 +13807,36 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<style id="duarte-mobile-menu-cleanup-v44">
+@media(max-width:760px){
+  /* No hamburger/menu button on mobile. Bottom navigation remains the navigation source. */
+  .mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,
+  [data-action="menu"],[aria-label="Menu"].menu-btn,
+  button[aria-label="Menu"],button[title="Menu"]{display:none!important}
+}
+</style>
+<script id="duarte-mobile-menu-cleanup-v44-js">
+(function(){
+ const removeNames=/^(home|my profile|profile|clan members|members|notifications?)$/i;
+ function cleanMenu(){
+   if(!matchMedia("(max-width:760px)").matches)return;
+   const menus=document.querySelectorAll(".mobile-menu,.ff-mobile-menu,.ff-menu-sheet,.mobile-menu-panel,[role='menu']");
+   menus.forEach(menu=>{
+     [...menu.querySelectorAll("a,button,[role='menuitem']")].forEach(item=>{
+       const label=(item.textContent||item.getAttribute("aria-label")||item.getAttribute("title")||"")
+         .replace(/\s+/g," ").trim();
+       if(removeNames.test(label)) item.remove();
+     });
+   });
+   document.querySelectorAll(".mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,button[aria-label='Menu'],button[title='Menu']")
+     .forEach(x=>x.remove());
+ }
+ document.addEventListener("DOMContentLoaded",()=>{cleanMenu();setTimeout(cleanMenu,400);setTimeout(cleanMenu,1200)},{once:true});
+ document.addEventListener("click",()=>setTimeout(cleanMenu,0),true);
+})();
+</script>
+
 </body>
 </html>
 

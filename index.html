@@ -13538,6 +13538,136 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<style id="duarte-online-presence-v41">
+.ff-online-dot-v41{
+ display:inline-block;width:10px;height:10px;border-radius:50%;
+ background:#31a24c;border:2px solid #17181a;box-sizing:content-box;
+ vertical-align:middle;margin-left:5px
+}
+.ff-presence-label-v41{font-size:12px;color:#31a24c;font-weight:700;margin-left:6px}
+.ff-presence-label-v41.offline{color:#8a8d91;font-weight:600}
+.ff-presence-avatar-v41{position:relative}
+.ff-presence-avatar-v41>.ff-online-dot-v41{
+ position:absolute;right:0;bottom:0;margin:0
+}
+@media(max-width:760px){
+ .ff-online-dot-v41{width:9px;height:9px}
+ .ff-presence-label-v41{font-size:11px}
+}
+</style>
+<script id="duarte-online-presence-v41-js">
+(function(){
+ const online=new Set();
+ let presenceChannel=null,currentId=null,paintTimer=0;
+
+ function esc(v){return String(v??"").replace(/["\\]/g,"\\$&")}
+ function isOnline(id){return !!id && online.has(String(id))}
+ function schedulePaint(){
+   clearTimeout(paintTimer);
+   paintTimer=setTimeout(paint,80);
+ }
+ function addStatus(host,id,labelOnly){
+   if(!host||!id)return;
+   const on=isOnline(id);
+   let mark=host.querySelector(":scope > .ff-online-dot-v41");
+   let label=host.querySelector(":scope > .ff-presence-label-v41");
+   if(on){
+     if(!mark&&!labelOnly){
+       mark=document.createElement("span");
+       mark.className="ff-online-dot-v41";
+       mark.title="Online";
+       host.appendChild(mark);
+     }
+     if(label){
+       label.textContent="Online";label.classList.remove("offline");
+     }
+   }else{
+     mark?.remove();
+     if(label){label.textContent="Offline";label.classList.add("offline")}
+   }
+ }
+ function paint(){
+   /* Any existing member/profile/message element carrying a user id can be painted
+      without duplicating the app's member or Messenger UI. */
+   document.querySelectorAll("[data-user-id],[data-member-id],[data-profile-id]").forEach(el=>{
+     const id=el.dataset.userId||el.dataset.memberId||el.dataset.profileId;
+     if(!id)return;
+     const avatar=el.matches("img,.avatar,[class*='avatar']")?el:
+       el.querySelector("img,.avatar,[class*='avatar']");
+     if(avatar){
+       const host=avatar.parentElement;
+       if(host){
+         host.classList.add("ff-presence-avatar-v41");
+         addStatus(host,id,false);
+       }
+     }
+   });
+   /* Messenger chat header: show a compact Online/Offline label for active peer. */
+   const chat=document.querySelector("#ffMsgModal .ff-chat");
+   if(chat){
+     const peer=chat.dataset.userId||chat.dataset.peerId||chat.querySelector("[data-user-id]")?.dataset.userId;
+     const head=chat.querySelector(".ff-chat-head");
+     if(peer&&head){
+       let label=head.querySelector(".ff-presence-label-v41");
+       if(!label){label=document.createElement("span");label.className="ff-presence-label-v41";head.appendChild(label)}
+       addStatus(head,peer,true);
+     }
+   }
+ }
+ async function start(){
+   try{
+     const {data}=await supabaseClient.auth.getSession();
+     const user=data?.session?.user;
+     if(!user||!supabaseClient?.channel)return;
+     currentId=String(user.id);
+     if(presenceChannel){try{await supabaseClient.removeChannel(presenceChannel)}catch(_){}}
+     presenceChannel=supabaseClient.channel("duarte-clan-presence",{config:{presence:{key:currentId}}});
+     presenceChannel
+       .on("presence",{event:"sync"},()=>{
+         online.clear();
+         const state=presenceChannel.presenceState()||{};
+         Object.entries(state).forEach(([key,entries])=>{
+           if(entries?.length) online.add(String(entries[0]?.user_id||key));
+         });
+         schedulePaint();
+       })
+       .on("presence",{event:"join"},({key,newPresences})=>{
+         online.add(String(newPresences?.[0]?.user_id||key));schedulePaint();
+       })
+       .on("presence",{event:"leave"},({key})=>{
+         online.delete(String(key));schedulePaint();
+       })
+       .subscribe(async status=>{
+         if(status==="SUBSCRIBED"){
+           await presenceChannel.track({
+             user_id:currentId,
+             online_at:new Date().toISOString()
+           });
+           schedulePaint();
+         }
+       });
+   }catch(e){console.debug("Duarte presence:",e)}
+ }
+ document.addEventListener("DOMContentLoaded",start,{once:true});
+ document.addEventListener("duarte:messages-changed",schedulePaint);
+ document.addEventListener("duarte:posts-changed",schedulePaint);
+ document.addEventListener("click",()=>setTimeout(schedulePaint,120),true);
+ document.addEventListener("visibilitychange",async()=>{
+   if(document.hidden){
+     try{await presenceChannel?.untrack()}catch(_){}
+   }else{
+     if(!presenceChannel)start();
+     else try{await presenceChannel.track({user_id:currentId,online_at:new Date().toISOString()})}catch(_){}
+     schedulePaint();
+   }
+ });
+ window.addEventListener("online",start,{passive:true});
+ window.addEventListener("beforeunload",()=>{try{presenceChannel?.untrack()}catch(_){}});
+ window.duartePresenceV41={isOnline,refresh:schedulePaint};
+})();
+</script>
+
 </body>
 </html>
 

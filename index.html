@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-desktop-admin-tools-v32f">
+<meta name="duarte-build" content="production-top-messenger-admin-health-v32h">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-desktop-admin-tools-v32f";
+ window.DUARTE_BUILD="production-top-messenger-admin-health-v32h";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-desktop-admin-tools-v32f"};
+ window.ffDuarteV29C={version:"production-top-messenger-admin-health-v32h"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-desktop-admin-tools-v32f">
+<script id="duarte-production-top-messenger-admin-health-v32h">
 (()=>{
  async function run(){
-  const r={build:"production-desktop-admin-tools-v32f",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-top-messenger-admin-health-v32h",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-desktop-admin-tools-v32f"};
+ window.ffDuarteMobileSmoothV31M={version:"production-top-messenger-admin-health-v32h"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-desktop-admin-tools-v32f",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-top-messenger-admin-health-v32h",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-desktop-admin-tools-v32f"};
+ window.ffDuarteAntiFlickerV31P={version:"production-top-messenger-admin-health-v32h"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-desktop-admin-tools-v32f"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-top-messenger-admin-health-v32h"};
 })();
 </script>
 
@@ -12345,6 +12345,150 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>setTimeout(applyDesktopAdminVisibility,100));
  addEventListener("pageshow",()=>setTimeout(applyDesktopAdminVisibility,100),{passive:true});
  window.ffDuarteDesktopAdminToolsV32F={refresh:applyDesktopAdminVisibility};
+})();
+</script>
+
+
+<style id="duarte-messenger-bell-admin-health-v32g">
+@media(min-width:761px){
+ #ffV32GMessengerDesktop{display:inline-grid!important;place-items:center!important;width:42px!important;height:42px!important;border-radius:50%!important;border:1px solid #38393d!important;background:#202124!important;color:#fff!important;font-size:20px!important;padding:0!important;margin:0 6px!important}
+ body:not(.ff-v32g-admin) #ffSystemHealthFab,
+ body:not(.ff-v32g-admin) #ffHealthBtnV25,
+ body:not(.ff-v32g-admin) .ff-system-health-fab,
+ body:not(.ff-v32g-admin) .ff-system-health-trigger,
+ body:not(.ff-v32g-admin) [data-go="health"]{display:none!important}
+}
+</style>
+<script id="duarte-messenger-bell-admin-health-v32g-script">
+(()=>{
+ if(!matchMedia("(min-width:761px)").matches)return;
+ const isAdmin=p=>!!p&&(p.is_admin===true||String(p.clan_role||"").trim().toLowerCase()==="administrator");
+ async function verifyAdmin(){
+   let admin=[window.currentProfile,window.myProfile,window.currentUserProfile,window.ffCurrentProfile,window.duarteProfile].some(isAdmin);
+   if(!admin&&window.supabaseClient?.auth?.getSession){
+     try{
+       const {data:s}=await window.supabaseClient.auth.getSession(),uid=s?.session?.user?.id;
+       if(uid){const {data:p}=await window.supabaseClient.from("profiles").select("is_admin,clan_role").eq("id",uid).maybeSingle();admin=isAdmin(p)}
+     }catch(_){}
+   }
+   document.body.classList.toggle("ff-v32g-admin",admin);
+   document.querySelectorAll("button,a").forEach(el=>{
+     const t=(el.textContent||"").replace(/\s+/g," ").trim();
+     if(/^System Health$/i.test(t)||/Duarte Clan\s*[·•-]\s*System Health/i.test(t))el.style.setProperty("display",admin?"":"none","important");
+   });
+ }
+ function openMessenger(){
+   for(const s of ["[data-section='messenger']","[data-action='messenger']","[data-go='messenger']",".messenger-button","#messengerButton"]){const e=document.querySelector(s);if(e){e.click();return}}
+   [...document.querySelectorAll("button,a")].find(x=>/^(messages?|messenger)$/i.test((x.textContent||"").trim()))?.click();
+ }
+ function place(){
+   let b=document.getElementById("ffV32GMessengerDesktop");
+   if(!b){b=document.createElement("button");b.id="ffV32GMessengerDesktop";b.type="button";b.setAttribute("aria-label","Messenger");b.title="Messenger";b.textContent="💬";b.onclick=openMessenger}
+   const bell=[...document.querySelectorAll("button,a")].find(el=>el!==b&&/notifications?|alerts?/i.test((el.textContent||"")+" "+(el.getAttribute("aria-label")||"")));
+   if(bell?.parentElement)bell.insertAdjacentElement("afterend",b);else if(!b.isConnected)document.body.appendChild(b);
+ }
+ async function apply(){place();await verifyAdmin()}
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,120));
+ addEventListener("pageshow",()=>setTimeout(apply,120),{passive:true});
+ window.ffDuarteDesktopMessengerHealthV32G={apply};
+})();
+</script>
+
+
+<style id="duarte-top-messenger-admin-health-v32h">
+@media(min-width:761px){
+  /* Remove/hide the old floating Messenger control on desktop. */
+  #ffMessengerFab,.messenger-fab,.floating-messenger,.messenger-floating,
+  [class*="messenger"][class*="float"],[class*="messenger"][class*="fab"]{
+    display:none!important;
+  }
+  /* New Messenger button beside the existing top notification bell. */
+  #ffV32HMessengerTop{
+    display:inline-grid!important;place-items:center!important;
+    width:42px!important;height:42px!important;min-width:42px!important;
+    padding:0!important;margin-left:6px!important;border-radius:50%!important;
+    border:1px solid #38393d!important;background:#202124!important;color:#fff!important;
+    font-size:20px!important;position:relative!important;inset:auto!important;
+    box-shadow:none!important;
+  }
+  /* Default-deny System Health on desktop until admin is verified. */
+  body:not(.ff-v32h-admin) #ffSystemHealthFab,
+  body:not(.ff-v32h-admin) #ffHealthBtnV25,
+  body:not(.ff-v32h-admin) .ff-system-health-fab,
+  body:not(.ff-v32h-admin) .ff-system-health-trigger,
+  body:not(.ff-v32h-admin) [data-go="health"]{
+    display:none!important;
+  }
+}
+</style>
+<script id="duarte-top-messenger-admin-health-v32h-script">
+(()=>{
+ if(!matchMedia("(min-width:761px)").matches)return;
+
+ const isAdmin=p=>!!p && (
+   p.is_admin===true ||
+   String(p.clan_role||"").trim().toLowerCase()==="administrator"
+ );
+
+ function openMessenger(){
+   for(const s of ["[data-section='messenger']","[data-action='messenger']","[data-go='messenger']",".messenger-button","#messengerButton"]){
+     const e=document.querySelector(s);if(e&&e.id!=="ffV32HMessengerTop"){e.click();return}
+   }
+   [...document.querySelectorAll("button,a")].find(x=>
+     x.id!=="ffV32HMessengerTop" && /^(messages?|messenger)$/i.test((x.textContent||"").trim())
+   )?.click();
+ }
+
+ function notificationBell(){
+   const nodes=[...document.querySelectorAll("button,a,[role='button']")];
+   return nodes.find(el=>{
+     const s=((el.textContent||"")+" "+(el.getAttribute("aria-label")||"")+" "+(el.title||"")).trim();
+     return /notifications?|alerts?/i.test(s) && !el.closest("#ffV31SAlerts");
+   });
+ }
+
+ function placeMessenger(){
+   let b=document.getElementById("ffV32HMessengerTop");
+   if(!b){
+     b=document.createElement("button"); b.id="ffV32HMessengerTop"; b.type="button";
+     b.setAttribute("aria-label","Messenger"); b.title="Messenger"; b.textContent="💬";
+     b.addEventListener("click",openMessenger);
+   }
+   const bell=notificationBell();
+   if(bell?.parentElement) bell.insertAdjacentElement("afterend",b);
+
+   /* V32G's earlier desktop proxy is no longer needed. */
+   const old=document.getElementById("ffV32GMessengerDesktop");
+   if(old) old.style.setProperty("display","none","important");
+ }
+
+ async function applyAdmin(){
+   let admin=[window.currentProfile,window.myProfile,window.currentUserProfile,
+              window.ffCurrentProfile,window.duarteProfile].some(isAdmin);
+   if(!admin&&window.supabaseClient?.auth?.getSession){
+     try{
+       const {data:s}=await window.supabaseClient.auth.getSession();
+       const uid=s?.session?.user?.id;
+       if(uid){
+         const {data:p}=await window.supabaseClient.from("profiles")
+           .select("is_admin,clan_role").eq("id",uid).maybeSingle();
+         admin=isAdmin(p);
+       }
+     }catch(_){}
+   }
+   document.body.classList.toggle("ff-v32h-admin",admin);
+   document.querySelectorAll("button,a").forEach(el=>{
+     const t=(el.textContent||"").replace(/\s+/g," ").trim();
+     if(/^System Health$/i.test(t)||/Duarte Clan\s*[·•-]\s*System Health/i.test(t)){
+       el.style.setProperty("display",admin?"":"none","important");
+     }
+   });
+ }
+
+ async function apply(){placeMessenger();await applyAdmin()}
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(apply,120));
+ addEventListener("pageshow",()=>setTimeout(apply,120),{passive:true});
+ window.ffDuarteTopMessengerAdminHealthV32H={apply};
 })();
 </script>
 

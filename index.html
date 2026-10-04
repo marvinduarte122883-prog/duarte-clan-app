@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-messenger-lite-consolidated-v32x">
+<meta name="duarte-build" content="production-messenger-click-actions-v32y">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10085,7 +10085,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-messenger-lite-consolidated-v32x";
+ window.DUARTE_BUILD="production-messenger-click-actions-v32y";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10448,7 +10448,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-messenger-lite-consolidated-v32x"};
+ window.ffDuarteV29C={version:"production-messenger-click-actions-v32y"};
 })();
 </script>
 
@@ -10567,10 +10567,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-messenger-lite-consolidated-v32x">
+<script id="duarte-production-messenger-click-actions-v32y">
 (()=>{
  async function run(){
-  const r={build:"production-messenger-lite-consolidated-v32x",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-messenger-click-actions-v32y",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10732,7 +10732,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-messenger-lite-consolidated-v32x"};
+ window.ffDuarteMobileSmoothV31M={version:"production-messenger-click-actions-v32y"};
 })();
 </script>
 
@@ -10813,7 +10813,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-messenger-lite-consolidated-v32x",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-messenger-click-actions-v32y",updateNow};
 })();
 </script>
 
@@ -10981,7 +10981,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-messenger-lite-consolidated-v32x"};
+ window.ffDuarteAntiFlickerV31P={version:"production-messenger-click-actions-v32y"};
 })();
 </script>
 
@@ -12107,169 +12107,183 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 
 
-<style id="duarte-messenger-lite-consolidated-v32x">
-/* ===== V32X: one lightweight Messenger theme/controller for desktop + mobile ===== */
+
+<style id="duarte-messenger-click-actions-v32y">
+/* V32Y — stable Facebook-Lite Messenger, desktop + mobile */
 #ffMsgModal{
- --m-blue:#0866ff;--m-in:#e4e6eb;--m-bg:#fff;--m-text:#050505;--m-muted:#65676b;
+ --m-blue:#0866ff;--m-in:#e4e6eb;--m-bg:#fff;--m-text:#050505;
  background:#fff!important;color:#050505!important;
 }
 #ffMsgModal .ff-msg-shell,#ffMsgModal .ff-msg-list,#ffMsgModal .ff-chat,
 #ffMsgModal .ff-chat-head,#ffMsgModal .ff-chat-messages,#ffMsgModal .ff-chat-compose{
  background:#fff!important;color:#050505!important;border-color:#e4e6eb!important;
 }
-#ffMsgModal input,#ffMsgModal textarea{
- background:#f0f2f5!important;color:#050505!important;border:1px solid #dfe3e8!important;
- border-radius:20px!important;box-shadow:none!important;
-}
-#ffMsgModal input::placeholder,#ffMsgModal textarea::placeholder{color:#65676b!important}
-
-/* Facebook Lite-style bubbles */
+#ffMsgModal input{background:#f0f2f5!important;color:#050505!important;border:1px solid #dfe3e8!important;border-radius:20px!important}
 #ffChatMessages .ff-bubble-row>.ff-bubble{
  width:max-content!important;max-width:min(74%,430px)!important;padding:8px 12px!important;
  border:0!important;border-radius:18px!important;box-shadow:none!important;
  background:#e4e6eb!important;color:#050505!important;font-size:14px!important;line-height:1.35!important;
- animation:none!important;transition:none!important;
+ animation:none!important;transition:none!important;cursor:pointer!important;
 }
-#ffChatMessages .ff-bubble-row.mine>.ff-bubble{
- background:#0866ff!important;color:#fff!important;
-}
+#ffChatMessages .ff-bubble-row.mine>.ff-bubble{background:#0866ff!important;color:#fff!important}
 #ffChatMessages .ff-bubble-row.mine>.ff-bubble *{color:#fff!important}
-#ffChatMessages .ff-bubble-time{font-size:10px!important;opacity:.75!important}
 #ffChatMessages .ff-bubble-row:not(.mine)>.ff-bubble *{color:#050505!important}
+#ffChatMessages .ff-bubble-time{font-size:10px!important;opacity:.78!important}
 
-/* Remove old permanent action rows. */
+/* Old controls stay disabled. */
 #ffMsgModal .ff-own-delete-row,#ffMsgModal .ff-v4-msg-tools,#ffMsgModal .ff-v32n-msg-actions,
 #ffMsgModal .ff-v32s-desktop-actions,#ffMsgModal .ff-v32t-bar,#ffMsgModal .ff-v32v-toolbar,
-#ffMsgModal .ff-v32w-tools{display:none!important}
+#ffMsgModal .ff-v32w-tools,#ffMsgModal .ff-v32x-tools{display:none!important}
 
-/* Composer */
-#ffUnifiedComposer,#ffMsgModal .ff-chat-compose{
- display:flex!important;align-items:center!important;gap:7px!important;padding:8px 10px!important;
- background:#fff!important;border-top:1px solid #e4e6eb!important;z-index:30!important;
+/* Stable selected-message toolbar: click once to open, click elsewhere to close. */
+.ff-v32y-tools{
+ display:flex!important;align-items:center!important;gap:4px!important;margin:5px 7px!important;
+ opacity:1!important;visibility:visible!important;pointer-events:auto!important;
+ animation:none!important;transition:none!important;
 }
-#ffMessengerPhotoButton,.ff-v4-attach{
- width:38px!important;height:38px!important;min-width:38px!important;border:0!important;border-radius:50%!important;
- background:#f0f2f5!important;color:#0866ff!important;display:grid!important;place-items:center!important;
- cursor:pointer!important;box-shadow:none!important;
+.ff-bubble-row.mine .ff-v32y-tools{order:-1!important;margin-left:auto!important}
+.ff-v32y-tools button{
+ width:32px!important;height:32px!important;min-width:32px!important;padding:0!important;
+ border:1px solid #d8dadf!important;border-radius:50%!important;background:#fff!important;color:#050505!important;
+ display:grid!important;place-items:center!important;cursor:pointer!important;box-shadow:0 1px 3px #0002!important;
+ font-size:15px!important;pointer-events:auto!important;
 }
-#ffMessengerSendButton,#ffMsgModal .ff-chat-compose>button:last-child{
- min-width:62px!important;height:40px!important;border:0!important;border-radius:20px!important;
- background:#0866ff!important;color:#fff!important;font-weight:700!important;cursor:pointer!important;
-}
-#ffV4MsgPhoto{position:fixed!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important}
+.ff-v32y-tools button:active{background:#e4e6eb!important}
+#ffChatMessages .ff-bubble-row{align-items:center!important;overflow:visible!important}
 
-/* Desktop: a single temporary toolbar is inserted only for the hovered row. */
-.ff-v32x-tools{display:flex;align-items:center;gap:3px;margin:0 7px}
-.ff-v32x-tools button{
- width:30px;height:30px;min-width:30px;padding:0;border:1px solid #d8dadf;border-radius:50%;
- background:#fff;color:#050505;display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 3px #0002;
-}
-.ff-bubble-row.mine .ff-v32x-tools{order:-1;margin-left:auto}
-#ffChatMessages .ff-bubble-row{align-items:center!important}
-
-/* Shared reaction picker */
-#ffV32XPicker{
+/* Emoji picker */
+#ffV32YPicker{
  display:none;position:fixed;z-index:2147483646;background:#fff;border:1px solid #ddd;border-radius:24px;
  padding:5px;gap:3px;box-shadow:0 4px 18px #0003
 }
-#ffV32XPicker.open{display:flex}
-#ffV32XPicker button{width:35px;height:35px;border:0;border-radius:50%;background:#f0f2f5;font-size:19px}
+#ffV32YPicker.open{display:flex!important}
+#ffV32YPicker button{width:36px;height:36px;border:0;border-radius:50%;background:#f0f2f5;font-size:20px;cursor:pointer}
 
-/* Mobile long-press sheet */
-#ffV32XSheet{display:none;position:fixed;inset:0;z-index:2147483646;background:#0006;align-items:flex-end}
-#ffV32XSheet.open{display:flex}
-#ffV32XSheet .sheet{width:100%;background:#fff;color:#050505;border-radius:20px 20px 0 0;padding:10px 12px max(14px,env(safe-area-inset-bottom))}
-#ffV32XSheet .reacts{display:flex;justify-content:space-around;padding:4px 0 12px}
-#ffV32XSheet .reacts button{width:43px;height:43px;border:0;border-radius:50%;background:#f0f2f5;font-size:21px}
-#ffV32XSheet .primary{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #ddd;padding-top:9px}
-#ffV32XSheet .primary button{min-height:54px;border:0;border-radius:10px;background:#f6f7f8;color:#050505;font-size:11px;font-weight:700}
-#ffV32XMore{display:none;border-top:1px solid #ddd;margin-top:8px;padding-top:5px}
-#ffV32XMore.open{display:block}
-#ffV32XMore button{display:block;width:100%;padding:12px;border:0;background:#fff;color:#050505;text-align:left}
-#ffV32XMore .danger{color:#b42318;font-weight:800}
-
-#ffMsgModal,#ffMsgModal *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* Mobile gets the SAME click behavior; toolbar wraps neatly under/alongside bubble. */
 @media(max-width:760px){
  #ffMsgModal .ff-msg-shell{width:100%!important;height:100dvh!important;max-width:none!important;max-height:none!important;border-radius:0!important}
  #ffChatMessages .ff-bubble-row>.ff-bubble{max-width:80%!important}
- .ff-v32x-tools{display:none!important}
- #ffMsgModal .ff-chat-compose{padding-bottom:max(8px,env(safe-area-inset-bottom))!important}
+ .ff-v32y-tools{gap:3px!important;margin:4px 5px!important}
+ .ff-v32y-tools button{width:30px!important;height:30px!important;min-width:30px!important;font-size:14px!important}
 }
+#ffMsgModal,#ffMsgModal *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 </style>
 
-<script id="duarte-messenger-lite-consolidated-v32x-script">
+<script id="duarte-messenger-click-actions-v32y-script">
 (()=>{
- let active=null,hold=0,start=null,lastHover=null;
- const $=s=>document.querySelector(s);
- const mid=r=>Number(r?.dataset.messageId||0), own=r=>r?.classList.contains("mine");
+ let selected=null;
+ const root=()=>document.getElementById("ffChatMessages");
+ const mid=r=>Number(r?.dataset.messageId||0);
+ const own=r=>!!r?.classList.contains("mine");
  const photo=r=>r?.querySelector(".ff-v4-msg-photo")?.src||"";
- const messageText=r=>{
-   const b=r?.querySelector(".ff-bubble");if(!b)return"";
-   const c=b.cloneNode(true);c.querySelectorAll(".ff-bubble-time,.ff-seen-status,.ff-v4-msg-reactions").forEach(x=>x.remove());
-   return c.textContent.trim()
+ const msgText=r=>{
+   const b=r?.querySelector(".ff-bubble"); if(!b)return "";
+   const c=b.cloneNode(true);
+   c.querySelectorAll(".ff-bubble-time,.ff-seen-status,.ff-v4-msg-reactions").forEach(x=>x.remove());
+   return c.textContent.trim();
  };
- const call=(name,args)=>{const f=window[name];if(typeof f==="function")return f(...args)};
- const react=(r,e)=>{const n=mid(r);if(n)call("ffV4React",[n,e])};
- const reply=r=>{const n=mid(r);if(n)call("ffV4Reply",[n,messageText(r).slice(0,120)||(photo(r)?"Photo":"Message")])};
- const unsend=r=>{const n=mid(r);if(n&&own(r))call("ffV42DeleteOwnMessage",[n,photo(r)])};
- async function copy(r){const t=messageText(r);if(!t)return;try{await navigator.clipboard.writeText(t)}catch(_){}}
+ const invoke=(name,args)=>{
+   const f=window[name];
+   if(typeof f==="function") return f(...args);
+ };
+ function react(r,e){const n=mid(r);if(n)invoke("ffV4React",[n,e])}
+ function reply(r){const n=mid(r);if(n)invoke("ffV4Reply",[n,msgText(r).slice(0,120)||(photo(r)?"Photo":"Message")])}
+ function unsend(r){const n=mid(r);if(n&&own(r))invoke("ffV42DeleteOwnMessage",[n,photo(r)])}
+ async function copy(r){
+   const t=msgText(r);if(!t)return;
+   try{await navigator.clipboard.writeText(t)}
+   catch(_){const x=document.createElement("textarea");x.value=t;document.body.appendChild(x);x.select();document.execCommand("copy");x.remove()}
+ }
  function details(r){alert("Message details\n\nID: "+mid(r)+"\n"+(r.querySelector(".ff-bubble-time")?.textContent?.trim()||""))}
- function report(r){const why=prompt("Reason for reporting this message:");if(!why)return;const s=`Message #${mid(r)}\nReason: ${why}\nMessage: ${messageText(r).slice(0,180)}`;navigator.clipboard?.writeText(s).catch(()=>{});alert("Report details copied. Server-side reports are not configured yet.")}
- function pin(r){const n=mid(r);if(!n)return;let a=[];try{a=JSON.parse(localStorage.getItem("duarte_pins_v32x")||"[]")}catch(_){};if(!a.includes(n))a.push(n);localStorage.setItem("duarte_pins_v32x",JSON.stringify(a.slice(-100)))}
- function forward(r){const n=mid(r);if(typeof window.forwardMessage==="function")return window.forwardMessage(n);if(typeof window.ffForwardMessage==="function")return window.ffForwardMessage(n);alert("Forward destination picker is not configured yet.")}
+ function report(r){
+   const why=prompt("Reason for reporting this message:");if(!why)return;
+   const s=`Message #${mid(r)}\nReason: ${why}\nMessage: ${msgText(r).slice(0,180)}`;
+   navigator.clipboard?.writeText(s).catch(()=>{});
+   alert("Report details copied. Server-side message reports are not configured yet.");
+ }
+ function pin(r){
+   const n=mid(r);if(!n)return;
+   let a=[];try{a=JSON.parse(localStorage.getItem("duarte_pins_v32y")||"[]")}catch(_){}
+   if(!a.includes(n))a.push(n);
+   localStorage.setItem("duarte_pins_v32y",JSON.stringify(a.slice(-100)));
+ }
+ function forward(r){
+   const n=mid(r);
+   if(typeof window.forwardMessage==="function")return window.forwardMessage(n);
+   if(typeof window.ffForwardMessage==="function")return window.ffForwardMessage(n);
+   alert("Forward destination picker is not configured yet.");
+ }
 
  function picker(){
-   let p=$("#ffV32XPicker");if(p)return p;
-   p=document.createElement("div");p.id="ffV32XPicker";
-   ["👍","❤️","😂","😮","😢","😡"].forEach(e=>{const b=document.createElement("button");b.type="button";b.textContent=e;b.onclick=()=>{if(active)react(active,e);p.classList.remove("open")};p.appendChild(b)});
-   document.body.appendChild(p);return p
+   let p=document.getElementById("ffV32YPicker");if(p)return p;
+   p=document.createElement("div");p.id="ffV32YPicker";
+   ["👍","❤️","😂","😮","😢","😡"].forEach(e=>{
+     const b=document.createElement("button");b.type="button";b.textContent=e;
+     b.onclick=ev=>{ev.stopPropagation();if(selected)react(selected,e);p.classList.remove("open")};
+     p.appendChild(b);
+   });
+   document.body.appendChild(p);return p;
  }
- function openPicker(r,btn){active=r;const p=picker(),q=btn.getBoundingClientRect();p.style.left=Math.max(8,Math.min(innerWidth-245,q.left-90))+"px";p.style.top=Math.max(8,q.top-48)+"px";p.classList.add("open")}
+ function openPicker(r,btn){
+   selected=r;const p=picker(),q=btn.getBoundingClientRect();
+   p.style.left=Math.max(8,Math.min(innerWidth-245,q.left-90))+"px";
+   p.style.top=Math.max(8,q.top-48)+"px";p.classList.add("open");
+ }
 
- function showTools(r){
-   if(innerWidth<=760||lastHover===r)return;
-   $(".ff-v32x-tools")?.remove();lastHover=r;
-   const t=document.createElement("div");t.className="ff-v32x-tools";
-   [["☺","Reactions",e=>openPicker(r,e.currentTarget)],["↗","Forward",()=>forward(r)],
-    ...(own(r)?[["↶","Unsend",()=>unsend(r)]]:[]),["📌","Pin",()=>pin(r)],["⚑","Report",()=>report(r)]]
-    .forEach(([x,title,fn])=>{const b=document.createElement("button");b.type="button";b.textContent=x;b.title=title;b.onclick=e=>{e.preventDefault();e.stopPropagation();fn(e)};t.appendChild(b)});
+ function closeTools(){
+   document.querySelector(".ff-v32y-tools")?.remove();
+   document.getElementById("ffV32YPicker")?.classList.remove("open");
+   selected=null;
+ }
+ function openTools(r){
+   if(!r)return;
+   if(selected===r && r.querySelector(".ff-v32y-tools")) return;
+   closeTools(); selected=r;
+   const t=document.createElement("div");t.className="ff-v32y-tools";
+   const defs=[
+     ["☺","Reactions",e=>openPicker(r,e.currentTarget)],
+     ["↩","Reply",()=>reply(r)],
+     ["▣","Copy",()=>copy(r)],
+     ["↗","Forward",()=>forward(r)],
+     ...(own(r)?[["↶","Unsend",()=>unsend(r)]]:[]),
+     ["📌","Pin",()=>pin(r)],
+     ["⚑","Report",()=>report(r)]
+   ];
+   defs.forEach(([icon,title,fn])=>{
+     const b=document.createElement("button");b.type="button";b.textContent=icon;b.title=title;b.setAttribute("aria-label",title);
+     b.onclick=e=>{e.preventDefault();e.stopPropagation();fn(e)};
+     t.appendChild(b);
+   });
    const bubble=r.querySelector(".ff-bubble");
-   if(own(r))r.insertBefore(t,bubble);else bubble?.insertAdjacentElement("afterend",t)
- }
- function hideToolsSoon(){
-   setTimeout(()=>{if(!$(".ff-v32x-tools:hover")){$(".ff-v32x-tools")?.remove();lastHover=null}},120)
+   if(own(r))r.insertBefore(t,bubble);else bubble?.insertAdjacentElement("afterend",t);
  }
 
- function sheet(){
-   let s=$("#ffV32XSheet");if(s)return s;
-   s=document.createElement("div");s.id="ffV32XSheet";
-   s.innerHTML=`<div class="sheet"><div class="reacts">${["👍","❤️","😂","😮","😢","😡"].map(e=>`<button data-r="${e}">${e}</button>`).join("")}</div><div class="primary"><button data-a="reply">↩<br>Reply</button><button data-a="copy">▣<br>Copy</button><button data-a="translate">文<br>Translate</button><button data-a="react">☺<br>Reactions</button><button data-a="more">•••<br>More</button></div><div id="ffV32XMore"><button data-a="delete" class="danger">🗑 Delete / Unsend</button><button data-a="forward">↗ Forward</button><button data-a="details">ⓘ Details</button><button data-a="report">⚑ Report</button></div></div>`;
-   s.onclick=e=>{if(e.target===s){s.classList.remove("open");return}const b=e.target.closest("button");if(!b||!active)return;if(b.dataset.r){react(active,b.dataset.r);s.classList.remove("open");return}const a=b.dataset.a;if(a==="reply"){reply(active);s.classList.remove("open")}else if(a==="copy"){copy(active);s.classList.remove("open")}else if(a==="translate"){copy(active);alert("Message copied for translation.");s.classList.remove("open")}else if(a==="more")$("#ffV32XMore").classList.toggle("open");else if(a==="delete"){unsend(active);s.classList.remove("open")}else if(a==="forward"){forward(active);s.classList.remove("open")}else if(a==="details")details(active);else if(a==="report")report(active)};
-   document.body.appendChild(s);return s
+ function bind(){
+   const r=root();if(!r||r.dataset.v32y==="1")return;
+   r.dataset.v32y="1";
+   /* ONE delegated click listener for all current/future messages: no observer, no per-message listeners. */
+   r.addEventListener("click",e=>{
+     if(e.target.closest(".ff-v32y-tools"))return;
+     const row=e.target.closest(".ff-bubble-row[data-message-id]");
+     const bubble=e.target.closest(".ff-bubble");
+     if(row&&bubble){e.preventDefault();e.stopPropagation();openTools(row)}
+   });
  }
- function openSheet(r){active=r;const s=sheet();s.querySelector('[data-a="delete"]').style.display=own(r)?"block":"none";$("#ffV32XMore").classList.remove("open");s.classList.add("open")}
-
  function bindComposer(){
-   const send=$("#ffMessengerSendButton"),input=$("#ffChatInput"),photoBtn=$("#ffMessengerPhotoButton"),file=$("#ffV4MsgPhoto");
+   const send=document.getElementById("ffMessengerSendButton"),input=document.getElementById("ffChatInput"),
+         photoBtn=document.getElementById("ffMessengerPhotoButton"),file=document.getElementById("ffV4MsgPhoto");
    if(send)send.onclick=e=>{e.preventDefault();if(typeof window.sendPrivateMessage==="function")window.sendPrivateMessage()};
    if(input)input.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send?.click()}};
    if(photoBtn&&file)photoBtn.onclick=e=>{e.preventDefault();try{file.showPicker?file.showPicker():file.click()}catch(_){file.click()}};
  }
-
- function bindDelegates(){
-   const root=$("#ffChatMessages");if(!root||root.dataset.v32x)return;root.dataset.v32x="1";
-   root.addEventListener("mouseover",e=>{const r=e.target.closest(".ff-bubble-row[data-message-id]");if(r)showTools(r)});
-   root.addEventListener("mouseout",e=>{if(e.target.closest(".ff-bubble-row[data-message-id]"))hideToolsSoon()});
-   root.addEventListener("pointerdown",e=>{if(innerWidth>760||e.pointerType==="mouse")return;const r=e.target.closest(".ff-bubble-row[data-message-id]");if(!r)return;start={x:e.clientX,y:e.clientY};clearTimeout(hold);hold=setTimeout(()=>{navigator.vibrate?.(18);openSheet(r)},480)},{passive:true});
-   root.addEventListener("pointermove",e=>{if(start&&Math.hypot(e.clientX-start.x,e.clientY-start.y)>10)clearTimeout(hold)},{passive:true});
-   root.addEventListener("pointerup",()=>{clearTimeout(hold);start=null},{passive:true});
-   root.addEventListener("pointercancel",()=>{clearTimeout(hold);start=null},{passive:true});
-   root.addEventListener("contextmenu",e=>{if(innerWidth<=760){const r=e.target.closest(".ff-bubble-row[data-message-id]");if(r){e.preventDefault();openSheet(r)}}});
- }
- function init(){picker();sheet();bindComposer();bindDelegates()}
+ function init(){picker();bind();bindComposer()}
+ document.addEventListener("click",e=>{
+   if(e.target.closest("#ffV32YPicker,.ff-v32y-tools,#ffChatMessages .ff-bubble"))return;
+   closeTools();
+ });
  document.addEventListener("DOMContentLoaded",()=>setTimeout(init,80));
  addEventListener("pageshow",()=>setTimeout(init,80),{passive:true});
- window.ffDuarteMessengerLiteV32X={init};
+ window.ffDuarteMessengerV32Y={init,openTools,closeTools};
 })();
 </script>
 

@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-nav-v32e">
+<meta name="duarte-build" content="production-desktop-admin-tools-v32f">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-nav-v32e";
+ window.DUARTE_BUILD="production-desktop-admin-tools-v32f";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-nav-v32e"};
+ window.ffDuarteV29C={version:"production-desktop-admin-tools-v32f"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-nav-v32e">
+<script id="duarte-production-desktop-admin-tools-v32f">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-nav-v32e",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-desktop-admin-tools-v32f",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-nav-v32e"};
+ window.ffDuarteMobileSmoothV31M={version:"production-desktop-admin-tools-v32f"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-nav-v32e",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-desktop-admin-tools-v32f",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-mobile-nav-v32e"};
+ window.ffDuarteAntiFlickerV31P={version:"production-desktop-admin-tools-v32f"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-mobile-nav-v32e"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-desktop-admin-tools-v32f"};
 })();
 </script>
 
@@ -12277,6 +12277,74 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  addEventListener("pageshow",apply,{passive:true});
  addEventListener("orientationchange",()=>setTimeout(apply,150),{passive:true});
  window.ffDuarteMobileNavV32E={apply};
+})();
+</script>
+
+
+<style id="duarte-desktop-admin-tools-v32f">
+/* DESKTOP ONLY: hide admin-only diagnostic controls until admin status is confirmed. */
+@media(min-width:761px){
+  body:not(.ff-v32f-admin) #ffV25HealthButton,
+  body:not(.ff-v32f-admin) #ffSyncFab,
+  body:not(.ff-v32f-admin) #syncFab,
+  body:not(.ff-v32f-admin) .ff-system-health-trigger,
+  body:not(.ff-v32f-admin) .ff-sync-fab{
+    display:none!important;
+  }
+}
+</style>
+<script id="duarte-desktop-admin-tools-v32f-script">
+(()=>{
+ if(!matchMedia("(min-width:761px)").matches)return;
+
+ const adminFromProfile=p=>!!p && (
+   p.is_admin===true ||
+   String(p.clan_role||"").trim().toLowerCase()==="administrator"
+ );
+
+ async function applyDesktopAdminVisibility(){
+   if(!matchMedia("(min-width:761px)").matches)return;
+   let admin=false;
+
+   /* Reuse already-loaded profile state first, avoiding an extra request where possible. */
+   const candidates=[
+     window.currentProfile, window.myProfile, window.currentUserProfile,
+     window.ffCurrentProfile, window.duarteProfile
+   ];
+   admin=candidates.some(adminFromProfile);
+
+   /* If profile state isn't exposed globally, verify the signed-in profile through Supabase. */
+   if(!admin && window.supabaseClient?.auth?.getSession){
+     try{
+       const {data:s}=await window.supabaseClient.auth.getSession();
+       const uid=s?.session?.user?.id;
+       if(uid){
+         const {data:p}=await window.supabaseClient
+           .from("profiles")
+           .select("is_admin,clan_role")
+           .eq("id",uid).maybeSingle();
+         admin=adminFromProfile(p);
+       }
+     }catch(_){}
+   }
+
+   document.body.classList.toggle("ff-v32f-admin",admin);
+
+   /* Catch the actual visible controls by their text as a compatibility fallback.
+      This runs on desktop only and does not touch mobile. */
+   document.querySelectorAll("button,a").forEach(el=>{
+     const label=(el.textContent||"").replace(/\s+/g," ").trim();
+     if(/Duarte Clan\s*[·•-]\s*System Health/i.test(label) ||
+        /^System Health$/i.test(label) ||
+        /^Sync(?:\s+\d+)?$/i.test(label)){
+       el.style.setProperty("display",admin?"":"none","important");
+       el.dataset.v32fAdminOnly="true";
+     }
+   });
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(applyDesktopAdminVisibility,100));
+ addEventListener("pageshow",()=>setTimeout(applyDesktopAdminVisibility,100),{passive:true});
+ window.ffDuarteDesktopAdminToolsV32F={refresh:applyDesktopAdminVisibility};
 })();
 </script>
 

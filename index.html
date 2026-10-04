@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-remove-floating-messenger-v32i">
+<meta name="duarte-build" content="production-working-top-messenger-v32j">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-remove-floating-messenger-v32i";
+ window.DUARTE_BUILD="production-working-top-messenger-v32j";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-remove-floating-messenger-v32i"};
+ window.ffDuarteV29C={version:"production-working-top-messenger-v32j"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-remove-floating-messenger-v32i">
+<script id="duarte-production-working-top-messenger-v32j">
 (()=>{
  async function run(){
-  const r={build:"production-remove-floating-messenger-v32i",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-working-top-messenger-v32j",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-remove-floating-messenger-v32i"};
+ window.ffDuarteMobileSmoothV31M={version:"production-working-top-messenger-v32j"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-remove-floating-messenger-v32i",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-working-top-messenger-v32j",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-remove-floating-messenger-v32i"};
+ window.ffDuarteAntiFlickerV31P={version:"production-working-top-messenger-v32j"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-remove-floating-messenger-v32i"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-working-top-messenger-v32j"};
 })();
 </script>
 
@@ -12559,6 +12559,52 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>mo.observe(document.body,{childList:true,subtree:true}));
 
  window.ffDuarteRemoveFloatingMessengerV32I={apply:ensureTopMessenger};
+})();
+</script>
+
+
+<style id="duarte-working-top-messenger-v32j">
+@media(min-width:761px){
+  /* Old floating launcher stays removed. */
+  .ff-msg-fab{display:none!important;visibility:hidden!important;pointer-events:none!important}
+  /* Top Messenger remains clickable beside Notifications. */
+  #ffV32HMessengerTop{
+    display:inline-grid!important;visibility:visible!important;pointer-events:auto!important;
+    cursor:pointer!important;z-index:100!important;
+  }
+}
+</style>
+<script id="duarte-working-top-messenger-v32j-script">
+(()=>{
+ if(!matchMedia("(min-width:761px)").matches)return;
+
+ function fixTopMessenger(){
+   const b=document.getElementById("ffV32HMessengerTop");
+   if(!b)return;
+
+   /* Replace the previous proxy click handler with the app's REAL Messenger function. */
+   const clean=b.cloneNode(true);
+   b.replaceWith(clean);
+   clean.addEventListener("click",e=>{
+     e.preventDefault();e.stopPropagation();
+     if(typeof window.openMessenger==="function"){
+       window.openMessenger();
+       return;
+     }
+     /* Direct fallback using the app's real Messenger modal. */
+     const modal=document.getElementById("ffMsgModal");
+     if(modal){
+       modal.classList.add("open");
+       modal.style.display="flex";
+       modal.removeAttribute("hidden");
+       if(typeof window.loadConversations==="function")window.loadConversations();
+       if(typeof window.subscribeMessengerRealtime==="function")window.subscribeMessengerRealtime();
+     }
+   });
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(fixTopMessenger,250));
+ addEventListener("pageshow",()=>setTimeout(fixTopMessenger,250),{passive:true});
+ window.ffDuarteWorkingTopMessengerV32J={apply:fixTopMessenger};
 })();
 </script>
 

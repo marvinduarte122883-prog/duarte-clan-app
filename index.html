@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-top-menu-v32d">
+<meta name="duarte-build" content="production-mobile-nav-v32e">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-top-menu-v32d";
+ window.DUARTE_BUILD="production-mobile-nav-v32e";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-top-menu-v32d"};
+ window.ffDuarteV29C={version:"production-mobile-nav-v32e"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-top-menu-v32d">
+<script id="duarte-production-mobile-nav-v32e">
 (()=>{
  async function run(){
-  const r={build:"production-top-menu-v32d",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-mobile-nav-v32e",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-top-menu-v32d"};
+ window.ffDuarteMobileSmoothV31M={version:"production-mobile-nav-v32e"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-top-menu-v32d",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-mobile-nav-v32e",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-top-menu-v32d"};
+ window.ffDuarteAntiFlickerV31P={version:"production-mobile-nav-v32e"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-top-menu-v32d"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-mobile-nav-v32e"};
 })();
 </script>
 
@@ -12157,6 +12157,126 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  addEventListener("pageshow",ensureTopMenu,{passive:true});
  addEventListener("orientationchange",()=>setTimeout(ensureTopMenu,150),{passive:true});
  window.ffDuarteTopMenuV32D={ensureTopMenu};
+})();
+</script>
+
+
+<style id="duarte-mobile-nav-v32e">
+@media(max-width:760px){
+  /* Top header: hamburger + brand + family features + Messenger */
+  #ffV32DTopMenu{left:10px!important}
+  #ffV32EFamilyFeatures,#ffV32EMessengerTop{
+    display:grid!important;place-items:center!important;
+    position:fixed!important;top:calc(8px + env(safe-area-inset-top))!important;
+    z-index:2147482700!important;width:44px!important;height:44px!important;
+    padding:0!important;border:1px solid #36373a!important;border-radius:50%!important;
+    background:#202124!important;color:#fff!important;box-shadow:none!important;
+    font-size:21px!important;
+  }
+  #ffV32EMessengerTop{right:10px!important}
+  #ffV32EFamilyFeatures{right:62px!important}
+
+  /* Bottom navigation: Home / Members / Notifications / Messages */
+  .ff-v29c-mobile-nav{
+    grid-template-columns:repeat(4,1fr)!important;
+  }
+  /* Remove old Create control completely. */
+  .ff-v29c-mobile-nav [data-go="create"],
+  .ff-v29c-mobile-nav [data-action="create"],
+  .ff-v29c-mobile-nav .create-item,
+  .ff-v29c-mobile-nav .ff-create-item{
+    display:none!important;
+  }
+  /* Keep old Menu hidden because it lives at the top. */
+  .ff-v29c-mobile-nav [data-go="menu"],
+  .ff-v29c-mobile-nav [data-action="menu"],
+  .ff-v29c-mobile-nav .menu-item,
+  .ff-v29c-mobile-nav .ff-menu-item{
+    display:none!important;
+  }
+  /* Make Alerts visually read as Notifications. */
+  .ff-v29c-mobile-nav [data-go="alerts"] .label,
+  .ff-v29c-mobile-nav [data-action="alerts"] .label{
+    font-size:0!important;
+  }
+  .ff-v29c-mobile-nav [data-go="alerts"] .label::after,
+  .ff-v29c-mobile-nav [data-action="alerts"] .label::after{
+    content:"Notifications";font-size:11px!important;
+  }
+}
+</style>
+
+<script id="duarte-mobile-nav-v32e-script">
+(()=>{
+ if(!matchMedia("(max-width:760px)").matches)return;
+
+ const allBottom=()=>[...document.querySelectorAll(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a")];
+ const byText=re=>allBottom().find(x=>re.test((x.textContent||"").trim()));
+
+ function clickExisting(re, selectors=[]){
+   const old=byText(re);
+   if(old){old.click();return true}
+   for(const s of selectors){const el=document.querySelector(s);if(el){el.click();return true}}
+   return false;
+ }
+
+ function ensureTop(){
+   let family=document.getElementById("ffV32EFamilyFeatures");
+   if(!family){
+     family=document.createElement("button");
+     family.id="ffV32EFamilyFeatures";family.type="button";
+     family.setAttribute("aria-label","Family features");
+     family.title="Family features";family.textContent="👨‍👩‍👧";
+     document.body.appendChild(family);
+     family.onclick=()=>{
+       const top=document.getElementById("ffV32DTopMenu");
+       if(top)top.click();
+       setTimeout(()=>{
+         const sheet=document.getElementById("ffV31OMenuSheet");
+         if(sheet)sheet.scrollTop=0;
+       },40);
+     };
+   }
+
+   let msg=document.getElementById("ffV32EMessengerTop");
+   if(!msg){
+     msg=document.createElement("button");
+     msg.id="ffV32EMessengerTop";msg.type="button";
+     msg.setAttribute("aria-label","Messenger");
+     msg.title="Messenger";msg.textContent="💬";
+     document.body.appendChild(msg);
+     msg.onclick=()=>clickExisting(/messages?|messenger/i,[
+       "[data-section='messenger']","[data-action='messenger']",".messenger-button"
+     ]);
+   }
+ }
+
+ function replaceCreate(){
+   const nav=document.querySelector(".ff-v29c-mobile-nav");if(!nav)return;
+   const create=byText(/^create$/i);
+   if(create)create.style.setProperty("display","none","important");
+
+   // Prefer the app's existing Alerts/Notifications button. If absent, create a lightweight proxy.
+   let alert=byText(/alerts?|notifications?/i);
+   if(!alert){
+     alert=document.createElement("button");
+     alert.type="button";alert.className="ff-v32e-notifications";
+     alert.innerHTML='<span aria-hidden="true">🔔</span><span class="label">Notifications</span>';
+     alert.onclick=()=>{
+       if(window.ffDuarteMobileAlertsV31S?.open)window.ffDuarteMobileAlertsV31S.open();
+       else document.querySelector("[data-action='notifications'],.notification-button,.alerts-button")?.click();
+     };
+     nav.appendChild(alert);
+   }
+ }
+
+ function apply(){
+   ensureTop();replaceCreate();
+ }
+ document.addEventListener("DOMContentLoaded",apply);
+ addEventListener("pageshow",apply,{passive:true});
+ addEventListener("orientationchange",()=>setTimeout(apply,150),{passive:true});
+ window.ffDuarteMobileNavV32E={apply};
 })();
 </script>
 

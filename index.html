@@ -1753,7 +1753,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-force-white-messenger-v32p">
+<meta name="duarte-build" content="production-send-fix-v32q">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -5115,7 +5115,7 @@ protectPrivateClan();
 <button class="ff-msg-fab" onclick="openMessenger()">💬 Messenger <span class="ff-msg-badge" id="ffMsgBadge">0</span></button>
 <div class="ff-msg-modal" id="ffMsgModal" onclick="if(event.target===this)closeMessenger()"><div class="ff-msg-shell" id="ffMsgShell">
 <div class="ff-msg-list"><div class="ff-msg-title"><span>💬 Messages</span><button class="ff-msg-close" onclick="closeMessenger()">×</button></div><div class="ff-msg-search"><input id="ffConversationSearch" placeholder="Search conversations..." oninput="filterMessengerConversations(this.value)"></div><div id="ffConversationList"><div class="ff-chat-empty" style="padding:25px">No conversations yet.</div></div></div>
-<div class="ff-chat"><div class="ff-chat-head"><button class="ff-chat-back" onclick="messengerBack()">‹</button><span id="ffChatName">Select a conversation</span></div><div class="ff-chat-messages" id="ffChatMessages"><div class="ff-chat-empty">Choose a clan member to start chatting.</div></div><div class="ff-v4-reply-preview" id="ffV4ReplyPreview" hidden></div><div class="ff-chat-compose"><input id="ffV4MsgPhoto" type="file" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="ff-v4-attach" onclick="document.getElementById('ffV4MsgPhoto').click()" title="Attach photo">📷</button><input id="ffChatInput" maxlength="2000" placeholder="Write a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendPrivateMessage()}"><button onclick="sendPrivateMessage()">Send</button></div></div>
+<div class="ff-chat"><div class="ff-chat-head"><button class="ff-chat-back" onclick="messengerBack()">‹</button><span id="ffChatName">Select a conversation</span></div><div class="ff-chat-messages" id="ffChatMessages"><div class="ff-chat-empty">Choose a clan member to start chatting.</div></div><div class="ff-v4-reply-preview" id="ffV4ReplyPreview" hidden></div><div class="ff-chat-compose"><input id="ffV4MsgPhoto" type="file" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="ff-v4-attach" onclick="document.getElementById('ffV4MsgPhoto').click()" title="Attach photo">📷</button><input id="ffChatInput" maxlength="2000" placeholder="Write a message..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendPrivateMessage()}"><button type="button" id="ffMessengerSendButton" onclick="sendPrivateMessage()">Send</button></div></div>
 </div></div>
 
 
@@ -10084,7 +10084,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-force-white-messenger-v32p";
+ window.DUARTE_BUILD="production-send-fix-v32q";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10447,7 +10447,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-force-white-messenger-v32p"};
+ window.ffDuarteV29C={version:"production-send-fix-v32q"};
 })();
 </script>
 
@@ -10566,10 +10566,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-force-white-messenger-v32p">
+<script id="duarte-production-send-fix-v32q">
 (()=>{
  async function run(){
-  const r={build:"production-force-white-messenger-v32p",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-send-fix-v32q",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10731,7 +10731,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-force-white-messenger-v32p"};
+ window.ffDuarteMobileSmoothV31M={version:"production-send-fix-v32q"};
 })();
 </script>
 
@@ -10812,7 +10812,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-force-white-messenger-v32p",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-send-fix-v32q",updateNow};
 })();
 </script>
 
@@ -10980,7 +10980,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-force-white-messenger-v32p"};
+ window.ffDuarteAntiFlickerV31P={version:"production-send-fix-v32q"};
 })();
 </script>
 
@@ -11616,7 +11616,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    window.ffMessengerLiteVisibleV31W=!document.hidden;
  });
  window.ffMessengerLiteVisibleV31W=!document.hidden;
- window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-force-white-messenger-v32p"};
+ window.ffDuarteMessengerLiteV31W={trimMessages,settle,version:"production-send-fix-v32q"};
 })();
 </script>
 
@@ -13232,9 +13232,51 @@ html body .private-chat-panel > *{
  const mo=new MutationObserver(schedule);
  document.addEventListener("DOMContentLoaded",()=>{
    const root=document.getElementById("ffMsgModal");
-   if(root)mo.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:["class","style"]});
+   if(root)mo.observe(root,{childList:true,subtree:true});
  });
  window.ffDuarteForceWhiteMessengerV32P={apply:force};
+})();
+</script>
+
+
+<style id="duarte-send-fix-v32q">
+#ffMessengerSendButton{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  position:relative!important;
+  z-index:3!important;
+}
+#ffMessengerSendButton:disabled{cursor:wait!important;opacity:.65!important}
+</style>
+<script id="duarte-send-fix-v32q-script">
+(()=>{
+ function repairSend(){
+   const btn=document.getElementById("ffMessengerSendButton");
+   const input=document.getElementById("ffChatInput");
+   if(!btn||!input)return;
+
+   /* Remove any accidental stale disabled state left by a previous render. */
+   if(btn.textContent.trim()!=="Sending...") btn.disabled=false;
+
+   /* Keep the original application send function as the single source of truth. */
+   btn.onclick=async e=>{
+     e.preventDefault();
+     e.stopPropagation();
+     if(typeof window.sendPrivateMessage==="function") return window.sendPrivateMessage();
+     /* top-level function declarations are normally global; fallback resolves it directly */
+     try{return await sendPrivateMessage()}catch(err){console.error("Messenger send:",err)}
+   };
+
+   input.onkeydown=e=>{
+     if(e.key==="Enter"&&!e.shiftKey){
+       e.preventDefault();
+       btn.click();
+     }
+   };
+ }
+ document.addEventListener("DOMContentLoaded",()=>setTimeout(repairSend,150));
+ addEventListener("pageshow",()=>setTimeout(repairSend,150),{passive:true});
+ window.ffDuarteMessengerSendFixV32Q={apply:repairSend};
 })();
 </script>
 

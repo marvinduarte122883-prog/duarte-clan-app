@@ -14023,3 +14023,80 @@ document.addEventListener("DOMContentLoaded",function(){
   }
 })();
 </script>
+
+<!-- DUARTE V54: MOBILE GLOBAL OVERLAY BACKGROUND SCROLL LOCK -->
+<style id="duarte-mobile-overlay-lock-v54">
+@media(max-width:760px){
+  html.ff-v54-overlay-open{overflow:hidden!important;overscroll-behavior:none!important}
+  body.ff-v54-overlay-open{
+    position:fixed!important;
+    left:0!important;right:0!important;
+    width:100%!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    touch-action:none!important;
+  }
+  /* The open surface itself remains usable and may scroll internally. */
+  body.ff-v54-overlay-open .modal.show,
+  body.ff-v54-overlay-open .modal.open,
+  body.ff-v54-overlay-open [class*="-modal"].open,
+  body.ff-v54-overlay-open #ffMobileMoreSheetV50.open,
+  body.ff-v54-overlay-open #ffV31OMenuBackdrop.open,
+  body.ff-v54-overlay-open #ffV31SAlerts.open,
+  body.ff-v54-overlay-open [aria-modal="true"]:not([hidden]){
+    touch-action:pan-y!important;
+    overscroll-behavior:contain!important;
+  }
+}
+</style>
+<script id="duarte-mobile-overlay-lock-v54-script">
+(()=>{
+ const mq=matchMedia('(max-width:760px)');
+ const selectors=[
+  '.modal.show','.modal.open','.ff-comment-modal.open','.ff-msg-modal.open',
+  '.ff-member-profile-modal.open','.ff-edit-profile-modal.open','.ff-rsvp-modal.open',
+  '.ff-birthday-modal.open','.ff-family-tree-modal.open','.ff-admin-activity-modal.open',
+  '.ff-system-health-modal.open','.ff-announcement-modal.open','.ff-history-modal.open',
+  '.ff-calendar-modal.open','.ff-albums-modal.open','.ff-directory-modal.open',
+  '.ff-polls-modal.open','.ff-admin-dash-modal.open','.ff-pa3-caption-modal.open',
+  '.ff-v3-reaction-modal.open','.ff-story-modal.open','#ffMobileMoreSheetV50.open',
+  '#ffV31OMenuBackdrop.open','#ffV31SAlerts.open','#privateChatModal.open',
+  '[aria-modal="true"]:not([hidden])'
+ ];
+ let locked=false,savedY=0,raf=0;
+ const visible=el=>{if(!el)return false;const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&s.opacity!=='0'&&r.width>0&&r.height>0};
+ const hasOpen=()=>mq.matches&&selectors.some(sel=>[...document.querySelectorAll(sel)].some(visible));
+ function lock(){
+  if(locked||!document.body)return;
+  savedY=window.scrollY||document.documentElement.scrollTop||0;
+  locked=true;
+  document.documentElement.classList.add('ff-v54-overlay-open');
+  document.body.classList.add('ff-v54-overlay-open');
+  document.body.style.setProperty('--ff-v54-scroll-y',savedY+'px');
+  document.body.style.setProperty('top',(-savedY)+'px','important');
+ }
+ function unlock(){
+  if(!locked||!document.body)return;
+  locked=false;
+  document.documentElement.classList.remove('ff-v54-overlay-open');
+  document.body.classList.remove('ff-v54-overlay-open');
+  document.body.style.removeProperty('top');
+  document.body.style.removeProperty('--ff-v54-scroll-y');
+  requestAnimationFrame(()=>window.scrollTo(0,savedY));
+ }
+ function sync(){raf=0;hasOpen()?lock():unlock()}
+ function schedule(){if(!raf)raf=requestAnimationFrame(sync)}
+ document.addEventListener('DOMContentLoaded',()=>{
+  schedule();
+  const mo=new MutationObserver(schedule);
+  mo.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','style','hidden','aria-hidden']});
+ },{once:true});
+ document.addEventListener('click',()=>setTimeout(schedule,0),true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')setTimeout(schedule,0)},true);
+ addEventListener('pageshow',schedule,{passive:true});
+ addEventListener('resize',schedule,{passive:true});
+ mq.addEventListener?.('change',schedule);
+ window.ffDuarteMobileOverlayLockV54={sync,schedule};
+ window.DuarteLiteBuild='production-mobile-overlay-lock-v54';
+})();
+</script>

@@ -13770,7 +13770,7 @@ document.addEventListener("DOMContentLoaded",function(){
 </script>
 
 
-<!-- V50 — MOBILE MORE: compact access to secondary destinations without a persistent side menu. -->
+<!-- V51 — MOBILE MORE: compact secondary destinations including Clan Announcements. -->
 <style id="duarte-mobile-more-v50-style">
 @media(max-width:760px){
  .ff-v29c-mobile-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
@@ -13789,6 +13789,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div id="ffMobileMoreBackdropV50" aria-hidden="true"></div>
 <div id="ffMobileMoreSheetV50" role="dialog" aria-modal="true" aria-label="More" aria-hidden="true">
  <div class="ff-v50-handle"></div>
+ <button type="button" data-v50-go="announcements"><span class="ff-v50-ico">📢</span><span>Clan Announcements</span></button>
  <button type="button" data-v50-go="events"><span class="ff-v50-ico">📅</span><span>Clan Events</span></button>
  <button type="button" data-v50-go="gallery"><span class="ff-v50-ico">📷</span><span>Family Gallery</span></button>
  <button type="button" data-v50-go="profile"><span class="ff-v50-ico">👤</span><span>My Profile</span></button>
@@ -13808,11 +13809,12 @@ document.addEventListener("DOMContentLoaded",function(){
    if(e.target===back){close();return}
    const b=e.target.closest?.("#ffMobileMoreSheetV50 [data-v50-go]");if(!b)return;
    e.preventDefault();e.stopPropagation();const go=b.dataset.v50Go;
-   if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
+   if(go==="announcements"){close();if(typeof window.openAnnouncementDirectory==="function")window.openAnnouncementDirectory();else section("announcements");}
+   else if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
  },true);
  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
  window.addEventListener("orientationchange",close,{passive:true});
- window.DuarteMobileMoreV50={open,close};window.DuarteLiteBuild="production-mobile-more-v50";document.documentElement.dataset.duarteBuild="v50";
+ window.DuarteMobileMoreV50={open,close};window.DuarteLiteBuild="production-mobile-announcements-v51";document.documentElement.dataset.duarteBuild="v51";
 })();
 </script>
 </body>

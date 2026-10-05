@@ -14034,6 +14034,66 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
 }
 </style>
 <!-- V65: Gallery Photos | Albums navigation -->
+
+<!-- V66 — FAMILY ALBUMS LITE: lazy details + photo likes, desktop/mobile -->
+<style id="duarte-v66-albums-lite-css">
+.ff-album-cover img,.ff-album-photo img{content-visibility:auto}
+.ff-album-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.ff-album-photo{position:relative;aspect-ratio:1/1;overflow:hidden;background:#202124;border-radius:10px}
+.ff-album-photo-copy{display:none!important}
+.ff-v66-photo-modal{position:fixed;inset:0;z-index:2147483645;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;padding:18px}
+.ff-v66-photo-modal.open{display:flex}
+.ff-v66-photo-card{width:min(980px,100%);height:min(760px,92dvh);background:#17181a;border:1px solid #333;border-radius:14px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.8fr);color:#fff}
+.ff-v66-photo-stage{min-width:0;min-height:0;background:#080808;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ff-v66-photo-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+.ff-v66-photo-info{display:flex;flex-direction:column;min-height:0;border-left:1px solid #333}
+.ff-v66-photo-head{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid #333}
+.ff-v66-photo-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#333;flex:none}
+.ff-v66-photo-who{min-width:0;flex:1}.ff-v66-photo-who strong,.ff-v66-photo-who small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ff-v66-photo-who small{color:#aaa;margin-top:2px}
+.ff-v66-close{border:0;background:#333;color:#fff;width:36px;height:36px;border-radius:50%;font-size:22px;cursor:pointer}
+.ff-v66-photo-body{padding:14px;overflow:auto;overscroll-behavior:contain;flex:1}.ff-v66-caption{white-space:pre-wrap;line-height:1.45}.ff-v66-date{color:#999;font-size:12px;margin-top:8px}
+.ff-v66-photo-actions{border-top:1px solid #333;padding:10px 14px;display:flex;align-items:center;gap:10px}.ff-v66-like{border:0;background:transparent;color:#ddd;font-weight:800;padding:9px 12px;border-radius:8px;cursor:pointer}.ff-v66-like.liked{color:#e9b52f;background:rgba(233,181,47,.1)}.ff-v66-like-count{border:0;background:transparent;color:#aaa;cursor:pointer;padding:8px}
+.ff-v66-likers{border-top:1px solid #333;max-height:180px;overflow:auto;padding:8px 14px;display:none}.ff-v66-likers.open{display:block}.ff-v66-liker{display:flex;align-items:center;gap:9px;padding:7px 0}.ff-v66-liker img{width:32px;height:32px;border-radius:50%;object-fit:cover;background:#333}
+@media(max-width:700px){.ff-v66-photo-modal{padding:0;align-items:stretch}.ff-v66-photo-card{width:100%;height:100dvh;border:0;border-radius:0;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.ff-v66-photo-info{border-left:0;border-top:1px solid #333;max-height:42dvh}.ff-v66-photo-stage{min-height:40dvh}.ff-v66-photo-body{padding:10px 14px}.ff-v66-photo-head{padding:10px 14px}.ff-v66-likers{max-height:30dvh}}
+</style>
+<div id="ffV66AlbumPhotoModal" class="ff-v66-photo-modal" role="dialog" aria-modal="true" aria-label="Album photo details">
+ <div class="ff-v66-photo-card">
+  <div class="ff-v66-photo-stage"><img id="ffV66PhotoImage" alt="Family album photo"></div>
+  <aside class="ff-v66-photo-info">
+   <div class="ff-v66-photo-head"><img id="ffV66PhotoAvatar" class="ff-v66-photo-avatar" alt=""><div class="ff-v66-photo-who"><strong id="ffV66PhotoMember">Duarte Clan Member</strong><small id="ffV66PhotoAlbum">Family Album</small></div><button class="ff-v66-close" type="button" onclick="ffV66ClosePhoto()">×</button></div>
+   <div class="ff-v66-photo-body"><div id="ffV66PhotoCaption" class="ff-v66-caption"></div><div id="ffV66PhotoDate" class="ff-v66-date"></div></div>
+   <div class="ff-v66-photo-actions"><button id="ffV66Like" class="ff-v66-like" type="button">👍 Like</button><button id="ffV66LikeCount" class="ff-v66-like-count" type="button">0 likes</button></div>
+   <div id="ffV66Likers" class="ff-v66-likers"></div>
+  </aside>
+ </div>
+</div>
+<script id="duarte-v66-albums-lite-js">
+(()=>{
+ let photoCache=[],active=null,likes=[],profileCache=new Map(),savedY=0;
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const modal=()=>document.getElementById('ffV66AlbumPhotoModal');
+ async function profiles(ids){const need=[...new Set(ids.filter(Boolean))].filter(id=>!profileCache.has(id));if(need.length){const r=await supabaseClient.from('profiles').select('id,full_name,avatar_url').in('id',need);(r.data||[]).forEach(p=>profileCache.set(p.id,p));}return profileCache}
+ async function litePhotos(){
+  if(!ffCurrentAlbum)return;const box=document.getElementById('ffAlbumPhotos');if(!box)return;box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';
+  const r=await supabaseClient.from('family_album_photos').select('id,image_url,caption,uploaded_by,created_at').eq('album_id',ffCurrentAlbum.id).order('created_at',{ascending:false});
+  if(r.error){box.innerHTML='<div class="ff-albums-empty">'+esc(r.error.message)+'</div>';return}
+  photoCache=r.data||[];box.innerHTML=photoCache.length?photoCache.map(p=>`<div class="ff-album-photo"><img loading="lazy" decoding="async" src="${esc(p.image_url)}" alt="${esc(p.caption||'Family photo')}" data-v66-photo="${p.id}"></div>`).join(''):'<div class="ff-albums-empty">No photos in this album yet.</div>';
+ }
+ window.loadAlbumPhotos=litePhotos;
+ async function loadLikes(){if(!active)return;const r=await supabaseClient.from('family_album_photo_likes').select('user_id,created_at').eq('photo_id',active.id).order('created_at',{ascending:false});if(r.error){likes=[];renderLikes(true);return false}likes=r.data||[];await profiles(likes.map(x=>x.user_id));renderLikes(false);return true}
+ function renderLikes(unavailable){const mine=likes.some(x=>x.user_id===currentUser?.id),b=document.getElementById('ffV66Like'),c=document.getElementById('ffV66LikeCount');b.classList.toggle('liked',mine);b.textContent=mine?'👍 Liked':'👍 Like';b.disabled=unavailable;b.title=unavailable?'Run the included V66 photo-likes SQL setup once.':'';c.textContent=unavailable?'Likes setup required':`${likes.length} like${likes.length===1?'':'s'}`;const list=document.getElementById('ffV66Likers');list.innerHTML=likes.length?likes.map(x=>{const p=profileCache.get(x.user_id)||{};return `<div class="ff-v66-liker"><img loading="lazy" src="${esc(p.avatar_url||'')}" alt=""><span>${esc(p.full_name||'Duarte Clan Member')}</span></div>`}).join(''):'<div style="color:#999;padding:8px 0">No likes yet.</div>'}
+ async function openPhoto(id){active=photoCache.find(x=>String(x.id)===String(id));if(!active)return;const m=modal(),p=(await profiles([active.uploaded_by])).get(active.uploaded_by)||{};document.getElementById('ffV66PhotoImage').src=active.image_url;document.getElementById('ffV66PhotoAvatar').src=p.avatar_url||'';document.getElementById('ffV66PhotoMember').textContent=p.full_name||'Duarte Clan Member';document.getElementById('ffV66PhotoAlbum').textContent=ffCurrentAlbum?.title||'Family Album';document.getElementById('ffV66PhotoCaption').textContent=active.caption||'No caption';document.getElementById('ffV66PhotoDate').textContent=active.created_at?new Date(active.created_at).toLocaleString():'';document.getElementById('ffV66Likers').classList.remove('open');savedY=scrollY;m.classList.add('open');document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden';await loadLikes()}
+ window.ffV66ClosePhoto=()=>{modal()?.classList.remove('open');document.documentElement.style.overflow='';document.body.style.overflow='';document.getElementById('ffV66PhotoImage').src='';active=null;requestAnimationFrame(()=>scrollTo(0,savedY))};
+ async function toggle(){if(!active||!currentUser)return;const mine=likes.some(x=>x.user_id===currentUser.id);let r;if(mine)r=await supabaseClient.from('family_album_photo_likes').delete().eq('photo_id',active.id).eq('user_id',currentUser.id);else r=await supabaseClient.from('family_album_photo_likes').insert({photo_id:active.id,user_id:currentUser.id});if(r.error)return alert('Photo like could not be saved: '+r.error.message);await loadLikes()}
+ document.addEventListener('click',e=>{const img=e.target.closest?.('[data-v66-photo]');if(img){e.preventDefault();e.stopPropagation();openPhoto(img.dataset.v66Photo);return}if(e.target===modal())ffV66ClosePhoto()},true);
+ document.getElementById('ffV66Like')?.addEventListener('click',toggle);
+ document.getElementById('ffV66LikeCount')?.addEventListener('click',()=>document.getElementById('ffV66Likers')?.classList.toggle('open'));
+ addEventListener('keydown',e=>{if(e.key==='Escape'&&modal()?.classList.contains('open'))ffV66ClosePhoto()});
+ document.documentElement.dataset.duarteBuild='v66';window.DuarteLiteBuild='production-family-albums-lite-v66';
+})();
+</script>
+<!-- /V66 -->
+
 </body>
 </html>
 

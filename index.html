@@ -1843,7 +1843,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   /* Keep one mobile bottom navigation only. */
   .ff-v29c-bottom-nav{
     display:grid!important;
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
     position:fixed!important;left:0!important;right:0!important;bottom:0!important;
     height:64px!important;padding:4px 4px max(4px,env(safe-area-inset-bottom))!important;
     background:#101112!important;border-top:1px solid #2b2b2b!important;
@@ -10612,6 +10612,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  <button type="button" data-v29c-nav="members"><span class="ico">👥</span><span>Members</span></button>
  <button type="button" data-v29c-nav="notifications" aria-label="Notifications"><span class="ico">🔔</span><span>Notifications</span></button>
  <button type="button" data-v29c-nav="messenger"><span class="ico">💬</span><span>Messenger</span></button>
+ <button type="button" data-v29c-nav="more" aria-label="More"><span class="ico">•••</span><span>More</span></button>
  <button type="button" data-v29c-nav="menu"><span class="ico">☰</span><span>Menu</span></button>
 </nav>
 
@@ -13135,7 +13136,7 @@ document.addEventListener("DOMContentLoaded",function(){
   navs.slice(1).forEach(n=>n.remove());
   const nav=navs[0];
   if(nav){
-    const wanted=["home","members","notifications","messenger"];
+    const wanted=["home","members","notifications","messenger","more"];
     [...nav.querySelectorAll("[data-v29c-nav]")].forEach(b=>{
       if(!wanted.includes(b.dataset.v29cNav)) b.remove();
     });
@@ -13735,7 +13736,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 <style id="duarte-mobile-lite-v46-style">
 @media(max-width:760px){
- .ff-v29c-mobile-nav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;z-index:2147483000!important}
+ .ff-v29c-mobile-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;z-index:2147483000!important}
  .ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a{min-width:0!important;touch-action:manipulation!important}
  .mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,[data-action="menu"],button[aria-label="Menu"],button[title="Menu"]{display:none!important}
 }
@@ -13768,6 +13769,52 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<!-- V50 — MOBILE MORE: compact access to secondary destinations without a persistent side menu. -->
+<style id="duarte-mobile-more-v50-style">
+@media(max-width:760px){
+ .ff-v29c-mobile-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+ .ff-v29c-mobile-nav [data-v29c-nav="more"]{display:flex!important}
+ #ffMobileMoreBackdropV50{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:2147483200;display:none}
+ #ffMobileMoreBackdropV50.open{display:block}
+ #ffMobileMoreSheetV50{position:fixed;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:2147483201;background:#18191b;border:1px solid #363636;border-radius:18px;padding:8px;box-shadow:0 14px 38px rgba(0,0,0,.48);display:none;max-height:min(360px,55vh);overflow:auto}
+ #ffMobileMoreSheetV50.open{display:block}
+ #ffMobileMoreSheetV50 .ff-v50-handle{width:38px;height:4px;border-radius:99px;background:#666;margin:3px auto 8px}
+ #ffMobileMoreSheetV50 button{width:100%;min-height:48px;border:0;border-bottom:1px solid #2e2e2e;background:transparent;color:#f4f4f4;text-align:left;padding:0 14px;font:inherit;font-size:15px;display:flex;align-items:center;gap:12px;touch-action:manipulation}
+ #ffMobileMoreSheetV50 button:last-child{border-bottom:0;color:#ff8b86}
+ #ffMobileMoreSheetV50 .ff-v50-ico{width:28px;text-align:center;font-size:19px}
+}
+@media(min-width:761px){#ffMobileMoreBackdropV50,#ffMobileMoreSheetV50,.ff-v29c-mobile-nav [data-v29c-nav="more"]{display:none!important}}
+</style>
+<div id="ffMobileMoreBackdropV50" aria-hidden="true"></div>
+<div id="ffMobileMoreSheetV50" role="dialog" aria-modal="true" aria-label="More" aria-hidden="true">
+ <div class="ff-v50-handle"></div>
+ <button type="button" data-v50-go="events"><span class="ff-v50-ico">📅</span><span>Clan Events</span></button>
+ <button type="button" data-v50-go="gallery"><span class="ff-v50-ico">📷</span><span>Family Gallery</span></button>
+ <button type="button" data-v50-go="profile"><span class="ff-v50-ico">👤</span><span>My Profile</span></button>
+ <button type="button" data-v50-go="logout"><span class="ff-v50-ico">🚪</span><span>Logout</span></button>
+</div>
+<script id="duarte-mobile-more-v50-script">
+(()=>{
+ const mq=matchMedia("(max-width:760px)"),sheet=document.getElementById("ffMobileMoreSheetV50"),back=document.getElementById("ffMobileMoreBackdropV50");
+ function close(){sheet?.classList.remove("open");back?.classList.remove("open");sheet?.setAttribute("aria-hidden","true");back?.setAttribute("aria-hidden","true")}
+ function open(){if(!mq.matches)return;sheet?.classList.add("open");back?.classList.add("open");sheet?.setAttribute("aria-hidden","false");back?.setAttribute("aria-hidden","false")}
+ async function profile(){close();if(window.DuarteMobileNavV46?.profile)return window.DuarteMobileNavV46.profile();try{const {data}=await supabaseClient.auth.getSession();const id=data?.session?.user?.id||window.currentUser?.id;if(id&&typeof window.openClanProfile==="function")window.openClanProfile(id)}catch(_){}}
+ function section(name){close();try{if(typeof window.showSection==="function")return window.showSection(name)}catch(_){}document.querySelector(`[onclick*="showSection('${name}')"],[data-section="${name}"],[data-target="${name}"]`)?.click()}
+ document.addEventListener("click",e=>{
+   if(!mq.matches)return;
+   const more=e.target.closest?.('.ff-v29c-mobile-nav [data-v29c-nav="more"]');
+   if(more){e.preventDefault();e.stopImmediatePropagation();sheet?.classList.contains("open")?close():open();return}
+   if(e.target===back){close();return}
+   const b=e.target.closest?.("#ffMobileMoreSheetV50 [data-v50-go]");if(!b)return;
+   e.preventDefault();e.stopPropagation();const go=b.dataset.v50Go;
+   if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
+ },true);
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ window.addEventListener("orientationchange",close,{passive:true});
+ window.DuarteMobileMoreV50={open,close};window.DuarteLiteBuild="production-mobile-more-v50";document.documentElement.dataset.duarteBuild="v50";
+})();
+</script>
 </body>
 </html>
 
@@ -13806,7 +13853,7 @@ document.addEventListener("DOMContentLoaded",function(){
   /* Four permanent mobile destinations only. */
   .ff-v29c-mobile-nav,
   .ff-v29c-bottom-nav{
-    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
   }
 }
 </style>

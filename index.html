@@ -2052,7 +2052,11 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
                         <h2 style="font-size:20px;margin-bottom:4px;">📷 Duarte Family Gallery</h2>
                         <p style="color:var(--muted);font-size:12px;">Family memories shared by approved clan members</p>
                     </div>
-                    <button class="publish-btn" onclick="openGalleryUpload()">+ UPLOAD PHOTO</button>
+                    <div class="ff-gallery-main-actions" role="group" aria-label="Gallery controls">
+                        <button class="ff-gallery-tab is-active" type="button" aria-current="page">📷 Photos</button>
+                        <button class="ff-gallery-tab" type="button" onclick="openFamilyAlbums()">📸 Albums</button>
+                        <button class="publish-btn" type="button" onclick="openGalleryUpload()">+ UPLOAD PHOTO</button>
+                    </div>
                 </div>
                 <div id="galleryGrid" class="gallery-grid">
                     <div style="color:var(--muted);padding:20px;">Loading family photos...</div>
@@ -14015,6 +14019,21 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
 @media(max-width:700px){#ffAlbumEditor input[type=file],#ffAlbumPhotoEditor input[type=file]{font-size:16px;min-height:46px}.ff-album-form{padding-bottom:calc(24px + env(safe-area-inset-bottom))}}
 </style>
 <!-- V64: multi-photo album creation/upload for desktop + mobile -->
+
+<style id="duarte-v65-gallery-albums-entry">
+/* V65: make Family Albums visible from the actual Gallery on desktop + mobile. */
+.ff-gallery-main-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;width:100%}
+.ff-gallery-tab{border:1px solid #353535;background:#202124;color:#e8e8e8;border-radius:9px;padding:10px 14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.ff-gallery-tab:hover{border-color:var(--gold,#e9b52f);color:#fff}
+.ff-gallery-tab.is-active{background:rgba(233,181,47,.13);border-color:var(--gold,#e9b52f);color:var(--gold,#e9b52f)}
+@media(max-width:700px){
+  #galleryManager .gallery-head{display:block!important;margin-bottom:12px!important}
+  .ff-gallery-main-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .ff-gallery-main-actions .publish-btn{grid-column:1/-1;width:100%;min-height:44px}
+  .ff-gallery-tab{width:100%;min-height:44px;padding:9px 10px}
+}
+</style>
+<!-- V65: Gallery Photos | Albums navigation -->
 </body>
 </html>
 

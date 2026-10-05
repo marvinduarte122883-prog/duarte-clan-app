@@ -14227,3 +14227,128 @@ window.DuarteLiteBuild='production-member-reject-filter-v59';
  window.DuarteLiteBuild='production-mobile-photo-lock-v56';
 })();
 </script>
+
+
+<!-- DUARTE V61: MOBILE CREATE CLAN POST COMPOSER FIX -->
+<style id="duarte-mobile-create-post-v61">
+@media(max-width:760px){
+  #createPostBox,#createPostBox .post-top,#createPostBox #postInput{
+    position:relative!important;
+    pointer-events:auto!important;
+  }
+  #createPostBox #postInput{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    font-size:16px!important;
+    line-height:1.35!important;
+    user-select:text!important;
+    -webkit-user-select:text!important;
+    touch-action:manipulation!important;
+    caret-color:#fff!important;
+  }
+  #postModal.show{
+    position:fixed!important;
+    inset:0!important;
+    z-index:100200!important;
+    width:100%!important;
+    height:var(--ff-v61-visible-h,100dvh)!important;
+    min-height:0!important;
+    padding:10px 10px calc(10px + env(safe-area-inset-bottom))!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    overflow:hidden!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+  }
+  #postModal .modal-box{
+    width:100%!important;
+    max-width:560px!important;
+    max-height:100%!important;
+    margin:0!important;
+    padding:16px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    pointer-events:auto!important;
+    touch-action:pan-y!important;
+  }
+  #postModal #modalPostText{
+    display:block!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    min-height:150px!important;
+    max-height:calc(var(--ff-v61-visible-h,100dvh) - 150px)!important;
+    font-size:16px!important;
+    line-height:1.45!important;
+    resize:none!important;
+    pointer-events:auto!important;
+    user-select:text!important;
+    -webkit-user-select:text!important;
+    touch-action:manipulation!important;
+    caret-color:#fff!important;
+  }
+  #postModal .modal-buttons{
+    flex:0 0 auto!important;
+    position:sticky!important;
+    bottom:0!important;
+    z-index:2!important;
+    background:#151515!important;
+    padding-top:10px!important;
+    padding-bottom:max(4px,env(safe-area-inset-bottom))!important;
+  }
+  body.ff-v61-post-keyboard #postModal{padding-bottom:4px!important}
+  body.ff-v61-post-keyboard #postModal .modal-box{border-radius:10px!important}
+}
+</style>
+<script id="duarte-mobile-create-post-v61-script">
+(()=>{
+ const mq=matchMedia('(max-width:760px)');
+ const modal=()=>document.getElementById('postModal');
+ const input=()=>document.getElementById('postInput');
+ const modalInput=()=>document.getElementById('modalPostText');
+ function fit(){
+   if(!mq.matches)return;
+   const vv=window.visualViewport;
+   const h=Math.max(260,Math.round(vv?.height||window.innerHeight));
+   document.documentElement.style.setProperty('--ff-v61-visible-h',h+'px');
+   const keyboard=(window.innerHeight-h)>100;
+   document.body.classList.toggle('ff-v61-post-keyboard',keyboard&&modal()?.classList.contains('show'));
+ }
+ function makeEditable(el){
+   if(!el)return;
+   el.removeAttribute('readonly');el.removeAttribute('disabled');
+   el.style.pointerEvents='auto';
+ }
+ function prepare(){makeEditable(input());makeEditable(modalInput());fit()}
+ const oldOpen=window.openPostModal;
+ if(typeof oldOpen==='function'&&!oldOpen.__v61){
+   const wrapped=function(){
+     makeEditable(modalInput());
+     const r=oldOpen.apply(this,arguments);
+     fit();
+     setTimeout(()=>{const t=modalInput();makeEditable(t);try{t?.focus({preventScroll:true})}catch(_){t?.focus()}},80);
+     return r;
+   };wrapped.__v61=true;window.openPostModal=wrapped;
+ }
+ document.addEventListener('pointerdown',e=>{
+   if(!mq.matches)return;
+   const t=e.target.closest?.('#postInput,#modalPostText');
+   if(t)makeEditable(t);
+ },true);
+ document.addEventListener('focusin',e=>{
+   if(!mq.matches)return;
+   if(e.target?.matches?.('#postInput,#modalPostText')){makeEditable(e.target);setTimeout(fit,40)}
+ },true);
+ window.visualViewport?.addEventListener('resize',fit,{passive:true});
+ window.visualViewport?.addEventListener('scroll',fit,{passive:true});
+ addEventListener('resize',fit,{passive:true});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',prepare,{once:true});else prepare();
+ window.DuarteLiteBuild='production-mobile-create-post-v61';
+ document.documentElement.dataset.duarteBuild='v61';
+})();
+</script>
+<!-- /DUARTE V61 -->

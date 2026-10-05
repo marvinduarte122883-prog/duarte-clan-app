@@ -5985,18 +5985,28 @@ async function ffADRejectMember(memberId,btn){
  const buttons=row?.querySelectorAll?.("button")||[];
  buttons.forEach(b=>b.disabled=true);
  try{
-   /* Keep a durable rejected state instead of deleting the profile.
-      Deleting only the profile can let an existing Auth account create a new
-      pending profile and make the rejected request appear again. */
-   const {data,error}=await supabaseClient.from("profiles")
+   /* V58: do not depend on UPDATE ... SELECT returning a row under RLS.
+      Persist the rejected state, then verify it with a separate read. */
+   const {error:updateError}=await supabaseClient.from("profiles")
      .update({approved:false,clan_role:"Rejected"})
      .eq("id",memberId)
-     .eq("approved",false)
-     .select("id")
+     .eq("approved",false);
+   if(updateError)throw updateError;
+
+   const {data:check,error:checkError}=await supabaseClient.from("profiles")
+     .select("id,approved,clan_role")
+     .eq("id",memberId)
      .maybeSingle();
-   if(error)throw error;
-   if(!data)throw new Error("This request is no longer pending or could not be rejected.");
+   if(checkError)throw checkError;
+   if(!check || check.approved!==false || String(check.clan_role||"").toLowerCase()!=="rejected"){
+     throw new Error("The request was not changed to Rejected. Check the profiles UPDATE policy for administrators.");
+   }
+
    row?.remove();
+   await Promise.allSettled([
+     ffADPending(),
+     typeof loadMembersDirectory==="function"?loadMembersDirectory():Promise.resolve()
+   ]);
    await loadAdminDashboard();
  }catch(e){
    alert("Request could not be rejected: "+(e?.message||e));
@@ -13928,6 +13938,7 @@ document.addEventListener("DOMContentLoaded",function(){
  window.DuarteLiteBuild="production-mobile-admin-more-v57";document.documentElement.dataset.duarteBuild="v57";
 })();
 </script>
+<!-- DUARTE V58: member request reject RLS-safe verification -->
 </body>
 </html>
 

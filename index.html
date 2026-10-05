@@ -1871,6 +1871,9 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 }
 </style>
 
+
+<!-- Duarte Clan production-facebook-lite-v48 | Final Mobile/Desktop QA & Stability -->
+<meta name="duarte-build" content="production-facebook-lite-v48">
 </head>
 
 
@@ -9115,7 +9118,7 @@ body{background:#0f1011!important;color:var(--fb-text)!important}
  function addMobileNav(){if(document.getElementById('dcMobileNav'))return;const n=document.createElement('nav');n.id='dcMobileNav';n.setAttribute('aria-label','Mobile navigation');n.innerHTML=`<button onclick="showSection('home')"><span>🏠</span>Home</button><button onclick="showSection('members')"><span>👥</span>Members</button><button onclick="document.getElementById('postInput')?.focus();showSection('home')"><span>➕</span>Create</button><button onclick="typeof openMessenger==='function'?openMessenger():document.querySelector('.ff-msg-fab')?.click()"><span>💬</span>Messages</button><button onclick="document.querySelector('.notification-bell')?.click()"><span>🔔</span>Alerts</button>`;document.body.appendChild(n)}
  function run(){addStories();addSearch();addMobileNav()}
  document.readyState==='loading'?document.addEventListener('DOMContentLoaded',run):run();
- let tries=0;const bootRetry=setInterval(()=>{run();if(++tries>=6)clearInterval(bootRetry)},350);
+ [350,900,1800].forEach(ms=>setTimeout(run,ms));
 })();
 </script>
 
@@ -9831,7 +9834,7 @@ body.ff-offline .ff-online-required{opacity:.55}
  });
  window.addEventListener("online",()=>setTimeout(syncAndRecord,1900),{passive:true});
  window.addEventListener("offline",render,{passive:true});
- setInterval(()=>{if(!document.hidden&&modal?.classList.contains("open"))render()},5000);
+ setInterval(()=>{if(!document.hidden&&modal?.classList.contains("open"))render()},15000);
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",render,{once:true});else render();
 })();
 </script>

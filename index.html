@@ -1754,7 +1754,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #duarteMyProfileCard:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 
-<meta name="duarte-build" content="production-mobile-facebook-lite-v33j">
+<meta name="duarte-build" content="production-facebook-lite-v46">
 <style id="ff-production-v10-css">
 /* Production V10: final containment and mobile stability. */
 #posts,.feed,#ffFullProfile,#ffMsgModal,#notificationWrap{min-width:0}
@@ -10282,7 +10282,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-mobile-facebook-lite-v33j";
+ window.DUARTE_BUILD="production-facebook-lite-v46";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -10652,7 +10652,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window){
    requestIdleCallback(()=>document.querySelectorAll("img").forEach(i=>{if(!i.loading)i.loading="lazy";if(!i.decoding)i.decoding="async"}),{timeout:1800});
  }
- window.ffDuarteV29C={version:"production-mobile-facebook-lite-v33j"};
+ window.ffDuarteV29C={version:"production-facebook-lite-v46"};
 })();
 </script>
 
@@ -10771,10 +10771,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 })();
 </script>
 
-<script id="duarte-production-mobile-facebook-lite-v33j">
+<script id="duarte-production-facebook-lite-v46">
 (()=>{
  async function run(){
-  const r={build:"production-mobile-facebook-lite-v33j",time:new Date().toISOString(),checks:{}};
+  const r={build:"production-facebook-lite-v46",time:new Date().toISOString(),checks:{}};
   const set=(k,ok,d="")=>r.checks[k]={ok:!!ok,detail:String(d||"")};
   set("familyStoriesPanel",!!document.getElementById("ffStories"),"Family Stories");
   set("storyComposer",!!document.getElementById("ffStoryComposer"),"Create Story");
@@ -10936,7 +10936,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  if("requestIdleCallback" in window)requestIdleCallback(lazy,{timeout:1500});
  else setTimeout(lazy,600);
 
- window.ffDuarteMobileSmoothV31M={version:"production-mobile-facebook-lite-v33j"};
+ window.ffDuarteMobileSmoothV31M={version:"production-facebook-lite-v46"};
 })();
 </script>
 
@@ -11017,7 +11017,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
- window.ffDuarteMobileStableV31N={version:"production-mobile-facebook-lite-v33j",updateNow};
+ window.ffDuarteMobileStableV31N={version:"production-facebook-lite-v46",updateNow};
 })();
 </script>
 
@@ -11185,7 +11185,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  stableViewport();
  addEventListener("orientationchange",()=>setTimeout(stableViewport,180),{passive:true});
 
- window.ffDuarteAntiFlickerV31P={version:"production-mobile-facebook-lite-v33j"};
+ window.ffDuarteAntiFlickerV31P={version:"production-facebook-lite-v46"};
 })();
 </script>
 
@@ -13732,109 +13732,29 @@ document.addEventListener("DOMContentLoaded",function(){
 </script>
 
 
-<style id="duarte-mobile-nav-fix-v43">
+<style id="duarte-mobile-lite-v46-style">
 @media(max-width:760px){
- .ff-v29c-mobile-nav{
-   display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-   position:fixed!important;left:0!important;right:0!important;bottom:0!important;
-   width:100%!important;z-index:2147483000!important
- }
- .ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a{
-   min-width:0!important;touch-action:manipulation!important
- }
+ .ff-v29c-mobile-nav{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;z-index:2147483000!important}
+ .ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a{min-width:0!important;touch-action:manipulation!important}
+ .mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,[data-action="menu"],button[aria-label="Menu"],button[title="Menu"]{display:none!important}
 }
 </style>
-<script id="duarte-mobile-nav-fix-v43-js">
+<script id="duarte-mobile-lite-v46-js">
 (function(){
- function closeMobileSurfaces(){
-   document.querySelectorAll(".mobile-menu.open,.ff-mobile-menu.open,.ff-menu-sheet.open").forEach(x=>x.classList.remove("open"));
- }
- async function goHome(){
-   closeMobileSurfaces();
-   if(typeof window.showSection==="function"){try{window.showSection("home")}catch(_){}}
-   if(typeof window.showHome==="function"){try{window.showHome()}catch(_){}}
-   document.querySelector("#home,#homeFeed,[data-page='home']")?.scrollIntoView({block:"start"});
-   window.scrollTo({top:0,behavior:"auto"});
-   if(typeof window.loadPosts==="function"){try{await window.loadPosts()}catch(_){}}
- }
- async function goProfile(){
-   closeMobileSurfaces();
-   try{
-     const {data}=await supabaseClient.auth.getSession();
-     const uid=data?.session?.user?.id||window.currentUser?.id;
-     if(uid&&typeof window.openClanProfile==="function") return window.openClanProfile(uid);
-   }catch(_){}
- }
- async function goMembers(){
-   closeMobileSurfaces();
-   const fns=["openMembers","showMembers","openFamilyDirectory","showFamilyDirectory"];
-   for(const n of fns){
-     if(typeof window[n]==="function"){try{return await window[n]()}catch(_){}}
-   }
-   if(typeof window.showSection==="function"){try{return window.showSection("members")}catch(_){}}
-   document.querySelector("#members,#familyDirectory,[data-page='members']")?.scrollIntoView({block:"start"});
- }
- function classify(el){
-   const txt=(el.textContent||"").trim().toLowerCase();
-   const aria=(el.getAttribute("aria-label")||"").toLowerCase();
-   const title=(el.getAttribute("title")||"").toLowerCase();
-   const all=txt+" "+aria+" "+title;
-   if(/\bhome\b/.test(all))return "home";
-   if(/\bmembers?\b|\bdirectory\b/.test(all))return "members";
-   if(/\bprofile\b|\bmy profile\b/.test(all))return "profile";
-   return "";
- }
- function bind(){
-   document.querySelectorAll(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a,[data-mobile-nav]").forEach(el=>{
-     const type=classify(el);
-     if(!type||el.dataset.v43Bound)return;
-     el.dataset.v43Bound="1";
-     el.addEventListener("click",e=>{
-       e.preventDefault();e.stopPropagation();
-       if(type==="home")goHome();
-       else if(type==="members")goMembers();
-       else if(type==="profile")goProfile();
-     },true);
-   });
-   /* Profile shortcuts elsewhere on mobile should always open the signed-in member's profile. */
-   document.querySelectorAll("[data-action='my-profile'],.my-profile-btn,.mobile-profile-btn").forEach(el=>{
-     if(el.dataset.v43Bound)return;el.dataset.v43Bound="1";
-     el.addEventListener("click",e=>{e.preventDefault();goProfile()},true);
-   });
- }
- document.addEventListener("DOMContentLoaded",()=>{bind();setTimeout(bind,500);setTimeout(bind,1600)},{once:true});
- document.addEventListener("click",()=>setTimeout(bind,0),true);
- window.DuarteMobileNavV43={home:goHome,profile:goProfile,members:goMembers};
-})();
-</script>
-
-
-<style id="duarte-mobile-menu-cleanup-v44">
-@media(max-width:760px){
-  /* No hamburger/menu button on mobile. Bottom navigation remains the navigation source. */
-  .mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,
-  [data-action="menu"],[aria-label="Menu"].menu-btn,
-  button[aria-label="Menu"],button[title="Menu"]{display:none!important}
-}
-</style>
-<script id="duarte-mobile-menu-cleanup-v44-js">
-(function(){
+ const mq=matchMedia("(max-width:760px)");
  const removeNames=/^(home|my profile|profile|clan members|members|notifications?)$/i;
- function cleanMenu(){
-   if(!matchMedia("(max-width:760px)").matches)return;
-   const menus=document.querySelectorAll(".mobile-menu,.ff-mobile-menu,.ff-menu-sheet,.mobile-menu-panel,[role='menu']");
-   menus.forEach(menu=>{
-     [...menu.querySelectorAll("a,button,[role='menuitem']")].forEach(item=>{
-       const label=(item.textContent||item.getAttribute("aria-label")||item.getAttribute("title")||"")
-         .replace(/\s+/g," ").trim();
-       if(removeNames.test(label)) item.remove();
-     });
-   });
-   document.querySelectorAll(".mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,button[aria-label='Menu'],button[title='Menu']")
-     .forEach(x=>x.remove());
- }
- document.addEventListener("DOMContentLoaded",()=>{cleanMenu();setTimeout(cleanMenu,400);setTimeout(cleanMenu,1200)},{once:true});
- document.addEventListener("click",()=>setTimeout(cleanMenu,0),true);
+ let cleanupQueued=false;
+ function closeSurfaces(){document.querySelectorAll(".mobile-menu.open,.ff-mobile-menu.open,.ff-menu-sheet.open").forEach(x=>x.classList.remove("open"))}
+ async function home(){closeSurfaces();try{window.showSection?.("home")}catch(_){}try{window.showHome?.()}catch(_){}window.scrollTo({top:0,behavior:"auto"});try{await window.loadPosts?.()}catch(_){}}
+ async function profile(){closeSurfaces();try{const {data}=await supabaseClient.auth.getSession();const uid=data?.session?.user?.id||window.currentUser?.id;if(uid&&typeof window.openClanProfile==="function")return window.openClanProfile(uid)}catch(_){}}
+ async function members(){closeSurfaces();for(const n of ["openMembers","showMembers","openFamilyDirectory","showFamilyDirectory"]){if(typeof window[n]==="function"){try{return await window[n]()}catch(_){}}}try{return window.showSection?.("members")}catch(_){}}
+ function classify(el){const explicit=el.dataset?.v29cNav||el.dataset?.mobileNav||"";if(explicit)return explicit.toLowerCase();const all=((el.textContent||"")+" "+(el.getAttribute?.("aria-label")||"")+" "+(el.getAttribute?.("title")||"")).toLowerCase();if(/\bhome\b/.test(all))return"home";if(/\bmembers?\b|\bdirectory\b/.test(all))return"members";if(/\bprofile\b/.test(all))return"profile";if(/notifications?|alerts?/.test(all))return"notifications";if(/messenger|messages?/.test(all))return"messenger";return""}
+ function clean(){cleanupQueued=false;if(!mq.matches)return;const navs=[...document.querySelectorAll(".ff-v29c-bottom-nav,.ff-v29c-mobile-nav")];navs.slice(1).forEach(n=>n.remove());document.querySelectorAll(".mobile-menu-btn,.mobile-menu-button,.ff-mobile-menu-btn,.ff-menu-toggle,button[aria-label='Menu'],button[title='Menu']").forEach(x=>x.remove());document.querySelectorAll(".mobile-menu,.ff-mobile-menu,.ff-menu-sheet,.mobile-menu-panel,[role='menu']").forEach(menu=>{[...menu.querySelectorAll("a,button,[role='menuitem']")].forEach(item=>{const label=(item.textContent||item.getAttribute("aria-label")||item.getAttribute("title")||"").replace(/\s+/g," ").trim();if(removeNames.test(label))item.remove()})})}
+ function queueClean(){if(cleanupQueued)return;cleanupQueued=true;requestAnimationFrame(clean)}
+ document.addEventListener("click",e=>{if(!mq.matches)return;const el=e.target.closest?.(".ff-v29c-mobile-nav button,.ff-v29c-mobile-nav a,.ff-v29c-bottom-nav [data-v29c-nav],[data-mobile-nav],[data-action='my-profile'],.my-profile-btn,.mobile-profile-btn");if(!el)return;const type=classify(el);if(!["home","members","profile"].includes(type))return;e.preventDefault();e.stopPropagation();if(type==="home")home();else if(type==="members")members();else profile()},true);
+ document.addEventListener("DOMContentLoaded",()=>{clean();const root=document.body;if(root)new MutationObserver(queueClean).observe(root,{childList:true,subtree:true})},{once:true});
+ mq.addEventListener?.("change",queueClean);
+ window.DuarteMobileNavV46={home,profile,members,cleanup:queueClean};
 })();
 </script>
 

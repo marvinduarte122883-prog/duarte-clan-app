@@ -14133,3 +14133,45 @@ document.addEventListener("DOMContentLoaded",function(){
 }
 </style>
 <!-- /V55 FAMILY CALENDAR HIGH-CONTRAST TEXT -->
+
+<!-- DUARTE V56: MOBILE PHOTO VIEWER BACKGROUND LOCK -->
+<style id="duarte-mobile-photo-lock-v56">
+@media(max-width:760px){
+  body.ff-v54-overlay-open #photoViewer.show,
+  body.ff-v54-overlay-open #ffV3PhotoLightbox.open,
+  body.ff-v54-overlay-open #ffV18PhotoViewer.open{
+    touch-action:pan-x pan-y!important;
+    overscroll-behavior:contain!important;
+  }
+  body.ff-v54-overlay-open #photoViewer.show img,
+  body.ff-v54-overlay-open #ffV3PhotoLightbox.open img,
+  body.ff-v54-overlay-open #ffV18PhotoViewer.open img{
+    touch-action:manipulation!important;
+  }
+}
+</style>
+<script id="duarte-mobile-photo-lock-v56-script">
+(()=>{
+ const api=window.ffDuarteMobileOverlayLockV54;
+ if(!api)return;
+ const photoOpen=()=>innerWidth<=760&&!!document.querySelector('#photoViewer.show,#ffV3PhotoLightbox.open,#ffV18PhotoViewer.open');
+ const originalSync=api.sync;
+ api.sync=function(){
+   if(photoOpen()){
+     /* V54 observer sees this synthetic modal marker and performs the canonical fixed-body lock. */
+     const p=document.querySelector('#photoViewer.show,#ffV3PhotoLightbox.open,#ffV18PhotoViewer.open');
+     if(p&&!p.hasAttribute('aria-modal'))p.setAttribute('aria-modal','true');
+   }
+   return originalSync();
+ };
+ const mark=()=>{
+   document.querySelectorAll('#photoViewer.show,#ffV3PhotoLightbox.open,#ffV18PhotoViewer.open').forEach(p=>p.setAttribute('aria-modal','true'));
+   api.schedule();
+ };
+ const mo=new MutationObserver(mark);
+ const start=()=>{mo.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});mark()};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+ document.addEventListener('click',()=>setTimeout(mark,0),true);
+ window.DuarteLiteBuild='production-mobile-photo-lock-v56';
+})();
+</script>

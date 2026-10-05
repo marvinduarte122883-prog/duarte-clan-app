@@ -13423,16 +13423,14 @@ document.addEventListener("DOMContentLoaded",function(){
  }
 
  // Remember whose profile is open without changing the existing profile renderer.
- const wait=setInterval(()=>{
-   if(typeof window.openClanProfile!=="function")return;
-   clearInterval(wait);
+ function hookProfile(attempt=0){
+   if(typeof window.openClanProfile!=="function"){if(attempt<40)setTimeout(()=>hookProfile(attempt+1),200);return}
+   if(window.openClanProfile.__duarteSyncV47)return;
    const original=window.openClanProfile;
-   window.openClanProfile=async function(userId){
-     activeProfileId=userId;
-     return await original.apply(this,arguments);
-   };
- },100);
- setTimeout(()=>clearInterval(wait),10000);
+   const wrapped=async function(userId){activeProfileId=userId;return await original.apply(this,arguments)};
+   wrapped.__duarteSyncV47=true;window.openClanProfile=wrapped;
+ }
+ hookProfile();
 
  async function startRealtime(){
    try{
@@ -13485,18 +13483,19 @@ document.addEventListener("DOMContentLoaded",function(){
 (function(){
  let viewedProfileId=null;
 
- const wait=setInterval(()=>{
-   if(typeof window.openClanProfile!=="function")return;
-   clearInterval(wait);
+ function hookProfileComposer(attempt=0){
+   if(typeof window.openClanProfile!=="function"){if(attempt<40)setTimeout(()=>hookProfileComposer(attempt+1),200);return}
+   if(window.openClanProfile.__duarteComposerV47)return;
    const original=window.openClanProfile;
-   window.openClanProfile=async function(userId){
+   const wrapped=async function(userId){
      viewedProfileId=userId;
      const result=await original.apply(this,arguments);
      setTimeout(()=>installComposer(userId),80);
      return result;
    };
- },100);
- setTimeout(()=>clearInterval(wait),10000);
+   wrapped.__duarteComposerV47=true;window.openClanProfile=wrapped;
+ }
+ hookProfileComposer();
 
  function profileRoot(){
    return document.getElementById("profileModal")||
@@ -13725,7 +13724,6 @@ document.addEventListener("DOMContentLoaded",function(){
    repaint();
  }
  document.addEventListener("DOMContentLoaded",()=>{setTimeout(boot,250);setTimeout(boot,1200)},{once:true});
- document.addEventListener("click",()=>setTimeout(repaint,100),true);
  document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(repaint,250)});
  window.addEventListener("online",()=>setTimeout(repaint,500),{passive:true});
 })();
@@ -13755,6 +13753,15 @@ document.addEventListener("DOMContentLoaded",function(){
  document.addEventListener("DOMContentLoaded",()=>{clean();const root=document.body;if(root)new MutationObserver(queueClean).observe(root,{childList:true,subtree:true})},{once:true});
  mq.addEventListener?.("change",queueClean);
  window.DuarteMobileNavV46={home,profile,members,cleanup:queueClean};
+})();
+</script>
+
+<script id="duarte-social-realtime-lite-v47">
+(function(){
+ /* V47 marker: social/profile realtime refreshes are coalesced by V39 and presence
+    repainting is driven by presence/render lifecycle instead of every document click. */
+ window.DuarteLiteBuild="production-social-realtime-lite-v47";
+ document.documentElement.dataset.duarteBuild="v47";
 })();
 </script>
 

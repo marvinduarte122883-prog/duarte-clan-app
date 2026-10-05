@@ -13960,3 +13960,66 @@ document.addEventListener("DOMContentLoaded",function(){
  window.ffDuarteMobileCleanHeaderV49={apply:clean};
 })();
 </script>
+
+<!-- DUARTE V53: MOBILE ONLINE AVATAR DOT -->
+<style id="duarte-mobile-online-avatar-v53">
+@media (max-width:760px){
+  .member-avatar.ff-presence-avatar-v41,
+  .ff-directory-avatar.ff-presence-avatar-v41,
+  .ff-conversation-avatar.ff-presence-avatar-v41,
+  .ff-v53-presence-avatar{
+    position:relative!important;
+    overflow:visible!important;
+  }
+  .member-avatar>.ff-online-dot-v41,
+  .ff-directory-avatar>.ff-online-dot-v41,
+  .ff-conversation-avatar>.ff-online-dot-v41,
+  .ff-v53-presence-avatar>.ff-online-dot-v41{
+    position:absolute!important;
+    right:-2px!important;
+    bottom:-2px!important;
+    width:11px!important;
+    height:11px!important;
+    margin:0!important;
+    display:block!important;
+    border-radius:50%!important;
+    background:#31a24c!important;
+    border:3px solid #17181a!important;
+    box-sizing:content-box!important;
+    z-index:50!important;
+    box-shadow:0 0 0 1px rgba(0,0,0,.2)!important;
+    pointer-events:none!important;
+  }
+}
+</style>
+<script id="duarte-mobile-online-avatar-v53-js">
+(function(){
+  function clean(v){return String(v||'').replace(/-(?:2|3)$/,'')}
+  function paintMobileDots(){
+    if(innerWidth>760)return;
+    const api=window.duartePresenceV41;if(!api)return;
+    document.querySelectorAll('[data-user-id],[data-member-id],[data-profile-id],.clan-member-card,.member-row,.ff-directory-card,.ff-conversation-row').forEach(row=>{
+      const owner=row.closest?.('[data-user-id],[data-member-id],[data-profile-id]')||row;
+      const id=clean(owner.dataset?.userId||owner.dataset?.memberId||owner.dataset?.profileId||row.dataset?.userId||row.dataset?.memberId||row.dataset?.profileId||row.querySelector?.('[data-user-id],[data-member-id],[data-profile-id]')?.dataset?.userId||row.querySelector?.('[data-member-id]')?.dataset?.memberId||row.querySelector?.('[data-profile-id]')?.dataset?.profileId);
+      if(!id)return;
+      const avatar=row.matches?.('.member-avatar,.ff-directory-avatar,.ff-conversation-avatar')?row:row.querySelector?.('.member-avatar,.ff-directory-avatar,.ff-conversation-avatar,[class*="avatar"]');
+      if(!avatar)return;
+      avatar.classList.add('ff-v53-presence-avatar');
+      let dot=avatar.querySelector(':scope > .ff-online-dot-v41');
+      if(api.isOnline(id)){
+        if(!dot){dot=document.createElement('span');dot.className='ff-online-dot-v41';dot.title='Online';dot.setAttribute('aria-label','Online');avatar.appendChild(dot)}
+      }else dot?.remove();
+    });
+  }
+  let timer=0;function schedule(){clearTimeout(timer);timer=setTimeout(paintMobileDots,70)}
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(schedule,300);setTimeout(schedule,1200)},{once:true});
+  document.addEventListener('duarte:messages-changed',schedule);
+  document.addEventListener('duarte:posts-changed',schedule);
+  window.addEventListener('online',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  const old=window.duartePresenceV41?.refresh;
+  if(window.duartePresenceV41&&typeof old==='function'&&!old.__v53){
+    const wrapped=function(){const r=old.apply(this,arguments);schedule();return r};wrapped.__v53=true;window.duartePresenceV41.refresh=wrapped;
+  }
+})();
+</script>

@@ -14352,3 +14352,79 @@ window.DuarteLiteBuild='production-member-reject-filter-v59';
 })();
 </script>
 <!-- /DUARTE V61 -->
+
+<!-- DUARTE V62: ANDROID MOBILE CREATE POST DARK-SCREEN / TOUCH FIX -->
+<style id="duarte-mobile-create-post-v62">
+@media(max-width:760px){
+  /* Body remains position:fixed via V54, but must not disable the gesture chain
+     while the post composer is open. Background still cannot scroll. */
+  body.ff-v54-overlay-open.ff-v62-post-open{
+    touch-action:auto!important;
+  }
+  body.ff-v62-post-open #postModal.show{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    z-index:2147483000!important;
+    pointer-events:auto!important;
+    touch-action:auto!important;
+  }
+  body.ff-v62-post-open #postModal.show .modal-box{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:relative!important;
+    z-index:1!important;
+    pointer-events:auto!important;
+    touch-action:auto!important;
+  }
+  body.ff-v62-post-open #postModal.show textarea,
+  body.ff-v62-post-open #postModal.show button{
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+  }
+  body.ff-v62-post-open #postModal.show #modalPostText{
+    user-select:text!important;
+    -webkit-user-select:text!important;
+    touch-action:auto!important;
+  }
+}
+</style>
+<script id="duarte-mobile-create-post-v62-script">
+(()=>{
+ const mq=matchMedia('(max-width:760px)');
+ const modal=()=>document.getElementById('postModal');
+ const field=()=>document.getElementById('modalPostText');
+ const setState=()=>{
+   if(!mq.matches){document.body?.classList.remove('ff-v62-post-open');return}
+   const open=!!modal()?.classList.contains('show');
+   document.body?.classList.toggle('ff-v62-post-open',open);
+   if(open){
+     modal().setAttribute('aria-modal','true');
+     modal().setAttribute('role','dialog');
+     field()?.removeAttribute('readonly');
+     field()?.removeAttribute('disabled');
+   }
+ };
+ const boot=()=>{
+   const m=modal(); if(!m)return;
+   new MutationObserver(()=>requestAnimationFrame(setState)).observe(m,{attributes:true,attributeFilter:['class','style','hidden']});
+   setState();
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ document.addEventListener('click',e=>{
+   if(!mq.matches)return;
+   if(e.target.closest?.('[onclick*="openPostModal"]')){
+     requestAnimationFrame(()=>{setState();setTimeout(()=>{try{field()?.focus({preventScroll:true})}catch(_){field()?.focus()}},60)});
+   }
+ },true);
+ const oldClose=window.closePostModal;
+ if(typeof oldClose==='function'&&!oldClose.__v62){
+   const wrapped=function(){const r=oldClose.apply(this,arguments);document.body?.classList.remove('ff-v62-post-open');window.ffDuarteMobileOverlayLockV54?.schedule?.();return r};
+   wrapped.__v62=true;window.closePostModal=wrapped;
+ }
+ window.DuarteLiteBuild='production-mobile-create-post-v62';
+ document.documentElement.dataset.duarteBuild='v62';
+})();
+</script>
+<!-- /DUARTE V62 -->

@@ -13771,3 +13771,59 @@ document.addEventListener("DOMContentLoaded",function(){
 </body>
 </html>
 
+
+<!-- V49 — MOBILE CLEAN HEADER: remove redundant top menu/family/messenger controls. -->
+<style id="duarte-mobile-clean-header-v49">
+@media (max-width:760px){
+  /* Bottom navigation is the single mobile navigation surface. */
+  #ffV32DTopMenu,
+  #ffV32EFamilyFeatures,
+  #ffV32EMessengerTop,
+  #ffV32HMessengerTop,
+  #ffV32GMessengerDesktop,
+  .ff-mobile-menu-btn,
+  .mobile-menu-btn,
+  .mobile-menu-button,
+  .ff-menu-toggle,
+  [data-action="menu"].mobile-menu-btn,
+  button[aria-label="Open menu"],
+  button[aria-label="Family features"]{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
+  /* Keep the Duarte Clan title clean and unobstructed. */
+  .topbar .topbar-inner{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  .topbar .brand{
+    margin-left:0!important;
+    padding-left:0!important;
+  }
+
+  /* Four permanent mobile destinations only. */
+  .ff-v29c-mobile-nav,
+  .ff-v29c-bottom-nav{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+</style>
+<script id="duarte-mobile-clean-header-v49-script">
+(()=>{
+ const mq=matchMedia("(max-width:760px)");
+ const ids=["ffV32DTopMenu","ffV32EFamilyFeatures","ffV32EMessengerTop","ffV32HMessengerTop","ffV32GMessengerDesktop"];
+ function clean(){
+   if(!mq.matches)return;
+   ids.forEach(id=>document.getElementById(id)?.remove());
+   document.querySelectorAll(".ff-mobile-menu-btn,.mobile-menu-btn,.mobile-menu-button,.ff-menu-toggle,button[aria-label='Open menu'],button[aria-label='Family features']").forEach(el=>el.remove());
+ }
+ document.addEventListener("DOMContentLoaded",()=>requestAnimationFrame(clean),{once:true});
+ addEventListener("pageshow",()=>requestAnimationFrame(clean),{passive:true});
+ addEventListener("orientationchange",()=>setTimeout(clean,120),{passive:true});
+ const mo=new MutationObserver(()=>{if(mq.matches)requestAnimationFrame(clean)});
+ if(document.documentElement)mo.observe(document.documentElement,{childList:true,subtree:true});
+ window.ffDuarteMobileCleanHeaderV49={apply:clean};
+})();
+</script>

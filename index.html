@@ -13817,6 +13817,90 @@ document.addEventListener("DOMContentLoaded",function(){
  window.DuarteMobileMoreV50={open,close};window.DuarteLiteBuild="production-mobile-announcements-v51";document.documentElement.dataset.duarteBuild="v51";
 })();
 </script>
+
+
+<!-- V52 — MOBILE COMMENTS: viewport/keyboard-safe composer above bottom navigation. -->
+<style id="duarte-mobile-comments-v52">
+@media (max-width:760px){
+  :root{--ff-v52-visible-h:100dvh;--ff-v52-bottom-nav:72px}
+  #ffCommentModal.ff-comment-modal{
+    padding:0!important;
+    align-items:flex-end!important;
+    height:var(--ff-v52-visible-h)!important;
+    max-height:var(--ff-v52-visible-h)!important;
+    overflow:hidden!important;
+  }
+  #ffCommentModal .ff-comment-dialog{
+    width:100%!important;
+    height:calc(var(--ff-v52-visible-h) - var(--ff-v52-bottom-nav) - env(safe-area-inset-bottom))!important;
+    max-height:calc(var(--ff-v52-visible-h) - var(--ff-v52-bottom-nav) - env(safe-area-inset-bottom))!important;
+    margin:0 0 calc(var(--ff-v52-bottom-nav) + env(safe-area-inset-bottom)) 0!important;
+    border:0!important;
+    border-radius:18px 18px 0 0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+  }
+  #ffCommentModal .ff-comment-head{flex:0 0 56px!important;position:relative!important}
+  #ffCommentModal .ff-comment-body{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    padding:10px 12px!important;
+  }
+  #ffCommentModal .ff-comment-footer{
+    position:relative!important;
+    flex:0 0 auto!important;
+    z-index:4!important;
+    background:#171717!important;
+    padding:9px 10px max(10px,env(safe-area-inset-bottom))!important;
+  }
+  #ffCommentModal .ff-comment-compose{display:flex!important;align-items:center!important;gap:8px!important}
+  #ffCommentModal #ffModalCommentInput{display:block!important;min-width:0!important;width:100%!important;font-size:16px!important}
+  #ffCommentModal .ff-comment-compose button{flex:0 0 auto!important;min-height:42px!important}
+  body.ff-v52-comment-open .family-tree-fab,
+  body.ff-v52-comment-open [class*="family-tree"][class*="fab"],
+  body.ff-v52-comment-open [class*="tree-fab"]{display:none!important}
+  body.ff-v52-keyboard-open #ffCommentModal .ff-comment-dialog{
+    height:var(--ff-v52-visible-h)!important;
+    max-height:var(--ff-v52-visible-h)!important;
+    margin-bottom:0!important;
+    border-radius:0!important;
+  }
+}
+</style>
+<script id="duarte-mobile-comments-v52-script">
+(()=>{
+ const mq=matchMedia('(max-width:760px)');
+ const modal=()=>document.getElementById('ffCommentModal');
+ function syncViewport(){
+   if(!mq.matches)return;
+   const vv=window.visualViewport;
+   const h=Math.max(260,Math.round(vv?.height||window.innerHeight));
+   document.documentElement.style.setProperty('--ff-v52-visible-h',h+'px');
+   const keyboard=(window.innerHeight-h)>120;
+   document.body.classList.toggle('ff-v52-keyboard-open',keyboard&&modal()?.classList.contains('open'));
+ }
+ function syncOpen(){
+   const open=!!modal()?.classList.contains('open');
+   document.body.classList.toggle('ff-v52-comment-open',open);
+   if(!open)document.body.classList.remove('ff-v52-keyboard-open');
+   syncViewport();
+ }
+ document.addEventListener('click',()=>requestAnimationFrame(syncOpen),true);
+ document.addEventListener('focusin',e=>{if(e.target?.id==='ffModalCommentInput')setTimeout(syncViewport,50)},true);
+ window.visualViewport?.addEventListener('resize',syncViewport,{passive:true});
+ window.visualViewport?.addEventListener('scroll',syncViewport,{passive:true});
+ window.addEventListener('resize',syncViewport,{passive:true});
+ const start=()=>{syncViewport();const m=modal();if(m)new MutationObserver(syncOpen).observe(m,{attributes:true,attributeFilter:['class']})};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+ window.DuarteLiteBuild='production-mobile-comments-v52';
+ document.documentElement.dataset.duarteBuild='v52';
+})();
+</script>
+
 </body>
 </html>
 

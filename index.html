@@ -13953,6 +13953,62 @@ document.addEventListener("DOMContentLoaded",function(){
    by the Pending Members dashboard. The canonical filtering lives in ffADPending(). */
 window.DuarteLiteBuild='production-member-reject-filter-v59';
 </script>
+<style id="duarte-v63-mobile-compose-style">
+@media(max-width:760px){
+#duarteV63Composer{position:fixed!important;inset:0!important;z-index:2147483646!important;background:#101113!important;color:#fff!important;display:none;flex-direction:column;height:100dvh;width:100vw;overflow:hidden;pointer-events:auto!important;touch-action:auto!important}
+#duarteV63Composer.active{display:flex!important}
+#duarteV63Composer .v63head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #353535;flex:none}
+#duarteV63Composer button{border:0;border-radius:9px;padding:11px 17px;font-weight:700;background:#e8b636;color:#111;touch-action:manipulation}
+#duarteV63Composer textarea{display:block;box-sizing:border-box;flex:1;min-height:120px;width:100%;background:#101113;color:white;border:0;outline:0;padding:20px;font-size:18px;line-height:1.5;resize:none;overflow:auto;touch-action:auto!important;user-select:text!important;-webkit-user-select:text!important}
+body.v63-compose-open #duarteV63Composer{visibility:visible!important}
+}
+</style>
+<div id="duarteV63Composer" role="dialog" aria-modal="true" aria-label="Create Clan Post"><div class="v63head"><button type="button" id="v63Cancel">Cancel</button><strong>Create Clan Post</strong><button type="button" id="v63Publish">Publish</button></div><textarea id="v63Text" placeholder="Share something with the Duarte Clan..."></textarea></div>
+<script id="duarte-v63-mobile-compose-script">
+(function(){
+const mobile=()=>matchMedia('(max-width:760px)').matches;
+const panel=document.getElementById('duarteV63Composer'),field=document.getElementById('v63Text');
+if(!panel||!field)return;
+let scroll=0,oldBodyPosition='',oldBodyTop='',oldBodyWidth='';
+function close(){panel.classList.remove('active');document.body.classList.remove('v63-compose-open');document.body.style.position=oldBodyPosition;document.body.style.top=oldBodyTop;document.body.style.width=oldBodyWidth;window.scrollTo(0,scroll);}
+function open(){scroll=window.scrollY;oldBodyPosition=document.body.style.position;oldBodyTop=document.body.style.top;oldBodyWidth=document.body.style.width;document.getElementById('postModal')?.classList.remove('show');document.body.classList.remove('ff-v62-post-open','ff-v61-post-keyboard');panel.classList.add('active');document.body.classList.add('v63-compose-open');document.body.style.position='fixed';document.body.style.top=(-scroll)+'px';document.body.style.width='100%';field.value=document.getElementById('postInput')?.value||'';setTimeout(()=>field.focus({preventScroll:true}),30);}
+const prior=window.openPostModal;
+window.openPostModal=function(){if(mobile()){open();return;}return prior?.apply(this,arguments)};
+document.getElementById('v63Cancel').addEventListener('click',close);
+document.getElementById('v63Publish').addEventListener('click',async()=>{const val=field.value.trim();if(!val){alert('Please write something first.');field.focus();return;}const original=document.getElementById('postInput');if(!original)return alert('Post field unavailable');original.value=val;close();try{await window.publishPost();field.value='';}catch(e){field.value=val;alert('Could not publish: '+(e?.message||e));}});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('active'))close()});
+})();
+</script>
+
+
+<!-- V63: independent mobile post composer, bypass legacy modal/backdrop -->
+<style id="duarte-v63-mobile-composer-css">
+@media(max-width:760px){
+ #duarteV63Composer{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;z-index:2147483646!important;background:#111!important;color:#fff!important;display:none;flex-direction:column;box-sizing:border-box;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 12px);overflow:hidden;touch-action:auto!important;pointer-events:auto!important}
+ #duarteV63Composer.ff-open{display:flex!important}
+ #duarteV63Composer .ff-v63-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:none;padding:6px 0 16px;font-weight:700;font-size:18px}
+ #duarteV63Composer button{border:0;border-radius:9px;padding:11px 16px;font-size:15px;cursor:pointer;touch-action:manipulation!important}
+ #duarteV63Composer #duarteV63Text{display:block!important;flex:1;min-height:120px;width:100%;resize:none;background:#202020;color:#fff;border:1px solid #555;border-radius:12px;padding:15px;font:16px/1.5 system-ui,sans-serif;box-sizing:border-box;user-select:text!important;-webkit-user-select:text!important;touch-action:auto!important;pointer-events:auto!important;outline-offset:2px}
+ #duarteV63Composer .ff-v63-bottom{display:flex;justify-content:flex-end;gap:12px;flex:none;padding-top:14px}
+ body.ff-v63-composing{touch-action:auto!important}
+ body.ff-v63-composing #ffMobileBottomNavV50{pointer-events:none!important}
+}
+</style>
+<script id="duarte-v63-mobile-composer-js">
+(()=>{
+ const mobile=()=>matchMedia('(max-width:760px)').matches;
+ let panel,field,busy=false,oldScroll=0;
+ function init(){if(panel)return;panel=document.createElement('section');panel.id='duarteV63Composer';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','Create Clan Post');panel.innerHTML='<div class="ff-v63-top"><span>Create Clan Post</span><button type="button" id="duarteV63CancelTop">Cancel</button></div><textarea id="duarteV63Text" placeholder="Share something with the Duarte Clan..." aria-label="Write your clan post"></textarea><div class="ff-v63-bottom"><button type="button" id="duarteV63Cancel">Cancel</button><button type="button" id="duarteV63Publish" style="background:#e9b62e;color:#151515;font-weight:800">Publish</button></div>';document.body.appendChild(panel);field=panel.querySelector('textarea');panel.querySelector('#duarteV63Cancel').addEventListener('click',close);panel.querySelector('#duarteV63CancelTop').addEventListener('click',close);panel.querySelector('#duarteV63Publish').addEventListener('click',publish)}
+ function open(){init();oldScroll=window.scrollY;const legacy=document.getElementById('postModal');legacy?.classList.remove('show');document.body.classList.remove('ff-v62-post-open');field.value=document.getElementById('postInput')?.value||'';panel.classList.add('ff-open');document.body.classList.add('ff-v63-composing');window.ffDuarteMobileOverlayLockV54?.schedule?.();setTimeout(()=>field.focus({preventScroll:true}),60)}
+ function close(){if(!panel)return;panel.classList.remove('ff-open');document.body.classList.remove('ff-v63-composing');window.ffDuarteMobileOverlayLockV54?.schedule?.();requestAnimationFrame(()=>{if(!document.body.classList.contains('ff-v54-overlay-open'))window.scrollTo(0,oldScroll)})}
+ async function publish(){if(busy)return;const content=field.value.trim();if(!content){field.focus();return}const original=document.getElementById('postInput');if(!original||typeof window.publishPost!=='function'){alert('Posting is temporarily unavailable. Please refresh.');return}busy=true;const button=panel.querySelector('#duarteV63Publish');button.disabled=true;button.textContent='Publishing…';try{original.value=content;await window.publishPost();if(!original.value.trim()){field.value='';close()}else{field.value=original.value;}}catch(err){alert('Could not publish: '+(err?.message||err))}finally{busy=false;button.disabled=false;button.textContent='Publish'}}
+ document.addEventListener('click',e=>{if(!mobile())return;const write=e.target.closest?.('[onclick*="openPostModal"]');if(write){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open()}},true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel?.classList.contains('ff-open'))close()});
+ window.duarteV63OpenComposer=open;
+ document.documentElement.dataset.duarteBuild='v63';window.DuarteLiteBuild='production-mobile-composer-v63';
+})();
+</script>
+<!-- /V63 -->
 </body>
 </html>
 

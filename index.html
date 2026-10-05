@@ -3003,6 +3003,9 @@ function applyMemberProfile(profile) {
     if (nameEl) nameEl.textContent = profile.full_name || "Duarte Family Member";
     if (roleEl) roleEl.textContent = profile.clan_role || "Member";
 
+    const mobileAdminV57 = document.getElementById("ffMobileAdminDashboardV57");
+    if (mobileAdminV57) mobileAdminV57.hidden = profile.is_admin !== true;
+
     if (profile.is_admin === true) {
         const sideMenu = document.querySelector(".side-menu");
         if (sideMenu && !document.getElementById("adminPanelLink")) {
@@ -13789,6 +13792,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div id="ffMobileMoreBackdropV50" aria-hidden="true"></div>
 <div id="ffMobileMoreSheetV50" role="dialog" aria-modal="true" aria-label="More" aria-hidden="true">
  <div class="ff-v50-handle"></div>
+ <button id="ffMobileAdminDashboardV57" type="button" data-v50-go="admin" hidden><span class="ff-v50-ico">🛡️</span><span>Admin Dashboard</span></button>
  <button type="button" data-v50-go="announcements"><span class="ff-v50-ico">📢</span><span>Clan Announcements</span></button>
  <button type="button" data-v50-go="events"><span class="ff-v50-ico">📅</span><span>Clan Events</span></button>
  <button type="button" data-v50-go="gallery"><span class="ff-v50-ico">📷</span><span>Family Gallery</span></button>
@@ -13809,7 +13813,8 @@ document.addEventListener("DOMContentLoaded",function(){
    if(e.target===back){close();return}
    const b=e.target.closest?.("#ffMobileMoreSheetV50 [data-v50-go]");if(!b)return;
    e.preventDefault();e.stopPropagation();const go=b.dataset.v50Go;
-   if(go==="announcements"){close();if(typeof window.openAnnouncementDirectory==="function")window.openAnnouncementDirectory();else section("announcements");}
+   if(go==="admin"){close();window.location.href="admin.html";}
+   else if(go==="announcements"){close();if(typeof window.openAnnouncementDirectory==="function")window.openAnnouncementDirectory();else section("announcements");}
    else if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
  },true);
  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
@@ -13901,6 +13906,28 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 
+
+<!-- V57 — ADMIN DASHBOARD IN MOBILE MORE: administrator-only, no permanent screen space. -->
+<script id="duarte-mobile-admin-more-v57">
+(()=>{
+ const mq=matchMedia("(max-width:760px)");
+ function setAdminVisible(profile){
+   const b=document.getElementById("ffMobileAdminDashboardV57");
+   if(!b)return;
+   b.hidden=!(mq.matches && profile?.is_admin===true);
+ }
+ const old=window.applyMemberProfile;
+ if(typeof old==="function"&&!old.__v57Admin){
+   const wrapped=function(profile){const r=old.apply(this,arguments);setAdminVisible(profile);return r};
+   wrapped.__v57Admin=true;window.applyMemberProfile=wrapped;
+ }
+ document.addEventListener("DOMContentLoaded",()=>{
+   try{const p=JSON.parse(localStorage.getItem("duarte_offline_profile_v26")||"null");setAdminVisible(p)}catch(_){}
+ },{once:true});
+ window.addEventListener("pageshow",()=>{try{const p=JSON.parse(localStorage.getItem("duarte_offline_profile_v26")||"null");setAdminVisible(p)}catch(_){}},{passive:true});
+ window.DuarteLiteBuild="production-mobile-admin-more-v57";document.documentElement.dataset.duarteBuild="v57";
+})();
+</script>
 </body>
 </html>
 

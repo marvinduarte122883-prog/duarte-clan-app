@@ -14761,3 +14761,47 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
  const oe=window.openEventModal,ce=window.closeEventModal;if(typeof oe==='function'){window.openEventModal=async function(id=null){await oe(id);if(q('eventModal')?.classList.contains('show')){document.body.classList.add('ff-v74-event-open');q('eventTitle')?.focus?.({preventScroll:true})}}}if(typeof ce==='function'){window.closeEventModal=function(){ce();document.body.classList.remove('ff-v74-event-open')}}
 })();
 </script>
+
+<!-- V75: Story reply textbox mobile focus/input fix -->
+<style id="ff-v75-story-reply-focus-fix">
+#ffStoryViewer .ff-story-social-v68,
+#ffStoryViewer .ff-story-reply-wrap-v70,
+#ffStoryViewer #ffStoryReplyV70,
+#ffStoryViewer #ffStorySendV70{pointer-events:auto!important;touch-action:manipulation!important}
+#ffStoryViewer #ffStoryReplyV70{-webkit-user-select:text!important;user-select:text!important;caret-color:#fff!important}
+#ffStoryViewer .ff-story-social-v68:not(.owner) #ffStoryReplyV70{cursor:text!important}
+</style>
+<script id="ff-v75-story-reply-focus-fix-js">
+(function(){
+  function apply(){
+    var bar=document.getElementById('ffStorySocialV68');
+    var input=document.getElementById('ffStoryReplyV70');
+    if(!bar||!input)return;
+    var owner=bar.classList.contains('owner');
+    if(owner){
+      input.readOnly=true;
+      input.disabled=false;
+      input.placeholder='Your story';
+      input.setAttribute('aria-label','Your story');
+    }else{
+      input.readOnly=false;
+      input.disabled=false;
+      input.placeholder=input.value?'':'Send message…';
+      input.setAttribute('aria-label','Send message');
+    }
+  }
+  function focusReply(e){
+    var input=e.target&&e.target.closest&&e.target.closest('#ffStoryReplyV70');
+    if(!input)return;
+    var bar=document.getElementById('ffStorySocialV68');
+    if(bar&&bar.classList.contains('owner'))return;
+    e.stopPropagation();
+    requestAnimationFrame(function(){try{input.focus({preventScroll:true});}catch(_){input.focus();}});
+  }
+  document.addEventListener('pointerdown',focusReply,true);
+  document.addEventListener('touchstart',focusReply,{capture:true,passive:true});
+  document.addEventListener('click',focusReply,true);
+  new MutationObserver(function(){setTimeout(apply,0)}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  setTimeout(apply,500);
+})();
+</script>

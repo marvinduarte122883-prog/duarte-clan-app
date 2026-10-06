@@ -14127,7 +14127,12 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
 <script id="ff-v80-calls-script">
 (()=>{
 'use strict';
-const S=()=>window.supabaseClient||window.supabase;
+const S=()=>{
+  // V81: use the instantiated Supabase client, never the window.supabase SDK namespace.
+  try{if(typeof supabaseClient!=='undefined' && supabaseClient && typeof supabaseClient.from==='function')return supabaseClient}catch(_){}
+  if(window.supabaseClient && typeof window.supabaseClient.from==='function')return window.supabaseClient;
+  return null;
+};
 let pc=null,localStream=null,call=null,callType='audio',callChannel=null,signalChannel=null,ringTimer=null,booted=false,pendingIce=[],signalPoll=null,incomingPoll=null,lastSignalId=0;
 const layer=()=>document.getElementById('ffCallLayer');
 const uid=()=>window.currentUser?.id||(typeof currentUser!=='undefined'&&currentUser?.id)||null;

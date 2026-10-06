@@ -14569,3 +14569,45 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
 })();
 </script>
 <!-- /DUARTE V62 -->
+
+<!-- V67: prevent mobile Create Clan Post composer from leaking into desktop page flow -->
+<style id="duarte-v67-hide-mobile-clan-composer-desktop">
+#duarteV63Composer{display:none!important;}
+@media(max-width:760px){
+  #duarteV63Composer.active,
+  #duarteV63Composer.ff-open{display:flex!important;}
+}
+</style>
+
+<!-- DUARTE V68 — STORY LIKE + MESSAGE (DESKTOP + MOBILE) -->
+<style id="duarte-story-social-v68">
+.ff-story-social-v68{position:absolute;z-index:8;left:12px;right:12px;bottom:46px;display:flex;align-items:center;gap:8px;pointer-events:auto}
+.ff-story-social-v68 button{height:38px;border:1px solid rgba(255,255,255,.22);border-radius:20px;background:rgba(20,20,20,.82);color:#fff;padding:0 14px;font-weight:800;font-size:12px;cursor:pointer;backdrop-filter:blur(8px)}
+.ff-story-social-v68 button.liked{background:rgba(225,29,72,.9);border-color:rgba(255,255,255,.35)}
+.ff-story-social-v68 .ff-story-message-v68{flex:1}.ff-story-social-v68 .ff-story-likes-v68{min-width:86px}
+.ff-story-social-v68.owner .ff-story-message-v68{display:none}
+.ff-story-likers-v68{position:fixed;inset:0;z-index:4100;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:16px}.ff-story-likers-v68.open{display:flex}
+.ff-story-likers-card-v68{width:min(390px,100%);max-height:70dvh;overflow:auto;background:#181818;border:1px solid #383838;border-radius:14px;color:#fff}
+.ff-story-likers-head-v68{position:sticky;top:0;background:#181818;display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid #303030;font-weight:900}.ff-story-likers-head-v68 button{border:0;background:#292929;color:#fff;width:32px;height:32px;border-radius:50%;font-size:20px}
+.ff-story-liker-v68{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #282828}.ff-story-liker-v68 img,.ff-story-liker-avatar-v68{width:38px;height:38px;border-radius:50%;object-fit:cover;background:#292929;display:grid;place-items:center;font-weight:900}
+@media(max-width:700px){.ff-story-social-v68{bottom:56px;left:10px;right:10px}.ff-story-social-v68 button{height:42px;font-size:12px}.ff-story-caption{bottom:108px!important}.ff-story-seenby{bottom:12px!important}}
+</style>
+<div id="ffStoryLikersV68" class="ff-story-likers-v68" aria-hidden="true"><div class="ff-story-likers-card-v68"><div class="ff-story-likers-head-v68"><span>Story likes</span><button type="button" id="ffStoryLikersCloseV68">×</button></div><div id="ffStoryLikersListV68"></div></div></div>
+<script id="duarte-story-social-v68-script">
+(()=>{
+ const $=id=>document.getElementById(id), sb=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
+ let storyId=null,storyOwner=null,me=null,liked=false,count=0,profileName="Duarte member",busy=false;
+ function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+ function ensure(){const view=document.querySelector("#ffStoryViewer .ff-story-view");if(!view)return null;let bar=$("ffStorySocialV68");if(!bar){bar=document.createElement("div");bar.id="ffStorySocialV68";bar.className="ff-story-social-v68";bar.innerHTML='<button type="button" id="ffStoryLikeV68" class="ff-story-likes-v68">♡ Like</button><button type="button" id="ffStoryMessageV68" class="ff-story-message-v68">💬 Send message</button>';view.appendChild(bar);$("ffStoryLikeV68").addEventListener("click",toggleLike);$("ffStoryMessageV68").addEventListener("click",messageOwner)}return bar}
+ async function getMe(){if(me)return me;const c=sb();if(!c)return null;const r=await c.auth.getSession();me=r?.data?.session?.user||null;return me}
+ async function sync(){const c=sb(),bar=ensure();if(!c||!bar||!storyId)return;await getMe();bar.classList.toggle("owner",!!me&&me.id===storyOwner);try{const q=await c.from("family_story_likes").select("user_id").eq("story_id",storyId);if(q.error)throw q.error;const rows=q.data||[];count=rows.length;liked=!!me&&rows.some(x=>x.user_id===me.id);render()}catch(e){console.warn("Story likes unavailable:",e);$("ffStoryLikeV68").textContent="♡ Like"}}
+ function render(){const b=$("ffStoryLikeV68");if(!b)return;b.classList.toggle("liked",liked);b.textContent=(liked?"♥":"♡")+" "+(count?count+" Like"+(count===1?"":"s"):"Like");b.title=count?"Click count to like/unlike. Story owner can view who liked.":"Like this story"}
+ async function toggleLike(e){e.stopPropagation();if(busy||!storyId)return;const c=sb(),u=await getMe();if(!c||!u){alert("Please sign in to like this story.");return}busy=true;try{if(liked){const r=await c.from("family_story_likes").delete().eq("story_id",storyId).eq("user_id",u.id);if(r.error)throw r.error;liked=false;count=Math.max(0,count-1)}else{const r=await c.from("family_story_likes").insert({story_id:storyId,user_id:u.id});if(r.error&&!String(r.error.code||"").includes("23505"))throw r.error;liked=true;count++}render();if(u.id===storyOwner&&count)showLikers()}catch(err){alert("Story like could not be saved: "+(err.message||err))}finally{busy=false}}
+ async function messageOwner(e){e.stopPropagation();const u=await getMe();if(!u||!storyOwner)return;if(u.id===storyOwner)return;try{document.getElementById("ffStoryViewer")?.classList.remove("open");document.getElementById("ffStoryViewer")?.setAttribute("aria-hidden","true");if(typeof window.startPrivateChat==="function")await window.startPrivateChat(storyOwner,profileName);else if(typeof window.openMessenger==="function")window.openMessenger();else alert("Messenger is unavailable.")}catch(err){alert("Message could not be opened: "+(err.message||err))}}
+ async function showLikers(){const c=sb();if(!c||!storyId)return;const modal=$("ffStoryLikersV68"),list=$("ffStoryLikersListV68");modal.classList.add("open");modal.setAttribute("aria-hidden","false");list.innerHTML='<div style="padding:22px;color:#aaa;text-align:center">Loading…</div>';try{const r=await c.from("family_story_likes").select("user_id,created_at").eq("story_id",storyId).order("created_at",{ascending:false});if(r.error)throw r.error;const ids=(r.data||[]).map(x=>x.user_id);let profiles={};if(ids.length){const p=await c.from("profiles").select("id,full_name,avatar_url,photo_url,profile_photo_url").in("id",ids);if(p.error)throw p.error;(p.data||[]).forEach(x=>profiles[x.id]=x)}list.innerHTML=ids.length?ids.map(id=>{const p=profiles[id]||{},n=p.full_name||"Duarte member",a=p.avatar_url||p.photo_url||p.profile_photo_url||"";return `<div class="ff-story-liker-v68">${a?`<img src="${esc(a)}" alt="">`:`<span class="ff-story-liker-avatar-v68">${esc(n.charAt(0).toUpperCase())}</span>`}<strong>${esc(n)}</strong></div>`}).join(""):'<div style="padding:22px;color:#aaa;text-align:center">No likes yet.</div>'}catch(err){list.innerHTML='<div style="padding:22px;color:#f0a0a0;text-align:center">Likes could not be loaded.</div>'}}
+ async function selectStory(id){storyId=id||null;if(!storyId)return;const c=sb();try{const r=await c.from("family_stories").select("id,user_id").eq("id",storyId).maybeSingle();storyOwner=r.data?.user_id||null;profileName=$("ffStoryViewName")?.textContent||"Duarte member";setTimeout(sync,30)}catch(_){}}
+ document.addEventListener("click",e=>{const card=e.target.closest?.("[data-story]");if(card)selectStory(card.dataset.story)},true);
+ document.addEventListener("DOMContentLoaded",()=>{ensure();$("ffStoryLikersCloseV68")?.addEventListener("click",()=>$("ffStoryLikersV68").classList.remove("open"));$("ffStoryLikersV68")?.addEventListener("click",e=>{if(e.target===$("ffStoryLikersV68"))e.currentTarget.classList.remove("open")})});
+ window.ffDuarteStorySocialV68={refresh:sync,showLikers};
+})();
+</script>

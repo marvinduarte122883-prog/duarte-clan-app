@@ -4275,7 +4275,7 @@ function closeMessenger(){
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
 }
 function messengerBack(){
- ffActiveConversationId=null;ffActiveChatUserId=null;
+ ffActiveConversationId=null;ffActiveChatUserId=null;window.ffActiveConversationId=null;window.ffActiveChatUserId=null;
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
  loadConversations();
 }
@@ -4284,6 +4284,7 @@ async function startPrivateChat(uid,name){
   const r=await supabaseClient.rpc("start_duarte_private_chat",{p_other_user:uid});
   if(r.error)throw r.error;
   ffActiveConversationId=Number(r.data);ffActiveChatName=name;ffActiveChatUserId=uid;
+  window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
   openMessenger();
   document.getElementById("ffMsgShell").classList.add("chat-open");
   const hn=document.getElementById("ffChatName");if(hn){hn.textContent=name;hn.onclick=()=>openClanProfile(uid);hn.style.cursor="pointer"}
@@ -4344,6 +4345,7 @@ function filterMessengerConversations(value){
 
 async function openConversation(id,name,userId=null){
  ffActiveConversationId=Number(id);ffActiveChatName=name;ffActiveChatUserId=userId;
+ window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
  document.getElementById("ffMsgShell").classList.add("chat-open");
  const hn=document.getElementById("ffChatName");
  if(hn){hn.textContent=name;hn.style.cursor=userId?"pointer":"";hn.onclick=userId?()=>openClanProfile(userId):null}
@@ -14178,7 +14180,27 @@ const convId=()=>window.ffActiveConversationId||(typeof ffActiveConversationId!=
 const cachedPeer=()=>window.ffActiveChatUserId||(typeof ffActiveChatUserId!=='undefined'?ffActiveChatUserId:null);
 const peerName=()=>window.ffActiveChatName||(typeof ffActiveChatName!=='undefined'?ffActiveChatName:'Clan member')||'Clan member';
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-async function resolvePeer(){let x=cachedPeer();if(x&&x!==uid())return x;const cid=convId();if(!cid||!uid())return null;const r=await S().from('conversation_members').select('user_id').eq('conversation_id',cid).neq('user_id',uid()).limit(1).maybeSingle();if(r.error)throw r.error;x=r.data?.user_id||null;if(x){try{ffActiveChatUserId=x}catch{}window.ffActiveChatUserId=x}return x}
+async function resolvePeer(){
+ const me=uid(),sb=S();if(!me||!sb)return null;
+ let x=cachedPeer();if(x&&String(x)!==String(me))return x;
+ const cid=convId();
+ if(cid){
+  const r=await sb.from('conversation_members').select('user_id').eq('conversation_id',cid);
+  if(r.error)throw r.error;
+  x=(r.data||[]).map(v=>v.user_id).find(v=>v&&String(v)!==String(me))||null;
+ }
+ // Recovery for chats opened by an older/alternate UI path: use the active chat name only
+ // to find the member, then verify membership when a conversation id is available.
+ if(!x){
+  const n=peerName();
+  if(n&&n!=='Clan member'){
+   const q=await sb.from('profiles').select('id,full_name').eq('full_name',n).limit(3);
+   if(!q.error){const candidates=(q.data||[]).filter(v=>v.id&&String(v.id)!==String(me));if(candidates.length===1)x=candidates[0].id}
+  }
+ }
+ if(x){try{ffActiveChatUserId=x}catch{}window.ffActiveChatUserId=x;return x}
+ return null
+}
 function buttons(){['ffAudioCallBtn','ffVideoCallBtn'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=false;b.removeAttribute('disabled');b.style.pointerEvents='auto';b.style.position='relative';b.style.zIndex='50';b.title=id.includes('Video')?'Video call':'Audio call'}})}
 function showStage(name,type,state){const L=layer();if(!L)return;document.body.classList.add('ff-call-mobile-active');L.classList.add('open');L.setAttribute('aria-hidden','false');L.innerHTML=`<div class="ff-call-shell"><div class="ff-call-stage"><div class="ff-call-avatar" id="ffCallAvatar">${type==='video'?'📹':'📞'}</div><video id="ffRemoteVideo" class="ff-call-remote" autoplay playsinline style="display:none"></video><video id="ffLocalVideo" class="ff-call-local" autoplay playsinline muted ${type==='video'?'':'style="display:none"'}></video><div class="ff-call-info"><div class="ff-call-name">${esc(name)}</div><div class="ff-call-state" id="ffCallState">${esc(state)}</div></div></div><div class="ff-call-controls"><button class="ff-call-control" id="ffMuteBtn">🎙️</button>${type==='video'?'<button class="ff-call-control" id="ffCamBtn">📷</button>':''}<button class="ff-call-control ff-call-end" id="ffEndCallBtn">📵</button></div></div>`;bindControls()}
 function incoming(c,name){call=c;callType=c.call_type||'audio';const L=layer();if(!L)return;L.classList.add('open');L.setAttribute('aria-hidden','false');L.innerHTML=`<div class="ff-incoming-card"><div style="font-size:44px">${callType==='video'?'📹':'📞'}</div><h3>${esc(name||'Clan member')}</h3><div style="color:#aaa">Incoming ${esc(callType)} call</div><div class="ff-incoming-actions"><button class="ff-decline" id="ffDeclineCall">📵</button><button class="ff-accept" id="ffAcceptCall">📞</button></div></div>`;document.getElementById('ffDeclineCall').onclick=decline;document.getElementById('ffAcceptCall').onclick=accept;startSignalPolling()}

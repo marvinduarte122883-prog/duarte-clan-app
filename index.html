@@ -1874,6 +1874,44 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 
 <!-- Duarte Clan production-facebook-lite-v48 | Final Mobile/Desktop QA & Stability -->
 <meta name="duarte-build" content="production-facebook-lite-v48">
+
+<style id="ff-v82-mobile-call-fit">
+/* V82: mobile-only Facebook-Lite call fit. Desktop is intentionally unchanged. */
+@media (max-width:700px){
+  body.ff-call-mobile-active{overflow:hidden!important;overscroll-behavior:none!important}
+  body.ff-call-mobile-active .ff-v29c-mobile-nav,
+  body.ff-call-mobile-active .ff-v29c-bottom-nav,
+  body.ff-call-mobile-active #ffV31OBottomNav,
+  body.ff-call-mobile-active .ff-mobile-bottom-nav{display:none!important}
+  #ffCallLayer{height:100dvh!important;min-height:100dvh!important;align-items:stretch!important}
+  #ffCallLayer.open{display:flex!important}
+  #ffCallLayer .ff-call-shell{
+    width:100vw!important;height:100dvh!important;max-height:100dvh!important;
+    padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)!important;
+    box-sizing:border-box!important;border-radius:0!important;overflow:hidden!important
+  }
+  #ffCallLayer .ff-call-stage{flex:1 1 auto!important;min-height:0!important;overflow:hidden!important}
+  #ffCallLayer .ff-call-remote{width:100%!important;height:100%!important;object-fit:contain!important}
+  #ffCallLayer .ff-call-info{top:max(10px,env(safe-area-inset-top,0px))!important;left:12px!important;right:12px!important}
+  #ffCallLayer .ff-call-local{
+    right:10px!important;bottom:10px!important;width:clamp(82px,24vw,118px)!important;
+    max-height:28vh!important;aspect-ratio:3/4!important;border-radius:12px!important
+  }
+  #ffCallLayer .ff-call-controls{
+    position:relative!important;z-index:5!important;flex:0 0 auto!important;
+    min-height:64px!important;box-sizing:border-box!important;display:flex!important;
+    align-items:center!important;justify-content:center!important;gap:clamp(12px,5vw,24px)!important;
+    padding:7px 12px max(8px,env(safe-area-inset-bottom,0px))!important;background:#111!important
+  }
+  #ffCallLayer .ff-call-control{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;font-size:20px!important}
+}
+@media (max-width:380px),(max-height:680px){
+  #ffCallLayer .ff-call-controls{min-height:56px!important;padding-top:5px!important;gap:12px!important}
+  #ffCallLayer .ff-call-control{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;font-size:18px!important}
+  #ffCallLayer .ff-call-local{width:82px!important;bottom:8px!important}
+  #ffCallLayer .ff-call-name{font-size:16px!important}
+}
+</style>
 </head>
 
 
@@ -14142,7 +14180,7 @@ const peerName=()=>window.ffActiveChatName||(typeof ffActiveChatName!=='undefine
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 async function resolvePeer(){let x=cachedPeer();if(x&&x!==uid())return x;const cid=convId();if(!cid||!uid())return null;const r=await S().from('conversation_members').select('user_id').eq('conversation_id',cid).neq('user_id',uid()).limit(1).maybeSingle();if(r.error)throw r.error;x=r.data?.user_id||null;if(x){try{ffActiveChatUserId=x}catch{}window.ffActiveChatUserId=x}return x}
 function buttons(){['ffAudioCallBtn','ffVideoCallBtn'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=false;b.removeAttribute('disabled');b.style.pointerEvents='auto';b.style.position='relative';b.style.zIndex='50';b.title=id.includes('Video')?'Video call':'Audio call'}})}
-function showStage(name,type,state){const L=layer();if(!L)return;L.classList.add('open');L.setAttribute('aria-hidden','false');L.innerHTML=`<div class="ff-call-shell"><div class="ff-call-stage"><div class="ff-call-avatar" id="ffCallAvatar">${type==='video'?'📹':'📞'}</div><video id="ffRemoteVideo" class="ff-call-remote" autoplay playsinline style="display:none"></video><video id="ffLocalVideo" class="ff-call-local" autoplay playsinline muted ${type==='video'?'':'style="display:none"'}></video><div class="ff-call-info"><div class="ff-call-name">${esc(name)}</div><div class="ff-call-state" id="ffCallState">${esc(state)}</div></div></div><div class="ff-call-controls"><button class="ff-call-control" id="ffMuteBtn">🎙️</button>${type==='video'?'<button class="ff-call-control" id="ffCamBtn">📷</button>':''}<button class="ff-call-control ff-call-end" id="ffEndCallBtn">📵</button></div></div>`;bindControls()}
+function showStage(name,type,state){const L=layer();if(!L)return;document.body.classList.add('ff-call-mobile-active');L.classList.add('open');L.setAttribute('aria-hidden','false');L.innerHTML=`<div class="ff-call-shell"><div class="ff-call-stage"><div class="ff-call-avatar" id="ffCallAvatar">${type==='video'?'📹':'📞'}</div><video id="ffRemoteVideo" class="ff-call-remote" autoplay playsinline style="display:none"></video><video id="ffLocalVideo" class="ff-call-local" autoplay playsinline muted ${type==='video'?'':'style="display:none"'}></video><div class="ff-call-info"><div class="ff-call-name">${esc(name)}</div><div class="ff-call-state" id="ffCallState">${esc(state)}</div></div></div><div class="ff-call-controls"><button class="ff-call-control" id="ffMuteBtn">🎙️</button>${type==='video'?'<button class="ff-call-control" id="ffCamBtn">📷</button>':''}<button class="ff-call-control ff-call-end" id="ffEndCallBtn">📵</button></div></div>`;bindControls()}
 function incoming(c,name){call=c;callType=c.call_type||'audio';const L=layer();if(!L)return;L.classList.add('open');L.setAttribute('aria-hidden','false');L.innerHTML=`<div class="ff-incoming-card"><div style="font-size:44px">${callType==='video'?'📹':'📞'}</div><h3>${esc(name||'Clan member')}</h3><div style="color:#aaa">Incoming ${esc(callType)} call</div><div class="ff-incoming-actions"><button class="ff-decline" id="ffDeclineCall">📵</button><button class="ff-accept" id="ffAcceptCall">📞</button></div></div>`;document.getElementById('ffDeclineCall').onclick=decline;document.getElementById('ffAcceptCall').onclick=accept;startSignalPolling()}
 function bindControls(){document.getElementById('ffEndCallBtn')?.addEventListener('click',()=>endCall(true));document.getElementById('ffMuteBtn')?.addEventListener('click',e=>{const t=localStream?.getAudioTracks()[0];if(t){t.enabled=!t.enabled;e.currentTarget.textContent=t.enabled?'🎙️':'🔇'}});document.getElementById('ffCamBtn')?.addEventListener('click',e=>{const t=localStream?.getVideoTracks()[0];if(t){t.enabled=!t.enabled;e.currentTarget.textContent=t.enabled?'📷':'🚫'}})}
 async function media(type){if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw new Error('Calls require HTTPS and browser microphone/camera support.');try{return await navigator.mediaDevices.getUserMedia(type==='video'?{audio:{echoCancellation:true,noiseSuppression:true},video:{facingMode:'user',width:{ideal:480,max:640},height:{ideal:360,max:480},frameRate:{ideal:15,max:20}}}:{audio:{echoCancellation:true,noiseSuppression:true},video:false})}catch(e){if(e?.name==='NotAllowedError')throw new Error('Microphone/camera permission was denied. Allow it in browser Site settings and try again.');throw e}}
@@ -14155,7 +14193,7 @@ async function start(type){if(call)return;try{const other=await resolvePeer();if
 async function accept(){if(!call)return;try{localStream=await media(callType);showStage('Clan member',callType,'Connecting…');const lv=document.getElementById('ffLocalVideo');if(lv){lv.srcObject=localStream;lv.play?.().catch(()=>{})}makePC(call.caller_id);subscribeSignals();const q=await S().from('duarte_call_signals').select('*').eq('call_id',call.id).eq('signal_type','offer').order('id',{ascending:false}).limit(1).maybeSingle();if(q.error||!q.data)throw q.error||new Error('Call offer not found');lastSignalId=Math.max(lastSignalId,Number(q.data.id)||0);await pc.setRemoteDescription(new RTCSessionDescription(q.data.payload));await flushIce();const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await signal('answer',{type:ans.type,sdp:ans.sdp},call.caller_id);const u=await S().from('duarte_calls').update({status:'accepted',answered_at:new Date().toISOString()}).eq('id',call.id);if(u.error)throw u.error;call.status='accepted';const st=document.getElementById('ffCallState');if(st)st.textContent='Connected';startSignalPolling()}catch(e){await decline();alert('Call could not be answered: '+(e?.message||e))}}
 async function decline(){const c=call;if(c)try{await S().from('duarte_calls').update({status:'declined',ended_at:new Date().toISOString()}).eq('id',c.id)}catch{}cleanup()}
 async function endCall(write){const c=call;if(write&&c)try{await S().from('duarte_calls').update({status:'ended',ended_at:new Date().toISOString()}).eq('id',c.id)}catch{}cleanup()}
-function cleanup(){clearTimeout(ringTimer);ringTimer=null;clearInterval(signalPoll);signalPoll=null;try{pc?.close()}catch{}pc=null;pendingIce=[];lastSignalId=0;localStream?.getTracks().forEach(t=>t.stop());localStream=null;if(signalChannel){try{S()?.removeChannel(signalChannel)}catch{}signalChannel=null}call=null;const L=layer();if(L){L.classList.remove('open');L.innerHTML='';L.setAttribute('aria-hidden','true')}}
+function cleanup(){clearTimeout(ringTimer);ringTimer=null;clearInterval(signalPoll);signalPoll=null;try{pc?.close()}catch{}pc=null;pendingIce=[];lastSignalId=0;localStream?.getTracks().forEach(t=>t.stop());localStream=null;if(signalChannel){try{S()?.removeChannel(signalChannel)}catch{}signalChannel=null}call=null;const L=layer();if(L){L.classList.remove('open');L.innerHTML='';L.setAttribute('aria-hidden','true')}document.body.classList.remove('ff-call-mobile-active')}
 function subscribeSignals(){if(!call||signalChannel)return;signalChannel=S().channel('duarte-call-signal-'+call.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'duarte_call_signals',filter:'call_id=eq.'+call.id},p=>processSignal(p.new).catch(console.warn)).subscribe()}
 function startSignalPolling(){clearInterval(signalPoll);signalPoll=setInterval(async()=>{if(!call)return;try{let q=S().from('duarte_call_signals').select('*').eq('call_id',call.id).eq('to_user',uid()).order('id',{ascending:true});if(lastSignalId)q=q.gt('id',lastSignalId);const r=await q.limit(50);if(!r.error)for(const x of r.data||[])await processSignal(x)}catch(e){console.warn('call signal poll',e)}},1200)}
 async function checkIncoming(){if(call||!uid())return;try{const r=await S().from('duarte_calls').select('*').eq('callee_id',uid()).eq('status','ringing').order('created_at',{ascending:false}).limit(1).maybeSingle();if(r.data&&!call){let name='Clan member';try{const q=await S().from('profiles').select('full_name').eq('id',r.data.caller_id).maybeSingle();if(q.data?.full_name)name=q.data.full_name}catch{}incoming(r.data,name)}}catch(e){console.warn('incoming call check',e)}}

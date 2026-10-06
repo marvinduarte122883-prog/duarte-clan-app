@@ -14666,3 +14666,44 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
   setTimeout(fix,800);
 })();
 </script>
+
+<!-- V73: clean mobile Story reactions/reply UI -->
+<style id="ff-v73-story-mobile-cleanup">
+/* Reaction summary: no browser-default white button/background. */
+#ffStoryViewer .ff-story-reaction-summary-v71{
+  appearance:none!important;-webkit-appearance:none!important;
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  padding:0!important;margin:0!important;color:#fff!important;
+}
+/* Selected reaction must not draw the white ring/arcs around the emoji. */
+#ffStoryViewer .ff-story-react-v71.selected{
+  outline:0!important;outline-offset:0!important;box-shadow:none!important;
+  border:0!important;background:transparent!important;
+  transform:scale(1.08)!important;
+}
+@media(max-width:700px){
+  /* Never cover the Story reply/reaction bar with the floating Family Tree button. */
+  body:has(#ffStoryViewer.open) #ffFamilyTreeFab,
+  body:has(#ffStoryViewer.open) .ff-family-tree-fab,
+  body.ff-v73-story-open #ffFamilyTreeFab,
+  body.ff-v73-story-open .ff-family-tree-fab{
+    display:none!important;visibility:hidden!important;pointer-events:none!important;
+  }
+}
+</style>
+<script id="ff-v73-story-mobile-cleanup-js">
+(function(){
+  function sync(){
+    var v=document.getElementById('ffStoryViewer');
+    document.body.classList.toggle('ff-v73-story-open',!!(v&&v.classList.contains('open')));
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    sync();
+    var v=document.getElementById('ffStoryViewer');
+    if(v)new MutationObserver(sync).observe(v,{attributes:true,attributeFilter:['class','aria-hidden']});
+    document.addEventListener('focusin',function(e){
+      if(e.target&&e.target.id==='ffStoryReplyV70')document.body.classList.add('ff-v73-story-open');
+    });
+  });
+})();
+</script>

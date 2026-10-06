@@ -14612,3 +14612,57 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
  window.ffDuarteStorySocialV71={refresh:sync,showReactors};
 })();
 </script>
+
+<!-- V72 Story mobile action bar visibility fix -->
+<style id="ff-v72-story-mobile-actions-fix">
+/* Keep the Facebook-Lite story reply/reaction row above the app's fixed mobile navigation. */
+@media (max-width:700px){
+  #ffStoryViewer .ff-story-view{padding-bottom:0!important}
+  #ffStoryViewer .ff-story-social-v68{
+    position:absolute!important;
+    left:10px!important;
+    right:10px!important;
+    bottom:calc(82px + env(safe-area-inset-bottom))!important;
+    z-index:120!important;
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    align-items:center!important;
+    gap:5px!important;
+  }
+  #ffStoryViewer .ff-story-reply-wrap-v70{display:flex!important;min-width:0!important;height:40px!important;flex:1 1 auto!important}
+  #ffStoryViewer .ff-story-social-v68.owner .ff-story-reply-wrap-v70{display:flex!important}
+  #ffStoryViewer .ff-story-reactions-v71{display:flex!important;visibility:visible!important;flex:0 0 auto!important;gap:1px!important;overflow-x:auto!important;max-width:58vw!important;scrollbar-width:none}
+  #ffStoryViewer .ff-story-reactions-v71::-webkit-scrollbar{display:none}
+  #ffStoryViewer .ff-story-react-v71{display:grid!important;visibility:visible!important;width:31px!important;min-width:31px!important;height:38px!important;font-size:23px!important}
+  #ffStoryViewer .ff-story-caption{bottom:calc(132px + env(safe-area-inset-bottom))!important;z-index:110!important}
+  #ffStoryViewer .ff-story-reaction-summary-v71{bottom:calc(126px + env(safe-area-inset-bottom))!important;z-index:111!important}
+  #ffStoryViewer .ff-story-seenby{bottom:calc(166px + env(safe-area-inset-bottom))!important;z-index:111!important}
+}
+@media (max-width:390px){
+  #ffStoryViewer .ff-story-social-v68{left:6px!important;right:6px!important;gap:3px!important}
+  #ffStoryViewer .ff-story-reply-v70{padding:0 9px!important;font-size:12px!important}
+  #ffStoryViewer .ff-story-reactions-v71{max-width:56vw!important}
+  #ffStoryViewer .ff-story-react-v71{width:29px!important;min-width:29px!important;font-size:22px!important}
+}
+</style>
+<script id="ff-v72-story-owner-reply-label">
+(function(){
+  function fix(){
+    var bar=document.getElementById('ffStorySocialV68');
+    var input=document.getElementById('ffStoryReplyV70');
+    if(!bar||!input)return;
+    /* Keep the field visible on one's own story, but don't imply self-messaging. */
+    if(bar.classList.contains('owner')){
+      input.placeholder='Your story';
+      input.readOnly=true;
+    }else{
+      if(input.readOnly) input.readOnly=false;
+      if(!input.value) input.placeholder='Send message…';
+    }
+  }
+  new MutationObserver(fix).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  document.addEventListener('click',function(){setTimeout(fix,0)},true);
+  setTimeout(fix,800);
+})();
+</script>

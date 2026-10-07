@@ -15040,3 +15040,54 @@ $('ffV87End')?.addEventListener('click',()=>leave(true));
   setTimeout(apply,500);
 })();
 </script>
+
+<!-- V94: mobile Home/Profile separation fix -->
+<style id="duarte-v94-mobile-home-profile-separation">
+@media (max-width:800px){
+  /* A member profile is a separate screen, never part of Home document flow. */
+  #ffFullProfile{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    max-width:none!important;
+    margin:0!important;
+    z-index:3500!important;
+    overflow:auto!important;
+    overscroll-behavior:contain;
+    display:none!important;
+  }
+  #ffFullProfile.open{display:block!important;}
+  #profileManager:not(.show){display:none!important;}
+}
+</style>
+<script id="duarte-v94-mobile-home-profile-separation-js">
+(function(){
+  function closeProfileScreensForNavigation(section){
+    if(section==='profile') return;
+    const full=document.getElementById('ffFullProfile');
+    if(full) full.classList.remove('open');
+    const modal=document.getElementById('ffMemberProfileModal');
+    if(modal) modal.classList.remove('open');
+    const edit=document.getElementById('ffEditProfileModal');
+    if(edit) edit.classList.remove('open');
+    document.body.style.overflow='';
+  }
+
+  const original=window.showSection;
+  if(typeof original==='function' && !original.__v94MobileProfileSeparation){
+    const wrapped=function(section){
+      closeProfileScreensForNavigation(section);
+      return original.apply(this,arguments);
+    };
+    wrapped.__v94MobileProfileSeparation=true;
+    window.showSection=wrapped;
+  }
+
+  /* Home must always return to Home only, even after viewing a member profile. */
+  document.addEventListener('click',function(e){
+    const b=e.target.closest?.('[onclick*="mobileGo(\'home\')"],[onclick*="mobileGo(&quot;home&quot;)"],[onclick*="showSection(\'home\')"],[data-section="home"]');
+    if(b) closeProfileScreensForNavigation('home');
+  },true);
+})();
+</script>

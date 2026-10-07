@@ -14325,6 +14325,84 @@ $('ffV87End')?.addEventListener('click',()=>leave(true));
 })();
 </script>
 
+
+
+<!-- V95: definitive mobile Home/Profile isolation -->
+<style id="duarte-v95-mobile-home-profile-isolation">
+@media (max-width:800px){
+  html[data-v95-mobile-section="home"] #ffFullProfile,
+  html[data-v95-mobile-section="home"] #ffMemberProfileModal,
+  html[data-v95-mobile-section="home"] #ffEditProfileModal,
+  html[data-v95-mobile-section="home"] #profileManager{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  #ffFullProfile:not(.open),
+  #ffMemberProfileModal:not(.open),
+  #ffEditProfileModal:not(.open){display:none!important;}
+}
+</style>
+<script id="duarte-v95-mobile-home-profile-isolation-js">
+(function(){
+  const mobile=()=>matchMedia('(max-width:800px)').matches;
+  const root=document.documentElement;
+  function hideProfiles(){
+    if(!mobile()) return;
+    ['ffFullProfile','ffMemberProfileModal','ffEditProfileModal'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){ el.classList.remove('open','show','active'); el.setAttribute('aria-hidden','true'); }
+    });
+    const pm=document.getElementById('profileManager');
+    if(pm) pm.classList.remove('show','open','active');
+    document.body.style.overflow='';
+  }
+  function mark(section){
+    if(!mobile()) return;
+    root.dataset.v95MobileSection=section||'';
+    if(section==='home') hideProfiles();
+  }
+  const baseShow=window.showSection;
+  if(typeof baseShow==='function'&&!baseShow.__v95Isolation){
+    const wrapped=function(section){
+      mark(section);
+      const out=baseShow.apply(this,arguments);
+      if(section==='home') queueMicrotask(hideProfiles);
+      return out;
+    };
+    wrapped.__v95Isolation=true;
+    window.showSection=wrapped;
+  }
+  const baseOpen=window.openClanProfile;
+  if(typeof baseOpen==='function'&&!baseOpen.__v95Isolation){
+    const wrappedOpen=async function(){
+      if(mobile()) root.dataset.v95MobileSection='profile';
+      return await baseOpen.apply(this,arguments);
+    };
+    wrappedOpen.__v95Isolation=true;
+    window.openClanProfile=wrappedOpen;
+  }
+  document.addEventListener('click',function(e){
+    if(!mobile()) return;
+    const nav=e.target.closest?.('[data-v29c-nav],[data-mobile-nav],.ff-v29c-mobile-nav button,.ff-v29c-bottom-nav button');
+    if(!nav) return;
+    const label=((nav.dataset?.v29cNav||nav.dataset?.mobileNav||nav.textContent||'')).trim().toLowerCase();
+    if(label==='home'||/\bhome\b/.test(label)){
+      mark('home');
+      requestAnimationFrame(hideProfiles);
+      setTimeout(hideProfiles,80);
+    }
+  },true);
+  const obs=new MutationObserver(()=>{
+    if(mobile()&&root.dataset.v95MobileSection==='home') hideProfiles();
+  });
+  document.addEventListener('DOMContentLoaded',()=>{
+    mark('home');
+    obs.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class','style']});
+  },{once:true});
+  window.addEventListener('pageshow',()=>{ if(mobile()&&root.dataset.v95MobileSection==='home') hideProfiles(); });
+})();
+</script>
 </body>
 </html>
 

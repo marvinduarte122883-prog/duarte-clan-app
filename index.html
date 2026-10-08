@@ -1963,6 +1963,36 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   #ffMsgModal .ff-chat-head #ffGroupCallBtn { display:none!important; }
 }
 </style>
+
+<style id="duarte-transparent-photo-emoji-trays-v113">
+/* Photo reactions: remove the dark pill and white button tiles; leave only emojis. */
+#ffV112Picker,
+#ffV92ReactionPicker,
+#ffV92ReactionPicker.ff-v112-picker-floating,
+#ffV74PhotoViewer .ff-v92-react-picker {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 4px !important;
+}
+#ffV112Picker button,
+#ffV92ReactionPicker button,
+#ffV74PhotoViewer .ff-v92-react-picker button {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  padding: 3px 5px !important;
+  border-radius: 0 !important;
+}
+#ffV112Picker button:hover,
+#ffV92ReactionPicker button:hover {
+  background: transparent !important;
+  transform: scale(1.12);
+}
+</style>
 </head>
 
 

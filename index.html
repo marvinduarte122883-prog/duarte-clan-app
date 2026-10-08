@@ -1918,6 +1918,28 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #ffMsgModal .ff-chat-head .ff-call-head-actions,
 #ffMsgModal .ff-chat-head .ff-call-head-actions * { display: none !important; }
 </style>
+
+<!-- V103: Mobile-only context-aware Messenger calling; desktop V102 untouched. -->
+<style id="duarte-v103-mobile-context-call-buttons">
+@media(max-width:768px){
+  /* Conversation list: show only the Group Call entry. */
+  #ffMsgModal .ff-v101-call-shortcuts [data-gc-kind="audio"],
+  #ffMsgModal .ff-v101-call-shortcuts [data-gc-kind="video"]{display:none!important}
+  #ffMsgModal .ff-v101-call-shortcuts [data-gc-kind="group"]{display:flex!important;width:100%!important;flex:1 1 100%!important}
+  /* Individual chat: show only voice/video; no group button. */
+  #ffMsgModal .ff-msg-shell.chat-open .ff-chat-head .ff-call-head-actions{display:flex!important;gap:8px!important;margin-left:auto!important}
+  #ffMsgModal .ff-msg-shell.chat-open .ff-chat-head #ffAudioCallBtn,
+  #ffMsgModal .ff-msg-shell.chat-open .ff-chat-head #ffVideoCallBtn{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:38px!important;height:38px!important;border-radius:50%!important;
+    background:#eef5ff!important;color:#0866ff!important;cursor:pointer!important;
+    visibility:visible!important;opacity:1!important;pointer-events:auto!important;
+  }
+  #ffMsgModal .ff-chat-head #ffGroupCallBtn{display:none!important}
+  /* Chat and list are separate mobile views, as before. */
+  #ffMsgModal .ff-msg-shell.chat-open .ff-v101-call-shortcuts{display:none!important}
+}
+</style>
 </head>
 
 

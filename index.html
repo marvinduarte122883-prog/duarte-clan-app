@@ -1912,6 +1912,12 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   #ffCallLayer .ff-call-name{font-size:16px!important}
 }
 </style>
+
+<!-- V102: Hide only the upper-right chat header voice/video/group call icon group. Keep call handlers and mobile toolbar. -->
+<style id="duarte-v102-no-chat-header-call-icons">
+#ffMsgModal .ff-chat-head .ff-call-head-actions,
+#ffMsgModal .ff-chat-head .ff-call-head-actions * { display: none !important; }
+</style>
 </head>
 
 

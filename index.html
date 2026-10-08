@@ -14404,6 +14404,40 @@ $('ffV87End')?.addEventListener('click',()=>leave(true));
   window.addEventListener('pageshow',()=>{ if(mobile()&&root.dataset.v95MobileSection==='home') hideProfiles(); });
 })();
 </script>
+
+<!-- V98: Messenger-specific floating Family Tree visibility, all viewports. -->
+<style id="duarte-v98-messenger-family-tree-visibility">
+html body.duarte-messenger-visible #ffFamilyTreeFab,
+html body.duarte-messenger-visible .ff-family-tree-fab,
+html body.duarte-messenger-visible .family-tree-button,
+html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
+ display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
+</style>
+<script id="duarte-v98-messenger-family-tree-sync">
+(function(){
+ const modalId='ffMsgModal';
+ function sync(){
+  const modal=document.getElementById(modalId);
+  const open=!!modal && modal.classList.contains('open');
+  document.body.classList.toggle('duarte-messenger-visible',open);
+  const fab=document.getElementById('ffFamilyTreeFab');
+  if(fab){
+   if(open){ fab.setAttribute('hidden','');fab.style.setProperty('display','none','important'); }
+   else {fab.removeAttribute('hidden');fab.style.removeProperty('display');}
+  }
+ }
+ function init(){
+  const modal=document.getElementById(modalId);
+  if(!modal)return;
+  new MutationObserver(sync).observe(modal,{attributes:true,attributeFilter:['class','style']});
+  sync();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+ else init();
+})();
+</script>
+
 </body>
 </html>
 
@@ -15170,3 +15204,4 @@ $('ffV87End')?.addEventListener('click',()=>leave(true));
   },true);
 })();
 </script>
+

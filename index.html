@@ -1963,6 +1963,46 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   #ffMsgModal .ff-chat-head #ffGroupCallBtn { display:none!important; }
 }
 </style>
+
+<style id="duarte-transparent-photo-emoji-trays-v113">
+/* Photo reactions: remove the dark pill and white button tiles; leave only emojis. */
+#ffV112Picker,
+#ffV92ReactionPicker,
+#ffV92ReactionPicker.ff-v112-picker-floating,
+#ffV74PhotoViewer .ff-v92-react-picker {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 4px !important;
+}
+#ffV112Picker button,
+#ffV92ReactionPicker button,
+#ffV74PhotoViewer .ff-v92-react-picker button {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  padding: 3px 5px !important;
+  border-radius: 0 !important;
+}
+#ffV112Picker button:hover,
+#ffV92ReactionPicker button:hover {
+  background: transparent !important;
+  transform: scale(1.12);
+}
+</style>
+<style id="duarte-v114-post-details-style">
+.ff114-options{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 12px;align-items:center}
+.ff114-options button{appearance:none;border:1px solid #bfc6cf;background:#fff;color:#222;border-radius:19px;padding:8px 11px;font:600 12px Arial,sans-serif;cursor:pointer;min-height:36px}
+.ff114-options button[aria-expanded="true"]{border-color:#1877f2;color:#1877f2}
+.ff114-fields{display:none;gap:9px;flex-wrap:wrap;padding:10px;background:#1c1e22;border:1px solid #414650;border-radius:12px;margin-bottom:10px}
+.ff114-fields.open{display:flex}
+.ff114-field{display:flex;flex:1 1 150px;min-width:0;flex-direction:column;gap:5px;color:#ededed;font:600 12px Arial,sans-serif}
+.ff114-field input,.ff114-field select{width:100%;min-width:0;border:1px solid #555;background:#272b30;color:#fff;border-radius:8px;padding:9px;font-size:16px}
+@media(max-width:700px){.ff114-options{gap:5px}.ff114-options button{font-size:12px;padding:8px 9px}.ff114-fields{max-height:30dvh;overflow-y:auto}.ff114-field{flex-basis:100%}}
+</style>
 </head>
 
 
@@ -4020,7 +4060,7 @@ async function publishModalPost() {
         return;
     }
 
-    document.getElementById("postInput").value = text;
+    document.getElementById("postInput").value = window.ff114Details?.combine(text,"post") || text;
     closePostModal();
     await publishPost();
     textarea.value = "";
@@ -4900,7 +4940,7 @@ async function uploadGalleryPhoto() {
         return;
     }
 
-    const caption = document.getElementById("galleryCaption").value.trim();
+    const caption = window.ff114Details?.combine(document.getElementById("galleryCaption").value.trim(),"gallery") || document.getElementById("galleryCaption").value.trim();
     const button = document.getElementById("galleryUploadButton");
     button.disabled = true;
     button.textContent = "UPLOADING...";
@@ -5836,14 +5876,14 @@ async function ffAlbumOptimizeImage(file,statusEl,index,total){
 }
 async function ffAlbumUploadFile(file,albumId){const path=`albums/${currentUser.id}/${albumId}/${Date.now()}-${crypto.randomUUID()}.jpg`;const up=await supabaseClient.storage.from("family-gallery").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg",cacheControl:"3600"});if(up.error)throw up.error;const url=supabaseClient.storage.from("family-gallery").getPublicUrl(path)?.data?.publicUrl;if(!url)throw new Error("Photo URL could not be created.");return url;}
 async function ffAlbumInsertFiles(albumId,files,caption="",statusEl=null){const urls=[],valid=files.filter(f=>f?.type?.startsWith("image/"));let i=0;for(const file of valid){i++;const optimized=await ffAlbumOptimizeImage(file,statusEl,i,valid.length);if(statusEl)statusEl.textContent=`Uploading photo ${i} of ${valid.length}...`;const url=await ffAlbumUploadFile(optimized,albumId);const ins=await supabaseClient.from("family_album_photos").insert({album_id:albumId,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(ins.error)throw ins.error;urls.push(url);await new Promise(r=>setTimeout(r,0));}return urls;}
-async function saveAlbum(){const st=document.getElementById("ffAlbumStatus"),title=document.getElementById("ffAlbumTitle").value.trim();if(!title){st.textContent="Album title is required.";return;}const payload={title,description:document.getElementById("ffAlbumDescription").value.trim()||null,album_date:document.getElementById("ffAlbumDate").value||null,cover_url:document.getElementById("ffAlbumCover").value.trim()||null};const files=[...(document.getElementById("ffAlbumCreateFiles")?.files||[])];st.textContent=files.length?`Creating album and uploading ${files.length} photo${files.length===1?"":"s"}...`:"Saving...";try{if(ffEditingAlbumId){const r=await supabaseClient.from("family_albums").update(payload).eq("id",ffEditingAlbumId);if(r.error)throw r.error;}else{const r=await supabaseClient.from("family_albums").insert({...payload,created_by:currentUser.id}).select("id").single();if(r.error)throw r.error;ffEditingAlbumId=r.data.id;if(files.length){const urls=await ffAlbumInsertFiles(ffEditingAlbumId,files,"",st);if(!payload.cover_url&&urls[0])await supabaseClient.from("family_albums").update({cover_url:urls[0]}).eq("id",ffEditingAlbumId);}}closeAlbumEditor();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Album could not be saved.";}}
+async function saveAlbum(){const st=document.getElementById("ffAlbumStatus"),title=document.getElementById("ffAlbumTitle").value.trim();if(!title){st.textContent="Album title is required.";return;}const payload={title,description:(window.ff114Details?.combine(document.getElementById("ffAlbumDescription").value.trim(),"album")||document.getElementById("ffAlbumDescription").value.trim())||null,album_date:document.getElementById("ffAlbumDate").value||null,cover_url:document.getElementById("ffAlbumCover").value.trim()||null};const files=[...(document.getElementById("ffAlbumCreateFiles")?.files||[])];st.textContent=files.length?`Creating album and uploading ${files.length} photo${files.length===1?"":"s"}...`:"Saving...";try{if(ffEditingAlbumId){const r=await supabaseClient.from("family_albums").update(payload).eq("id",ffEditingAlbumId);if(r.error)throw r.error;}else{const r=await supabaseClient.from("family_albums").insert({...payload,created_by:currentUser.id}).select("id").single();if(r.error)throw r.error;ffEditingAlbumId=r.data.id;if(files.length){const urls=await ffAlbumInsertFiles(ffEditingAlbumId,files,"",st);if(!payload.cover_url&&urls[0])await supabaseClient.from("family_albums").update({cover_url:urls[0]}).eq("id",ffEditingAlbumId);}}closeAlbumEditor();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Album could not be saved.";}}
 async function deleteAlbum(id){if(!confirm("Delete this album and all photos inside it?"))return;const {error}=await supabaseClient.from("family_albums").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyAlbums();}
 async function openAlbum(id){ffCurrentAlbum=ffAlbums.find(x=>Number(x.id)===Number(id));if(!ffCurrentAlbum)return;document.getElementById("ffAlbumViewTitle").textContent=ffCurrentAlbum.title;document.getElementById("ffAlbumViewMeta").textContent=[ffCurrentAlbum.album_date,ffCurrentAlbum.profiles?.full_name].filter(Boolean).join(" · ");document.getElementById("ffAlbumViewDescription").textContent=ffCurrentAlbum.description||"";document.getElementById("ffAlbumView")?.classList.add("open");await loadAlbumPhotos();}
 function closeAlbumView(){document.getElementById("ffAlbumView")?.classList.remove("open");ffCurrentAlbum=null;}
 async function loadAlbumPhotos(){if(!ffCurrentAlbum)return;const box=document.getElementById("ffAlbumPhotos");box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';const {data,error}=await supabaseClient.from("family_album_photos").select("id,image_url,caption,uploaded_by,created_at").eq("album_id",ffCurrentAlbum.id).order("created_at",{ascending:false});if(error){box.innerHTML='<div class="ff-albums-empty">'+ffAlbEsc(error.message)+'</div>';return;}const canAlbum=ffAlbAdmin()||ffCurrentAlbum.created_by===currentUser?.id;box.innerHTML=(data||[]).length?(data||[]).map(p=>`<div class="ff-album-photo"><img src="${ffAlbEsc(p.image_url)}" alt="" onclick="openPhotoViewer(${chr(39)}${ffAlbEsc(p.image_url)}${chr(39)})" style="cursor:pointer"><div class="ff-album-photo-copy">${ffAlbEsc(p.caption||"")}${(canAlbum||p.uploaded_by===currentUser?.id)?`<br><button onclick="deleteAlbumPhoto(${Number(p.id)})">Delete photo</button>`:""}</div></div>`).join(""):'<div class="ff-albums-empty">No photos in this album yet.</div>';}
 function openAlbumPhotoEditor(){if(!ffCurrentAlbum)return;const f=document.getElementById("ffAlbumPhotoFiles");if(f)f.value="";document.getElementById("ffAlbumPhotoUrl").value="";document.getElementById("ffAlbumPhotoCaption").value="";document.getElementById("ffAlbumPhotoStatus").textContent="";document.getElementById("ffAlbumPhotoEditor")?.classList.add("open");}
 function closeAlbumPhotoEditor(){document.getElementById("ffAlbumPhotoEditor")?.classList.remove("open");}
-async function saveAlbumPhoto(){if(!ffCurrentAlbum)return;const st=document.getElementById("ffAlbumPhotoStatus"),url=document.getElementById("ffAlbumPhotoUrl").value.trim(),caption=document.getElementById("ffAlbumPhotoCaption").value.trim(),files=[...(document.getElementById("ffAlbumPhotoFiles")?.files||[])];if(!url&&!files.length){st.textContent="Choose at least one photo.";return;}st.textContent=files.length?`Uploading ${files.length} photo${files.length===1?"":"s"}...`:"Adding...";try{if(files.length)await ffAlbumInsertFiles(ffCurrentAlbum.id,files,caption,st);if(url){const r=await supabaseClient.from("family_album_photos").insert({album_id:ffCurrentAlbum.id,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(r.error)throw r.error;}closeAlbumPhotoEditor();await loadAlbumPhotos();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Photo upload failed.";}}
+async function saveAlbumPhoto(){if(!ffCurrentAlbum)return;const st=document.getElementById("ffAlbumPhotoStatus"),url=document.getElementById("ffAlbumPhotoUrl").value.trim(),caption=window.ff114Details?.combine(document.getElementById("ffAlbumPhotoCaption").value.trim(),"albumphoto")||document.getElementById("ffAlbumPhotoCaption").value.trim(),files=[...(document.getElementById("ffAlbumPhotoFiles")?.files||[])];if(!url&&!files.length){st.textContent="Choose at least one photo.";return;}st.textContent=files.length?`Uploading ${files.length} photo${files.length===1?"":"s"}...`:"Adding...";try{if(files.length)await ffAlbumInsertFiles(ffCurrentAlbum.id,files,caption,st);if(url){const r=await supabaseClient.from("family_album_photos").insert({album_id:ffCurrentAlbum.id,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(r.error)throw r.error;}closeAlbumPhotoEditor();await loadAlbumPhotos();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Photo upload failed.";}}
 async function deleteAlbumPhoto(id){if(!confirm("Delete this photo from the album?"))return;const {error}=await supabaseClient.from("family_album_photos").delete().eq("id",id);if(error)return alert(error.message);await loadAlbumPhotos();}
 </script>
 
@@ -14120,7 +14160,7 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.conta
  function init(){if(panel)return;panel=document.createElement('section');panel.id='duarteV63Composer';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','Create Clan Post');panel.innerHTML='<div class="ff-v63-top"><span>Create Clan Post</span><button type="button" id="duarteV63CancelTop">Cancel</button></div><textarea id="duarteV63Text" placeholder="Share something with the Duarte Clan..." aria-label="Write your clan post"></textarea><div class="ff-v63-bottom"><button type="button" id="duarteV63Cancel">Cancel</button><button type="button" id="duarteV63Publish" style="background:#e9b62e;color:#151515;font-weight:800">Publish</button></div>';document.body.appendChild(panel);field=panel.querySelector('textarea');panel.querySelector('#duarteV63Cancel').addEventListener('click',close);panel.querySelector('#duarteV63CancelTop').addEventListener('click',close);panel.querySelector('#duarteV63Publish').addEventListener('click',publish)}
  function open(){init();oldScroll=window.scrollY;const legacy=document.getElementById('postModal');legacy?.classList.remove('show');document.body.classList.remove('ff-v62-post-open');field.value=document.getElementById('postInput')?.value||'';panel.classList.add('ff-open');document.body.classList.add('ff-v63-composing');window.ffDuarteMobileOverlayLockV54?.schedule?.();setTimeout(()=>field.focus({preventScroll:true}),60)}
  function close(){if(!panel)return;panel.classList.remove('ff-open');document.body.classList.remove('ff-v63-composing');window.ffDuarteMobileOverlayLockV54?.schedule?.();requestAnimationFrame(()=>{if(!document.body.classList.contains('ff-v54-overlay-open'))window.scrollTo(0,oldScroll)})}
- async function publish(){if(busy)return;const content=field.value.trim();if(!content){field.focus();return}const original=document.getElementById('postInput');if(!original||typeof window.publishPost!=='function'){alert('Posting is temporarily unavailable. Please refresh.');return}busy=true;const button=panel.querySelector('#duarteV63Publish');button.disabled=true;button.textContent='Publishing…';try{original.value=content;await window.publishPost();if(!original.value.trim()){field.value='';close()}else{field.value=original.value;}}catch(err){alert('Could not publish: '+(err?.message||err))}finally{busy=false;button.disabled=false;button.textContent='Publish'}}
+ async function publish(){if(busy)return;const content=field.value.trim();if(!content){field.focus();return}const original=document.getElementById('postInput');if(!original||typeof window.publishPost!=='function'){alert('Posting is temporarily unavailable. Please refresh.');return}busy=true;const button=panel.querySelector('#duarteV63Publish');button.disabled=true;button.textContent='Publishing…';try{original.value=window.ff114Details?.combine(content,"mobilepost") || content;await window.publishPost();if(!original.value.trim()){field.value='';close()}else{field.value=original.value;}}catch(err){alert('Could not publish: '+(err?.message||err))}finally{busy=false;button.disabled=false;button.textContent='Publish'}}
  document.addEventListener('click',e=>{if(!mobile())return;const write=e.target.closest?.('[onclick*="openPostModal"]');if(write){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open()}},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel?.classList.contains('ff-open'))close()});
  window.duarteV63OpenComposer=open;
@@ -14783,6 +14823,30 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
  body:has(#ffV74PhotoViewer.open) .mobile-bottom-nav,body:has(#ffV74PhotoViewer.open) .ff-mobile-bottom-nav{display:none!important}
 }
 </style>
+<script id="duarte-v114-post-details-script">
+(function(){
+ const destinations=[['postModal','post'],['galleryUploadModal','gallery'],['ffAlbumEditor','album'],['ffAlbumPhotoEditor','albumphoto'],['duarteV63Composer','mobilepost']];
+ const feelings=['','Happy 😊','Loved 🥰','Excited 🤩','Grateful 🙏','Blessed ❤️','Celebrating 🎉','Remembering 🕯️','Sad 😢','Proud 💛','Missing someone 💙'];
+ function install(id,key){const host=document.getElementById(id);if(!host||host.querySelector('.ff114-options'))return;
+  const bar=document.createElement('div');bar.className='ff114-options';bar.innerHTML=['👥 People','😊 Feeling/activity','📍 Location'].map((a,i)=>`<button type="button" data-open="${i}" aria-expanded="false">${a}</button>`).join('');
+  const fields=document.createElement('div');fields.className='ff114-fields';fields.innerHTML=`<label class="ff114-field">People (member names, separated by commas)<input data-ff114="people" type="text" maxlength="240" placeholder="Add family members" autocomplete="off"></label><label class="ff114-field">Feeling / Activity<select data-ff114="feeling">${feelings.map(f=>`<option value="${f}">${f||'Select feeling or activity'}</option>`).join('')}</select></label><label class="ff114-field">Location<input data-ff114="location" type="text" maxlength="150" placeholder="Add a place (optional)" autocomplete="off"></label>`;
+  bar.addEventListener('click',e=>{const b=e.target.closest('button[data-open]');if(!b)return;const isOpen=fields.classList.toggle('open');bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-expanded',String(isOpen)));if(isOpen)fields.querySelectorAll('input,select')[Number(b.dataset.open)]?.focus()});
+  const target=host.querySelector('#modalPostText,#galleryCaption,#ffAlbumDescription,#ffAlbumPhotoCaption,#duarteV63Text');
+  if(target){target.insertAdjacentElement('afterend',bar);bar.insertAdjacentElement('afterend',fields)}
+  else {host.querySelector('.ff-album-form,.modal-box')?.prepend(fields);fields.insertAdjacentElement('beforebegin',bar)}
+ }
+ function read(key){const id={post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=document.getElementById(id);if(!host)return '';
+  const v=k=>host.querySelector(`[data-ff114="${k}"]`)?.value.trim()||'';
+  return [v('people')&&'👥 With '+v('people'),v('feeling')&&'😊 '+v('feeling'),v('location')&&'📍 '+v('location')].filter(Boolean).join(' · ')
+ }
+ function combine(text,key){const m=read(key);return m?[text,m].filter(Boolean).join('\n'):text}
+ function reset(key){const id={post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=document.getElementById(id);host?.querySelectorAll('[data-ff114]').forEach(el=>el.value='')}
+ function mount(){destinations.forEach(([a,b])=>install(a,b))}
+ document.addEventListener('DOMContentLoaded',mount);mount();
+ const watch=new MutationObserver(()=>{if(document.getElementById('duarteV63Composer')){install('duarteV63Composer','mobilepost');watch.disconnect()}});if(!document.getElementById('duarteV63Composer'))watch.observe(document.body||document.documentElement,{childList:true,subtree:true});
+ window.ff114Details={combine,reset,read,install};
+})();
+</script>
 </body>
 </html>
 
@@ -15715,6 +15779,79 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
 @media(max-height:550px){#ffV112GalleryPhoto .v112-social{max-height:58dvh;min-height:108px}#ffV112GalleryPhoto .v112-comments{max-height:55px}}
 body:has(#ffV112GalleryPhoto.open) .mobile-bottom-nav,body:has(#ffV112GalleryPhoto.open) .ff-mobile-bottom-nav{display:none!important}
 </style>
+<style id="ff-v113-mobile-gallery-comment-visible">
+/* V113: Mobile-only Family Gallery photo viewer: keep composer and Send visible. */
+@media (max-width:760px){
+  #ffV112GalleryPhoto.open{
+    display:grid!important;
+    grid-template-rows:44px minmax(0,1fr) minmax(170px,auto);
+    width:100vw!important;
+    height:var(--ff-gallery-visible-height,100dvh)!important;
+    max-height:var(--ff-gallery-visible-height,100dvh)!important;
+    top:var(--ff-gallery-visible-top,0px)!important;
+    bottom:auto!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+  #ffV112GalleryPhoto .v112-stage{min-height:0!important;min-width:0;overflow:hidden!important}
+  #ffV112GalleryPhoto .v112-stage img{max-height:100%!important;max-width:100%!important}
+  #ffV112GalleryPhoto .v112-social{
+    position:relative!important;
+    min-height:170px!important;
+    max-height:min(55%,290px)!important;
+    height:auto!important;
+    overflow:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:5px!important;
+    padding:7px 10px max(10px,env(safe-area-inset-bottom))!important;
+  }
+  #ffV112GalleryPhoto .v112-actions{flex-wrap:wrap;gap:4px!important}
+  #ffV112GalleryPhoto .v112-actions button{min-height:36px;padding:7px 9px}
+  #ffV112GalleryPhoto .v112-count{flex-basis:100%;font-size:10px}
+  #ffV112GalleryPhoto .v112-comments{min-height:0!important;max-height:none!important;flex:1 1 auto!important;overflow-y:auto!important}
+  #ffV112GalleryPhoto .v112-compose{
+    display:flex!important;visibility:visible!important;
+    position:relative!important;flex:0 0 46px!important;
+    width:100%!important;min-height:46px!important;z-index:2!important;
+  }
+  #ffV112GalleryPhoto .v112-compose input{
+    display:block!important;visibility:visible!important;
+    height:44px!important;min-height:44px!important;
+    min-width:0!important;font-size:16px!important;
+  }
+  #ffV112GalleryPhoto .v112-compose button{
+    display:block!important;visibility:visible!important;
+    flex:0 0 auto!important;min-width:62px!important;
+    min-height:44px!important;
+  }
+}
+@media (max-width:760px) and (max-height:500px){
+  #ffV112GalleryPhoto.open{grid-template-rows:36px minmax(0,1fr) minmax(125px,auto)}
+  #ffV112GalleryPhoto header{height:36px;flex-basis:36px}
+  #ffV112GalleryPhoto .v112-social{min-height:125px!important;max-height:72%!important}
+  #ffV112GalleryPhoto .v112-caption,#ffV112GalleryPhoto .v112-count{display:none}
+}
+</style>
+<script id="ff-v113-gallery-keyboard-fit">
+(function(){
+  'use strict';
+  const viewer=()=>document.getElementById('ffV112GalleryPhoto');
+  function fit(){
+    const root=viewer();if(!root||!root.classList.contains('open'))return;
+    if(window.matchMedia('(min-width:761px)').matches){root.style.removeProperty('--ff-gallery-visible-height');root.style.removeProperty('--ff-gallery-visible-top');return;}
+    const viewport=window.visualViewport;
+    const height=Math.max(180,Math.round(viewport?.height||window.innerHeight));
+    root.style.setProperty('--ff-gallery-visible-height',height+'px');
+    root.style.setProperty('--ff-gallery-visible-top',Math.round(viewport?.offsetTop||0)+'px');
+  }
+  if(window.visualViewport){visualViewport.addEventListener('resize',fit,{passive:true});visualViewport.addEventListener('scroll',fit,{passive:true});}
+  window.addEventListener('resize',fit,{passive:true});
+  document.addEventListener('focusin',e=>{if(e.target?.id==='ffV112Input')requestAnimationFrame(fit)});
+  const root=viewer();if(root&&window.MutationObserver){new MutationObserver(fit).observe(root,{attributes:true,attributeFilter:['class']});}
+  document.addEventListener('click',e=>{if(e.target.closest('[data-v112-gallery-photo]'))requestAnimationFrame(fit)},true);
+})();
+</script>
 <div id="ffV112GalleryPhoto" role="dialog" aria-modal="true" aria-label="Family Gallery photo">
 <header><strong>Family Gallery Photo</strong><button class="v112-close" type="button" onclick="ffV112CloseGalleryPhoto()" aria-label="Close photo">×</button></header>
 <div class="v112-stage" id="ffV112Stage"><img id="ffV112Image" alt="Family Gallery photo"></div>

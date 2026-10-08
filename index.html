@@ -2003,6 +2003,13 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 .ff114-field input,.ff114-field select{width:100%;min-width:0;border:1px solid #555;background:#272b30;color:#fff;border-radius:8px;padding:9px;font-size:16px}
 @media(max-width:700px){.ff114-options{gap:5px}.ff114-options button{font-size:12px;padding:8px 9px}.ff114-fields{max-height:30dvh;overflow-y:auto}.ff114-field{flex-basis:100%}}
 </style>
+<style id="ff-v118-post-details-before-publish">
+.create-post .ff114-options{display:flex!important;align-items:center;gap:6px;flex-wrap:wrap;margin:12px 0 5px!important;position:relative;z-index:2}
+.create-post .ff114-options button{border-radius:24px!important;background:transparent!important;color:inherit!important;border:1px solid rgba(160,160,160,.5)!important;padding:8px 11px!important;min-height:36px!important;white-space:nowrap}
+.create-post .ff114-fields.open{display:flex!important;flex-wrap:wrap;gap:8px;padding:9px 0!important}
+.create-post .ff114-field{min-width:min(220px,100%);flex:1 1 180px}
+@media(max-width:700px){.create-post .ff114-options{gap:5px!important}.create-post .ff114-options button{font-size:11px!important;padding:8px!important}}
+</style>
 </head>
 
 
@@ -3651,7 +3658,8 @@ async function uploadDuartePostPhoto(file) {
 
 async function publishPost() {
     const input = document.getElementById("postInput");
-    const text = input.value.trim();
+    const rawText = input.value.trim();
+    const text = window.ff114Details?.combine(rawText,"home") || rawText;
     const multiFiles = window.ffRichComposerV41?.getFiles?.() || [];
     const hasPhoto = !!selectedPostPhotoFile || multiFiles.length > 0;
 
@@ -3680,6 +3688,7 @@ async function publishPost() {
             }
             await window.ffOfflineQueue.enqueuePost(text,photo);
             input.value = "";
+            window.ff114Details?.reset("home");
             clearSelectedPostPhoto();
             window.ffRichComposerV41?.clear?.();
             window.ffShowOfflinePending?.("post", text || "Photo");
@@ -3725,6 +3734,7 @@ async function publishPost() {
         }
 
         input.value = "";
+        window.ff114Details?.reset("home");
         clearSelectedPostPhoto();
         window.ffRichComposerV41?.clear?.();
         await loadPosts();
@@ -14825,22 +14835,22 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
 </style>
 <script id="duarte-v114-post-details-script">
 (function(){
- const destinations=[['postModal','post'],['galleryUploadModal','gallery'],['ffAlbumEditor','album'],['ffAlbumPhotoEditor','albumphoto'],['duarteV63Composer','mobilepost']];
+ const destinations=[['homeInlinePost','home'],['postModal','post'],['galleryUploadModal','gallery'],['ffAlbumEditor','album'],['ffAlbumPhotoEditor','albumphoto'],['duarteV63Composer','mobilepost']];
  const feelings=['','Happy 😊','Loved 🥰','Excited 🤩','Grateful 🙏','Blessed ❤️','Celebrating 🎉','Remembering 🕯️','Sad 😢','Proud 💛','Missing someone 💙'];
- function install(id,key){const host=document.getElementById(id);if(!host||host.querySelector('.ff114-options'))return;
+ function install(id,key){const host=id==='homeInlinePost'?document.querySelector('.create-post'):document.getElementById(id);if(!host||host.querySelector('.ff114-options'))return;
   const bar=document.createElement('div');bar.className='ff114-options';bar.innerHTML=['👥 People','😊 Feeling/activity','📍 Location'].map((a,i)=>`<button type="button" data-open="${i}" aria-expanded="false">${a}</button>`).join('');
   const fields=document.createElement('div');fields.className='ff114-fields';fields.innerHTML=`<label class="ff114-field">People (member names, separated by commas)<input data-ff114="people" type="text" maxlength="240" placeholder="Add family members" autocomplete="off"></label><label class="ff114-field">Feeling / Activity<select data-ff114="feeling">${feelings.map(f=>`<option value="${f}">${f||'Select feeling or activity'}</option>`).join('')}</select></label><label class="ff114-field">Location<input data-ff114="location" type="text" maxlength="150" placeholder="Add a place (optional)" autocomplete="off"></label>`;
   bar.addEventListener('click',e=>{const b=e.target.closest('button[data-open]');if(!b)return;const isOpen=fields.classList.toggle('open');bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-expanded',String(isOpen)));if(isOpen)fields.querySelectorAll('input,select')[Number(b.dataset.open)]?.focus()});
-  const target=host.querySelector('#modalPostText,#galleryCaption,#ffAlbumDescription,#ffAlbumPhotoCaption,#duarteV63Text');
-  if(target){target.insertAdjacentElement('afterend',bar);bar.insertAdjacentElement('afterend',fields)}
+  const target=key==='home'?host.querySelector('.post-tools'):host.querySelector('#modalPostText,#galleryCaption,#ffAlbumDescription,#ffAlbumPhotoCaption,#duarteV63Text');
+  if(target){target.insertAdjacentElement(key==='home'?'beforebegin':'afterend',bar);bar.insertAdjacentElement('afterend',fields)}
   else {host.querySelector('.ff-album-form,.modal-box')?.prepend(fields);fields.insertAdjacentElement('beforebegin',bar)}
  }
- function read(key){const id={post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=document.getElementById(id);if(!host)return '';
+ function read(key){const id={home:'homeInlinePost',post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=key==='home'?document.querySelector('.create-post'):document.getElementById(id);if(!host)return '';
   const v=k=>host.querySelector(`[data-ff114="${k}"]`)?.value.trim()||'';
   return [v('people')&&'👥 With '+v('people'),v('feeling')&&'😊 '+v('feeling'),v('location')&&'📍 '+v('location')].filter(Boolean).join(' · ')
  }
  function combine(text,key){const m=read(key);return m?[text,m].filter(Boolean).join('\n'):text}
- function reset(key){const id={post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=document.getElementById(id);host?.querySelectorAll('[data-ff114]').forEach(el=>el.value='')}
+ function reset(key){const id={home:'homeInlinePost',post:'postModal',gallery:'galleryUploadModal',album:'ffAlbumEditor',albumphoto:'ffAlbumPhotoEditor',mobilepost:'duarteV63Composer'}[key];const host=key==='home'?document.querySelector('.create-post'):document.getElementById(id);host?.querySelectorAll('[data-ff114]').forEach(el=>el.value='')}
  function mount(){destinations.forEach(([a,b])=>install(a,b))}
  document.addEventListener('DOMContentLoaded',mount);mount();
  const watch=new MutationObserver(()=>{if(document.getElementById('duarteV63Composer')){install('duarteV63Composer','mobilepost');watch.disconnect()}});if(!document.getElementById('duarteV63Composer'))watch.observe(document.body||document.documentElement,{childList:true,subtree:true});
@@ -15029,6 +15039,115 @@ html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:no
  window.ff117CloseHomePhoto=close;
 })();
 </script>
+
+<!-- V119: mobile Android Back returns to previous Duarte view; never signs out -->
+<script id="duarte-v119-mobile-back-navigation">
+(function(){
+  'use strict';
+  if(!window.history || !history.pushState) return;
+  const mobile=()=>window.matchMedia('(max-width:760px)').matches;
+  let restoring=false, lastKey='', current={section:'home',overlay:'',chat:false};
+  const overlays=[
+    ['photo','#ff117Photo'],['galleryPhoto','#ffV112GalleryPhoto'],
+    ['albumPhoto','#ffV66AlbumPhotoModal'],['legacyPhoto','#photoViewer'],
+    ['profile','#ffFullProfile'],['messenger','#ffMsgModal'],
+    ['album','#ffAlbumView'],['story','#ffStoryViewer'],
+    ['composer','#duarteV63Composer'],['groupCall','#ffGroupCallModal']
+  ];
+  function openEl(el){
+    if(!el)return false;
+    const cs=getComputedStyle(el);
+    return (el.classList.contains('open')||el.classList.contains('show')) && cs.display!=='none' && cs.visibility!=='hidden';
+  }
+  function section(){
+    const ids=[['gallery','galleryManager'],['members','membersManager'],['events','eventManager'],['profile','profileManager']];
+    for(const [name,id] of ids)if(document.getElementById(id)?.classList.contains('show'))return name;
+    return 'home';
+  }
+  function snapshot(){
+    let overlay='';for(const [name,sel] of overlays){if(openEl(document.querySelector(sel))){overlay=name;break;}}
+    const chat=!!(document.getElementById('ffMsgShell')?.classList.contains('chat-open')||document.body.classList.contains('ff-mobile-chat-open'));
+    return {section:section(),overlay,chat:overlay==='messenger'&&chat};
+  }
+  const key=v=>[v.section,v.overlay,v.chat?'chat':'list'].join('|');
+  function record(){
+    if(restoring||!mobile())return;
+    const next=snapshot(), k=key(next);
+    if(k===lastKey)return;
+    lastKey=k;current=next;
+    try{history.pushState({duarteV119:true,view:next},'',location.href);}catch(e){console.warn('Duarte view history',e);}
+  }
+  function closeOverlays(){
+    try{window.closeMobileClanMenu?.()}catch(e){}
+    try{window.ffMobileMessengerBack?.()}catch(e){}
+    for(const [name,sel] of overlays){
+      const el=document.querySelector(sel);
+      if(!el)continue;
+      el.classList.remove('open','show');
+      if(name==='groupCall')el.setAttribute('aria-hidden','true');
+    }
+    document.getElementById('ffMsgShell')?.classList.remove('chat-open');
+    document.body.classList.remove('ff-mobile-chat-open');
+    // Do not call logout(), signOut() or change location when navigating back.
+    if(!document.querySelector('.ff-call-layer.open,.ff-gc-stage.open')){
+      document.documentElement.style.overflow=''; document.body.style.overflow='';
+    }
+  }
+  function restore(target){
+    restoring=true;
+    try{
+      closeOverlays();
+      const dest=target?.section||'home';
+      if(typeof window.showSection==='function')window.showSection(dest);
+      if(target?.overlay==='messenger' && typeof window.openMessenger==='function')window.openMessenger();
+      else if(target?.overlay==='profile')document.getElementById('ffFullProfile')?.classList.add('open');
+      // Old closed photo overlays are not reopened with a stale photo URL.
+      const v=snapshot(); lastKey=key(v);current=v;
+    }catch(e){console.warn('Duarte Back view restore',e)}
+    finally{restoring=false;}
+  }
+  function onBack(event){
+    if(!mobile())return;
+    const target=event.state?.duarteV119?event.state.view:{section:'home',overlay:'',chat:false};
+    restore(target);
+    // At the initial Home history entry, insert a guard so another Back
+    // cannot close the website or fall through to the login page.
+    if(target.section==='home' && !target.overlay && !target.chat){
+      const safe={section:'home',overlay:'',chat:false};
+      try{history.pushState({duarteV119:true,view:safe},'',location.href)}catch(e){}
+      lastKey=key(safe);current=safe;
+    }
+  }
+  function init(){
+    if(!mobile())return;
+    const base={section:'home',overlay:'',chat:false};
+    try{
+      history.replaceState({duarteV119:true,view:base},'',location.href);
+      // One guard entry prevents Back from exiting immediately on Home.
+      history.pushState({duarteV119:true,view:base},'',location.href);
+    }catch(e){}
+    lastKey=key(base);current=base;
+    if(typeof window.showSection==='function'){
+      const original=window.showSection;
+      if(!original.__duarteV119){
+        const wrapped=function(){const ret=original.apply(this,arguments);if(!restoring)queueMicrotask(record);return ret;};
+        wrapped.__duarteV119=true;window.showSection=wrapped;
+      }
+    }
+    // Capture navigation that uses inline handlers or separately defined mobile views.
+    document.addEventListener('click',event=>{
+      const t=event.target.closest('button,a,[role="button"],.ff-conversation,[data-conversation-id]');
+      if(!t || /logout|log out|sign out/i.test((t.textContent||'').trim()) || t.closest('[data-v50-go="logout"]'))return;
+      setTimeout(record,90);
+      setTimeout(record,350);
+    },true);
+    addEventListener('popstate',onBack);
+    addEventListener('pageshow',e=>{if(e.persisted){restoring=false;lastKey=key(snapshot());}});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
 </body>
 </html>
 

@@ -4843,7 +4843,7 @@ async function loadGallery() {
                     <img class="gallery-image"
                          src="${escapeHTML(photo.image_url)}"
                          alt="${escapeHTML(photo.caption || "Duarte family photo")}"
-                         onclick="openPhotoViewer('${escapeHTML(photo.image_url)}')">
+                         data-v112-gallery-photo="${Number(photo.id)}">
                     <div class="gallery-meta">
                         ${photo.caption ? `<div class="gallery-caption">${escapeHTML(photo.caption)}</div>` : ""}
                         <div class="gallery-by">Shared by ${escapeHTML(who)}<br>${escapeHTML(when)}</div>
@@ -15687,5 +15687,77 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
   // Detect call display changes without polling during normal browsing.
   var layers=[document.getElementById('ffCallLayer'),document.getElementById('ffV87Call')].filter(Boolean);
   if(layers.length&&window.MutationObserver){var mo=new MutationObserver(fit);layers.forEach(function(el){mo.observe(el,{attributes:true,attributeFilter:['class','style']})});}
+})();
+</script>
+
+<style id="ff-v112-gallery-photo-social-css">
+#ffV112GalleryPhoto{position:fixed;inset:0;z-index:110000;background:#101114;color:#fff;display:none;flex-direction:column;height:100dvh;max-height:100dvh;overflow:hidden}
+#ffV112GalleryPhoto.open{display:flex}
+#ffV112GalleryPhoto header{height:46px;flex:0 0 46px;display:flex;justify-content:space-between;align-items:center;padding:0 14px;background:#18191b}
+#ffV112GalleryPhoto button{cursor:pointer}
+#ffV112GalleryPhoto .v112-close{background:#303237;color:white;border:0;border-radius:50%;font-size:24px;width:36px;height:36px}
+#ffV112GalleryPhoto .v112-stage{flex:1 1 auto;min-height:75px;overflow:hidden;display:flex;align-items:center;justify-content:center;touch-action:none;position:relative}
+#ffV112GalleryPhoto .v112-stage img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;user-select:none;-webkit-user-drag:none;will-change:transform}
+#ffV112GalleryPhoto .v112-social{flex:0 0 auto;display:flex;flex-direction:column;max-height:min(42dvh,310px);min-height:120px;background:#18191b;border-top:1px solid #3d4046;padding:7px 12px max(10px,env(safe-area-inset-bottom));gap:5px}
+#ffV112GalleryPhoto .v112-caption{font-size:12px;max-height:35px;overflow:auto}
+#ffV112GalleryPhoto .v112-actions{display:flex;align-items:center;gap:9px;flex-shrink:0}
+#ffV112GalleryPhoto .v112-actions button{border:0;border-radius:9px;background:#31363e;color:#fff;padding:9px 12px;font-weight:600}
+#ffV112GalleryPhoto .v112-count{font-size:11px;color:#ccc;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ffV112GalleryPhoto .v112-comments{overflow:auto;min-height:26px;max-height:130px;flex:1 1 auto;font-size:12px;overscroll-behavior:contain}
+#ffV112GalleryPhoto .v112-comment{padding:6px 3px;border-bottom:1px solid #34363b;overflow-wrap:anywhere}
+#ffV112GalleryPhoto .v112-compose{display:flex;flex-shrink:0;gap:8px;min-height:44px}
+#ffV112GalleryPhoto .v112-compose input{flex:1;min-width:0;border-radius:20px;background:#303237;color:white;border:1px solid #565b62;padding:10px 12px;font-size:16px}
+#ffV112GalleryPhoto .v112-compose button{background:#237bdf;border:0;border-radius:20px;color:white;padding:0 15px;font-weight:bold}
+#ffV112Picker,#ffV92ReactionPicker.ff-v112-picker-floating{position:fixed!important;display:none;left:var(--v112-picker-left,8px)!important;top:var(--v112-picker-top,60px)!important;bottom:auto!important;max-width:calc(100vw - 16px);box-sizing:border-box;z-index:2147483647!important;overflow-x:auto;background:#292b30;border:1px solid #565960;border-radius:24px;padding:7px;gap:4px;box-shadow:0 4px 26px #0009;white-space:nowrap}
+#ffV112Picker.open,#ffV92ReactionPicker.ff-v112-picker-floating.open{display:flex!important}
+#ffV112Picker button{background:transparent;border:0;font-size:23px;padding:3px 5px}
+@media(min-width:761px){#ffV112GalleryPhoto{padding:12px 20px}#ffV112GalleryPhoto .v112-stage img{max-width:min(1100px,90vw)}#ffV112GalleryPhoto .v112-social{width:min(860px,90vw);align-self:center;border-radius:12px}#ffV112GalleryPhoto .v112-comments{max-height:135px}}
+@media(max-height:550px){#ffV112GalleryPhoto .v112-social{max-height:58dvh;min-height:108px}#ffV112GalleryPhoto .v112-comments{max-height:55px}}
+body:has(#ffV112GalleryPhoto.open) .mobile-bottom-nav,body:has(#ffV112GalleryPhoto.open) .ff-mobile-bottom-nav{display:none!important}
+</style>
+<div id="ffV112GalleryPhoto" role="dialog" aria-modal="true" aria-label="Family Gallery photo">
+<header><strong>Family Gallery Photo</strong><button class="v112-close" type="button" onclick="ffV112CloseGalleryPhoto()" aria-label="Close photo">×</button></header>
+<div class="v112-stage" id="ffV112Stage"><img id="ffV112Image" alt="Family Gallery photo"></div>
+<div class="v112-social"><div id="ffV112Caption" class="v112-caption"></div>
+<div class="v112-actions"><button id="ffV112Like" type="button" onclick="ffV112TogglePicker(event)">👍 Like</button><button type="button" onclick="document.getElementById('ffV112Input').focus()">💬 Comment</button><button type="button" onclick="ffV112Share()">↗ Share</button><span id="ffV112Count" class="v112-count"></span></div>
+<div id="ffV112Comments" class="v112-comments"></div>
+<div class="v112-compose"><input id="ffV112Input" maxlength="500" placeholder="Write a comment…" aria-label="Write a photo comment"><button type="button" onclick="ffV112Comment()">Send</button></div></div></div>
+<div id="ffV112Picker"><button onclick="ffV112React('like')">👍</button><button onclick="ffV112React('love')">❤️</button><button onclick="ffV112React('care')">🥰</button><button onclick="ffV112React('haha')">😆</button><button onclick="ffV112React('wow')">😮</button><button onclick="ffV112React('sad')">😢</button></div>
+<script id="ff-v112-gallery-social">
+(function(){
+'use strict';
+const el=id=>document.getElementById(id), esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rx={like:'👍',love:'❤️',care:'🥰',haha:'😆',wow:'😮',sad:'😢'};
+let current=null,scale=1,dx=0,dy=0,drag=null,pinch=null,lastTap=0,seq=0;
+const sb=()=>typeof supabaseClient!=='undefined'?supabaseClient:null;
+const uid=()=>typeof currentUser!=='undefined'?currentUser?.id:null;
+function apply(){el('ffV112Image').style.transform=`translate3d(${dx}px,${dy}px,0) scale(${scale})`}
+function reset(){scale=1;dx=dy=0;apply()}
+function hidePicker(){el('ffV112Picker').classList.remove('open');el('ffV92ReactionPicker')?.classList.remove('open')}
+function placePicker(node,anchor){const rect=anchor.getBoundingClientRect(),width=Math.min(320,innerWidth-16);node.style.setProperty('--v112-picker-left',Math.max(8,Math.min(rect.left,innerWidth-width-8))+'px');node.style.setProperty('--v112-picker-top',Math.max(8,rect.top-62)+'px')}
+window.ffV112OpenGalleryPhoto=async function(id){let cli=sb();if(!cli)return;const {data,error}=await cli.from('gallery').select('id,user_id,image_url,caption,created_at').eq('id',id).single();if(error||!data){alert('Photo could not be opened: '+(error?.message||'Not found'));return}current=data;seq++;reset();el('ffV112Image').src=data.image_url;el('ffV112Caption').textContent=data.caption||'';el('ffV112GalleryPhoto').classList.add('open');document.body.classList.add('ff-v112-photo-open');await refresh()};
+window.ffV112CloseGalleryPhoto=function(){el('ffV112GalleryPhoto').classList.remove('open');el('ffV112Image').removeAttribute('src');document.body.classList.remove('ff-v112-photo-open');current=null;seq++;hidePicker();reset()};
+async function refresh(){if(!current)return;const target=seq,id=current.id,cli=sb();const [l,c]=await Promise.all([cli.from('gallery_photo_likes').select('user_id,reaction').eq('photo_id',id),cli.from('gallery_photo_comments').select('id,user_id,content,created_at').eq('photo_id',id).order('created_at',{ascending:true}).limit(80)]);if(seq!==target)return;if(l.error){el('ffV112Count').textContent='Reactions unavailable: '+l.error.message}else{const likes=l.data||[],mine=likes.find(x=>x.user_id===uid());el('ffV112Like').textContent=mine?(rx[mine.reaction]||'👍')+' Reacted':'👍 Like';el('ffV112Count').textContent=likes.length?likes.length+' reactions':''}if(c.error){el('ffV112Comments').textContent='Comments unavailable: '+c.error.message;return}const comments=c.data||[],ids=[...new Set(comments.map(x=>x.user_id).filter(Boolean))];let names={};if(ids.length){const r=await cli.from('profiles').select('id,full_name').in('id',ids);names=Object.fromEntries((r.data||[]).map(x=>[x.id,x.full_name]))}if(seq!==target)return;el('ffV112Comments').innerHTML=comments.map(x=>`<div class="v112-comment"><strong>${esc(names[x.user_id]||'Duarte member')}</strong> ${esc(x.content)} <small>${x.created_at?new Date(x.created_at).toLocaleString():''}</small></div>`).join('')}
+window.ffV112TogglePicker=function(e){e?.stopPropagation();const p=el('ffV112Picker');if(p.classList.contains('open'))return hidePicker();placePicker(p,el('ffV112Like'));p.classList.add('open')};
+window.ffV112React=async function(kind){hidePicker();if(!current||!uid())return alert('Please sign in to react.');const cli=sb(),id=current.id;const r=await cli.from('gallery_photo_likes').select('reaction').eq('photo_id',id).eq('user_id',uid()).maybeSingle();if(r.error)return alert('Could not load photo reaction: '+r.error.message);const out=r.data?.reaction===kind?await cli.from('gallery_photo_likes').delete().eq('photo_id',id).eq('user_id',uid()):await cli.from('gallery_photo_likes').upsert({photo_id:id,user_id:uid(),reaction:kind},{onConflict:'photo_id,user_id'});if(out.error)return alert('Could not save reaction: '+out.error.message+' (Run V112 Gallery SQL setup.)');await refresh()};
+window.ffV112Comment=async function(){const inp=el('ffV112Input'),content=inp.value.trim();if(!current||!content)return;if(!uid())return alert('Please sign in to comment.');const cli=sb(),id=current.id,btn=inp.nextElementSibling;btn.disabled=true;try{const out=await cli.from('gallery_photo_comments').insert({photo_id:id,user_id:uid(),content});if(out.error)throw out.error;inp.value='';await refresh();el('ffV112Comments').scrollTop=el('ffV112Comments').scrollHeight}catch(e){alert('Could not save comment: '+(e?.message||e)+' (Run V112 Gallery SQL setup.)')}finally{btn.disabled=false}};
+el('ffV112Input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();window.ffV112Comment()}});
+window.ffV112Share=async function(){if(!current)return;const url=current.image_url;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',text:current.caption||'Family Gallery photo',url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);alert('Photo link copied.')}else prompt('Copy photo link:',url)}catch(e){if(e?.name!=='AbortError')alert('Unable to share: '+e.message)}};
+// Family Gallery opens the new per-image social viewer without altering albums.
+document.addEventListener('click',e=>{const img=e.target.closest('[data-v112-gallery-photo]');if(img){e.preventDefault();e.stopPropagation();window.ffV112OpenGalleryPhoto(Number(img.dataset.v112GalleryPhoto))}else if(!e.target.closest('#ffV112Picker,#ffV112Like'))hidePicker()},true);
+const stage=el('ffV112Stage');stage.addEventListener('touchstart',e=>{if(e.touches.length===2){pinch={distance:Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),start:scale};drag=null}else if(e.touches.length===1)drag={x:e.touches[0].clientX,y:e.touches[0].clientY,dx,dy}},{passive:true});
+stage.addEventListener('touchmove',e=>{if(e.touches.length===2&&pinch){e.preventDefault();const distance=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.max(1,Math.min(5,pinch.start*distance/pinch.distance));apply()}else if(e.touches.length===1&&drag&&scale>1){e.preventDefault();dx=drag.dx+e.touches[0].clientX-drag.x;dy=drag.dy+e.touches[0].clientY-drag.y;apply()}},{passive:false});
+stage.addEventListener('touchend',e=>{if(e.touches.length!==0)return;pinch=drag=null;const now=Date.now();if(now-lastTap<330){scale=scale>1?1:2.5;dx=dy=0;apply();lastTap=0}else lastTap=now},{passive:true});
+stage.addEventListener('dblclick',()=>{scale=scale>1?1:2.5;dx=dy=0;apply()});stage.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();scale=Math.max(1,Math.min(5,scale+(e.deltaY<0?.25:-.25)));if(scale===1)dx=dy=0;apply()},{passive:false});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&el('ffV112GalleryPhoto').classList.contains('open'))window.ffV112CloseGalleryPhoto()});
+// Album emoji picker moves outside clipped album social panel so emoji options stay visible on mobile.
+let originalAlbumToggle=window.ffV92ToggleReactionPicker;
+if(typeof originalAlbumToggle==='function'){
+ const picker=el('ffV92ReactionPicker');picker?.classList.add('ff-v112-picker-floating');
+ if(picker)document.body.appendChild(picker);
+ window.ffV92ToggleReactionPicker=function(e){e?.stopPropagation?.();const p=el('ffV92ReactionPicker');if(!p)return;if(p.classList.contains('open'))return p.classList.remove('open');placePicker(p,el('ffV74Like'));p.classList.add('open')};
+ const closeAlbum=window.ffV74ClosePhoto;
+ if(typeof closeAlbum==='function')window.ffV74ClosePhoto=function(){el('ffV92ReactionPicker')?.classList.remove('open');return closeAlbum.apply(this,arguments)};
+}
 })();
 </script>

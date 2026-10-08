@@ -15205,3 +15205,56 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
 })();
 </script>
 
+
+
+<!-- V99 Messenger layout: visual-only redesign; existing events, IDs and call logic unchanged. -->
+<style id="duarte-v99-facebook-lite-messenger">
+#ffMsgModal{--duarte-chat-blue:#0866ff;--duarte-chat-text:#17212f;--duarte-chat-border:#e4e9f1;background:#f2f5fa!important;color:var(--duarte-chat-text)!important;padding:0!important;}
+#ffMsgModal.open{align-items:stretch!important;justify-content:stretch!important;}
+#ffMsgModal .ff-msg-shell{box-sizing:border-box!important;position:relative!important;width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;min-height:0!important;margin:0!important;transform:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;display:grid!important;grid-template-columns:minmax(275px,330px) minmax(0,1fr)!important;background:#fff!important;overflow:hidden!important;}
+#ffMsgModal .ff-msg-list{min-width:0!important;width:auto!important;height:100%!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain;border-right:1px solid var(--duarte-chat-border)!important;background:#fff!important;}
+#ffMsgModal .ff-msg-title{height:72px!important;min-height:72px!important;padding:0 18px!important;background:#fff!important;color:#17212f!important;border-bottom:1px solid var(--duarte-chat-border)!important;font-size:20px!important;letter-spacing:-.3px;}
+#ffMsgModal .ff-msg-title .ff-msg-close{background:#edf2f7!important;color:#243448!important;width:36px!important;height:36px!important;}
+#ffMsgModal .ff-msg-search{background:#fff!important;padding:12px 14px!important;border-bottom:1px solid #f1f3f6!important;}
+#ffMsgModal #ffConversationSearch{width:100%!important;box-sizing:border-box!important;padding:12px 15px!important;background:#f0f2f5!important;color:#17212f!important;border:1px solid transparent!important;border-radius:22px!important;font-size:14px!important;}
+#ffMsgModal .ff-conversation{min-height:70px!important;box-sizing:border-box!important;margin:3px 8px!important;padding:10px!important;border:0!important;border-radius:12px!important;gap:12px!important;background:#fff!important;}
+#ffMsgModal .ff-conversation:hover,#ffMsgModal .ff-conversation.unread{background:#eff5ff!important;}
+#ffMsgModal .ff-conversation-avatar{width:49px!important;height:49px!important;min-width:49px!important;border-radius:50%!important;}
+#ffMsgModal .ff-conversation-name{font-size:13px!important;color:#1b2736!important;font-weight:750!important;}
+#ffMsgModal .ff-conversation-preview{font-size:12px!important;color:#687789!important;max-width:100%!important;}
+#ffMsgModal .ff-conversation-time{color:#8793a3!important;font-size:10px!important;}
+#ffMsgModal .ff-conversation-unread{background:#0866ff!important;color:#fff!important;}
+#ffMsgModal .ff-chat{min-width:0!important;min-height:0!important;height:100%!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;background:#fff!important;}
+#ffMsgModal .ff-chat-head{height:72px!important;min-height:72px!important;flex:0 0 72px!important;padding:0 20px!important;background:#fff!important;border-bottom:1px solid var(--duarte-chat-border)!important;color:#17212f!important;font-size:16px!important;}
+#ffMsgModal .ff-chat-head #ffChatName{font-size:16px!important;font-weight:800!important;color:#17212f!important;}
+#ffMsgModal .ff-call-head-actions{display:flex!important;align-items:center!important;gap:7px!important;}
+#ffMsgModal .ff-call-head-btn{width:39px!important;height:39px!important;background:#eef4ff!important;color:#0866ff!important;border-radius:50%!important;}
+#ffMsgModal .ff-call-head-btn:hover{background:#deebff!important;}
+#ffMsgModal .ff-chat-messages{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;padding:22px clamp(14px,3vw,34px)!important;background:#fff!important;scroll-behavior:auto!important;}
+#ffMsgModal #ffChatMessages .ff-bubble-row>.ff-bubble{font-size:14px!important;line-height:1.45!important;padding:10px 14px!important;border-radius:17px!important;background:#eef1f5!important;color:#17212f!important;max-width:min(76%,550px)!important;}
+#ffMsgModal #ffChatMessages .ff-bubble-row.mine>.ff-bubble{background:#0866ff!important;color:#fff!important;}
+#ffMsgModal .ff-chat-compose{position:relative!important;bottom:auto!important;flex:0 0 auto!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;gap:10px!important;padding:12px clamp(12px,2vw,24px) max(12px,env(safe-area-inset-bottom))!important;background:#fff!important;border-top:1px solid var(--duarte-chat-border)!important;}
+#ffMsgModal #ffChatInput{height:43px!important;box-sizing:border-box!important;flex:1 1 auto!important;min-width:0!important;background:#f0f2f5!important;color:#17212f!important;border:1px solid transparent!important;border-radius:24px!important;padding:10px 15px!important;font-size:14px!important;}
+#ffMsgModal #ffMessengerSendButton{background:#0866ff!important;color:white!important;border-radius:22px!important;min-height:42px!important;padding:9px 17px!important;}
+#ffMsgModal #ffMessengerPhotoButton{background:#edf4ff!important;color:#0866ff!important;border-radius:50%!important;min-width:40px!important;min-height:40px!important;}
+#ffMsgModal .ff-chat-empty{font-size:14px!important;color:#788598!important;}
+#ffMsgModal .ff-chat-back{color:#0866ff!important;}
+#ffMsgModal input:focus-visible,#ffMsgModal button:focus-visible{outline:2px solid #0866ff!important;outline-offset:2px!important;}
+@media(max-width:760px){
+ #ffMsgModal{inset:0!important;width:100vw!important;height:100dvh!important;padding:0!important;overflow:hidden!important;}
+ #ffMsgModal .ff-msg-shell{height:100dvh!important;width:100vw!important;max-width:none!important;grid-template-columns:minmax(0,1fr)!important;}
+ #ffMsgModal .ff-msg-list,#ffMsgModal .ff-chat{width:100%!important;height:100%!important;min-height:0!important;}
+ #ffMsgModal .ff-chat{display:none!important;}
+ #ffMsgModal .ff-msg-shell.chat-open .ff-msg-list{display:none!important;}
+ #ffMsgModal .ff-msg-shell.chat-open .ff-chat{display:flex!important;}
+ #ffMsgModal .ff-msg-title{height:62px!important;min-height:62px!important;font-size:19px!important;}
+ #ffMsgModal .ff-chat-head{height:62px!important;min-height:62px!important;flex-basis:62px!important;padding:0 10px!important;}
+ #ffMsgModal .ff-chat-back{display:block!important;color:#0866ff!important;}
+ #ffMsgModal .ff-chat-messages{padding:12px 10px!important;}
+ #ffMsgModal #ffChatMessages .ff-bubble-row>.ff-bubble{max-width:85%!important;}
+ #ffMsgModal .ff-chat-compose{padding:8px 8px max(10px,env(safe-area-inset-bottom))!important;gap:6px!important;}
+ #ffMsgModal #ffChatInput{font-size:16px!important;}
+ #ffMsgModal #ffMessengerSendButton{padding:8px 12px!important;}
+ #ffMsgModal .ff-call-head-btn{width:34px!important;height:34px!important;font-size:16px!important;}
+}
+</style>

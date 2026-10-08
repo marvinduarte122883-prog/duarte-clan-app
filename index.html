@@ -2010,6 +2010,58 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 .create-post .ff114-field{min-width:min(220px,100%);flex:1 1 180px}
 @media(max-width:700px){.create-post .ff114-options{gap:5px!important}.create-post .ff114-options button{font-size:11px!important;padding:8px!important}}
 </style>
+
+<!-- V121: Replace browser alert heading with a Duarte-only notification dialog. -->
+<style id="duarte-v121-notification-style">
+#duarteV121AlertOverlay{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.55)}
+#duarteV121AlertOverlay.duarte-open{display:flex}
+#duarteV121AlertDialog{width:min(430px,100%);max-height:min(80dvh,650px);display:flex;flex-direction:column;background:#202124;color:#f8f8f8;border:1px solid #43464c;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.42);overflow:hidden;font-family:Arial,Helvetica,sans-serif}
+#duarteV121AlertMessage{padding:24px 22px 12px;font-size:15px;line-height:1.5;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+#duarteV121AlertButtons{display:flex;justify-content:flex-end;padding:8px 17px 17px}
+#duarteV121AlertOk{min-width:75px;min-height:40px;border:0;border-radius:24px;background:#087fd7;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+#duarteV121AlertOk:focus-visible{outline:2px solid #f0c756;outline-offset:3px}
+</style>
+<script id="duarte-v121-notification-script">
+(function(){
+  'use strict';
+  const pending=[];
+  let active=false;
+  let overlay=null, message=null, okay=null, previouslyFocused=null;
+  function ensureDialog(){
+    if(overlay||!document.body)return Boolean(overlay);
+    overlay=document.createElement('div');
+    overlay.id='duarteV121AlertOverlay';
+    overlay.innerHTML='<div id="duarteV121AlertDialog" role="alertdialog" aria-modal="true" aria-label="Duarte Clan notification" aria-describedby="duarteV121AlertMessage"><div id="duarteV121AlertMessage"></div><div id="duarteV121AlertButtons"><button id="duarteV121AlertOk" type="button">OK</button></div></div>';
+    document.body.appendChild(overlay);
+    message=overlay.querySelector('#duarteV121AlertMessage');
+    okay=overlay.querySelector('#duarteV121AlertOk');
+    okay.addEventListener('click',dismiss);
+    overlay.addEventListener('keydown',function(e){if(e.key==='Escape'||e.key==='Enter'){e.preventDefault();dismiss()}if(e.key==='Tab'){e.preventDefault();okay.focus()}});
+    return true;
+  }
+  function showNext(){
+    if(active||!pending.length)return;
+    if(!ensureDialog()){
+      document.addEventListener('DOMContentLoaded',showNext,{once:true});
+      return;
+    }
+    active=true;
+    previouslyFocused=document.activeElement;
+    message.textContent=pending.shift();
+    overlay.classList.add('duarte-open');
+    okay.focus();
+  }
+  function dismiss(){
+    if(!active)return;
+    active=false;
+    overlay.classList.remove('duarte-open');
+    if(previouslyFocused&&typeof previouslyFocused.focus==='function'&&previouslyFocused.isConnected){try{previouslyFocused.focus()}catch(_){}}
+    showNext();
+  }
+  window.alert=function(value){pending.push(String(value===undefined?'':value));showNext()};
+})();
+</script>
+
 </head>
 
 

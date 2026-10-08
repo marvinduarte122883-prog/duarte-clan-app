@@ -15148,6 +15148,95 @@ html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:no
 })();
 </script>
 
+
+<!-- V120: selected registered members + opt-in current location / explicit place search -->
+<style id="duarte-v120-member-place-style">
+.ff120-wrap{width:100%;min-width:0;position:relative;font:inherit}
+.ff120-people-search,.ff120-place-search{width:100%!important;min-height:42px!important}
+.ff120-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.ff120-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid #6a7583;border-radius:18px;padding:5px 8px;background:#303944;color:#fff;font-size:12px}
+.ff120-chip button{border:0;background:none;color:#fff;font-size:16px;cursor:pointer;min-height:28px}
+.ff120-results{display:none;max-height:190px;overflow-y:auto;overscroll-behavior:contain;background:#24282e;border:1px solid #55606a;border-radius:10px;margin-top:5px;padding:4px;z-index:5}
+.ff120-results.show{display:block}
+.ff120-result{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:0;background:transparent;color:#fff;padding:9px;border-radius:8px;cursor:pointer;min-height:40px}
+.ff120-result:hover,.ff120-result:focus-visible{background:#35414d}
+.ff120-result img{height:29px;width:29px;object-fit:cover;border-radius:50%}
+.ff120-row{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.ff120-action{border:1px solid #61738a;border-radius:9px;background:#303c4b;color:white;padding:8px 10px;cursor:pointer;font-size:12px;min-height:38px}
+.ff120-note{font-size:11px;font-weight:400;color:#b9c3ce;margin:4px 0 0;line-height:1.4}
+.ff120-field-hidden{display:none!important}
+@media(max-width:700px){.ff114-fields.open{max-height:min(62dvh,510px)!important;overflow-y:auto!important;overscroll-behavior:contain}.ff120-results{max-height:170px}}
+</style>
+<script id="duarte-v120-member-place-script">
+(()=>{
+'use strict';
+let members=null, memberLoad=null, lastLoad=0;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const coordsLabel=(lat,lon)=>`${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+function client(){try{return typeof supabaseClient!=='undefined' && typeof supabaseClient.from==='function'?supabaseClient:null}catch{return null}}
+async function loadMembers(){
+ if(members&&Date.now()-lastLoad<120000)return members;
+ if(memberLoad)return memberLoad;
+ memberLoad=(async()=>{
+  const sb=client();if(!sb)throw new Error('Sign in to search clan members.');
+  const {data,error}=await sb.from('profiles').select('id,full_name,avatar_url,clan_role').in('clan_role',['Member','Administrator']).order('full_name').limit(250);
+  if(error)throw error;
+  members=(data||[]).filter(p=>p.id&&p.full_name);lastLoad=Date.now();return members;
+ })();
+ try{return await memberLoad}finally{memberLoad=null}
+}
+function peopleUpgrade(input){
+ if(input.dataset.ff120Upgraded)return;input.dataset.ff120Upgraded='yes';input.classList.add('ff120-field-hidden');
+ const wrapper=document.createElement('div');wrapper.className='ff120-wrap';
+ wrapper.innerHTML='<div class="ff120-chips" aria-live="polite"></div><input class="ff120-people-search" type="search" placeholder="Search registered clan members" autocomplete="off" aria-label="Search registered clan members"><div class="ff120-results" role="listbox"></div><div class="ff120-note">Choose members from the registered clan directory. Names will be included in your post.</div>';
+ input.after(wrapper);
+ const search=wrapper.querySelector('input'), results=wrapper.querySelector('.ff120-results'),chips=wrapper.querySelector('.ff120-chips');
+ const selected=new Map();
+ function sync(){input.value=[...selected.values()].join(', ');chips.replaceChildren();for(const [id,name] of selected){const chip=document.createElement('span');chip.className='ff120-chip';chip.append(document.createTextNode(name));const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label','Remove '+name);remove.onclick=()=>{selected.delete(id);sync();render()};chip.append(remove);chips.append(chip)}}
+ function render(){results.replaceChildren();const q=search.value.trim().toLocaleLowerCase();if(!members){results.textContent='Loading clan members…';results.classList.add('show');return}const filtered=members.filter(p=>!selected.has(p.id)&&(!q||p.full_name.toLocaleLowerCase().includes(q))).slice(0,35);if(!filtered.length){results.textContent='No matching registered members.'}else for(const m of filtered){const b=document.createElement('button');b.type='button';b.className='ff120-result';if(m.avatar_url&&/^https:\/\//i.test(m.avatar_url)){const pic=document.createElement('img');pic.src=m.avatar_url;pic.alt='';pic.loading='lazy';b.append(pic)}const name=document.createElement('span');name.textContent=m.full_name;b.append(name);b.onclick=()=>{selected.set(m.id,m.full_name);sync();search.value='';render();search.focus()};results.append(b)}results.classList.add('show')}
+ async function show(){results.textContent='Loading clan members…';results.classList.add('show');try{await loadMembers();render()}catch(e){results.textContent='Member list unavailable: '+(e.message||'Please try again.')}}
+ search.addEventListener('focus',show);search.addEventListener('input',()=>{if(members)render();else show()});search.addEventListener('keydown',e=>{if(e.key==='Escape')results.classList.remove('show')});
+ wrapper.addEventListener('focusout',()=>setTimeout(()=>{if(!wrapper.contains(document.activeElement))results.classList.remove('show')},120));
+ const form=input.closest('.ff114-fields')?.parentElement;
+ if(form){const obs=new MutationObserver(()=>{if(!input.value&&selected.size){selected.clear();sync()}});obs.observe(input,{attributes:true,attributeFilter:['value']})}
+ // The original V114 reset uses input.value=''; clear tags whenever a new compose session begins.
+ wrapper.addEventListener('ff120-reset',()=>{selected.clear();sync();search.value='';results.classList.remove('show')});
+}
+async function getPlace(url){const res=await fetch(url,{headers:{Accept:'application/json'}});if(!res.ok)throw Error('Place search is temporarily unavailable.');return res.json()}
+function locationUpgrade(input){
+ if(input.dataset.ff120Upgraded)return;input.dataset.ff120Upgraded='yes';
+ const wrapper=document.createElement('div');wrapper.className='ff120-wrap';input.after(wrapper);wrapper.append(input);input.classList.add('ff120-place-search');input.placeholder='Enter a city or place';
+ const row=document.createElement('div');row.className='ff120-row';row.innerHTML='<button type="button" class="ff120-action" data-geo>📍 Use my current location</button><button type="button" class="ff120-action" data-search>🔎 Search place</button>';
+ const feedback=document.createElement('div');feedback.className='ff120-note';feedback.setAttribute('role','status');feedback.textContent='Location is optional. It is requested only when you choose to use it.';
+ const results=document.createElement('div');results.className='ff120-results';wrapper.append(row,feedback,results);
+ let busy=false;function state(s){feedback.textContent=s}
+ row.querySelector('[data-geo]').onclick=async()=>{
+  if(busy)return;if(!navigator.geolocation){state('Location is not supported in this browser. Enter a place instead.');return}
+  busy=true;state('Waiting for location permission…');
+  navigator.geolocation.getCurrentPosition(async pos=>{
+   try{const lat=pos.coords.latitude,lon=pos.coords.longitude;input.value=coordsLabel(lat,lon);state('Location found. Looking up a nearby place…');
+    const data=await getPlace('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+encodeURIComponent(lat)+'&lon='+encodeURIComponent(lon)+'&zoom=14&addressdetails=1');
+    input.value=data.display_name||coordsLabel(lat,lon);state('Selected current location · OpenStreetMap contributors');
+   }catch(e){state('Coordinates selected; place name lookup unavailable.')}finally{busy=false}
+  },err=>{busy=false;state(err.code===1?'Location permission denied. You can enter a place manually.':'Location unavailable. Try a manual search.')},{enableHighAccuracy:false,timeout:12000,maximumAge:120000});
+ };
+ async function searchPlace(){const q=input.value.trim();if(q.length<3){state('Enter at least three characters to search.');return}if(busy)return;busy=true;state('Searching places…');results.replaceChildren();
+  try{const places=await getPlace('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q='+encodeURIComponent(q));
+   if(!Array.isArray(places)||!places.length){state('No places found. You can still use the name you typed.');return}
+   for(const p of places){const b=document.createElement('button');b.type='button';b.className='ff120-result';b.textContent=p.display_name;b.onclick=()=>{input.value=p.display_name;results.classList.remove('show');state('Place selected · OpenStreetMap contributors')};results.append(b)}results.classList.add('show');state('Choose a place · Search results © OpenStreetMap contributors');
+  }catch(e){state('Place lookup unavailable. You can enter a place manually.')}finally{busy=false}
+ }
+ row.querySelector('[data-search]').onclick=searchPlace;
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchPlace()}});
+}
+function upgrade(){document.querySelectorAll('[data-ff114="people"]').forEach(peopleUpgrade);document.querySelectorAll('[data-ff114="location"]').forEach(locationUpgrade)}
+const start=()=>{upgrade();document.addEventListener('click',e=>{if(e.target.closest('.ff114-options'))queueMicrotask(upgrade)},true);
+ const observer=new MutationObserver(()=>{if(document.querySelector('[data-ff114="people"]:not([data-ff120-upgraded])'))upgrade()});observer.observe(document.body,{childList:true,subtree:true});
+ if(window.ff114Details){const old=window.ff114Details.reset;window.ff114Details.reset=function(key){old.call(this,key);document.querySelectorAll('.ff120-wrap').forEach(w=>w.dispatchEvent(new Event('ff120-reset')))}}
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
 </body>
 </html>
 

@@ -14946,6 +14946,89 @@ html:has(#ffV74PhotoViewer.open),body:has(#ffV74PhotoViewer.open){overflow:hidde
   };
 })();
 </script>
+
+<style id="duarte-v117-home-photo-social">
+html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:none!important}
+#ff117Photo{position:fixed;inset:0;z-index:2147483000;display:none;background:#101114;color:#fff;flex-direction:column;width:100vw;height:100dvh;overflow:hidden}
+#ff117Photo.open{display:flex}
+#ff117Photo .ff117-head{flex:0 0 46px;display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:#18191c;border-bottom:1px solid #35383c}
+#ff117Photo .ff117-close{background:#303237;color:#fff;border:0;border-radius:50%;width:36px;height:36px;font-size:25px;cursor:pointer}
+#ff117Photo .ff117-stage{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px 10px;touch-action:pan-x pan-y}
+#ff117Photo .ff117-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:5px;user-select:none}
+#ff117Photo .ff117-panel{width:min(880px,100%);margin:0 auto;flex:0 0 clamp(173px,27dvh,260px);min-height:0;display:flex;flex-direction:column;gap:5px;padding:7px 10px calc(8px + env(safe-area-inset-bottom,0px));background:#1a1b1e;border-top:1px solid #34373c}
+#ff117Photo .ff117-by{font-size:12px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:0 0 auto}
+#ff117Photo .ff117-actions{display:flex;gap:7px;align-items:center;flex:0 0 auto}
+#ff117Photo .ff117-actions button{background:#30343b;border:0;border-radius:9px;color:white;padding:8px 12px;cursor:pointer;font-weight:600;font-size:13px}
+#ff117Photo .ff117-reactions{display:none;gap:5px;align-items:center;flex:0 0 auto;background:transparent;border:0}
+#ff117Photo .ff117-reactions.open{display:flex}
+#ff117Photo .ff117-reactions button{background:transparent;border:0;box-shadow:none;font-size:22px;cursor:pointer;padding:1px 5px}
+#ff117Photo .ff117-status{font-size:11px;color:#ced2d8;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ff117Photo .ff117-comments{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;font-size:12px}
+#ff117Photo .ff117-comment{padding:4px 2px;border-bottom:1px solid #35373c;overflow-wrap:anywhere}
+#ff117Photo .ff117-compose{flex:0 0 44px;display:flex;gap:7px;min-height:44px}
+#ff117Photo .ff117-compose input{flex:1;min-width:0;border:1px solid #474a52;border-radius:22px;background:#30343b;color:#fff;padding:9px 12px;font-size:16px}
+#ff117Photo .ff117-compose button{flex:0 0 auto;border:0;border-radius:22px;background:#1877f2;color:white;font-weight:700;padding:0 15px;cursor:pointer}
+@media(max-width:760px){#ff117Photo .ff117-panel{flex-basis:clamp(168px,29dvh,230px)}#ff117Photo .ff117-actions button{font-size:12px;padding:7px 9px}}
+@media(max-height:500px){#ff117Photo .ff117-head{flex-basis:36px}#ff117Photo .ff117-panel{flex-basis:125px}#ff117Photo .ff117-by,#ff117Photo .ff117-comments{display:none}}
+</style>
+
+<div id="ff117Photo" role="dialog" aria-modal="true" aria-label="Duarte Clan post photo" aria-hidden="true">
+  <div class="ff117-head"><strong>Post Photo</strong><button class="ff117-close" type="button" id="ff117Close" aria-label="Close photo">×</button></div>
+  <div class="ff117-stage"><img id="ff117Image" alt="Member uploaded photo"></div>
+  <div class="ff117-panel">
+    <div class="ff117-by" id="ff117By"></div>
+    <div class="ff117-actions"><button type="button" id="ff117Like">👍 Like</button><button type="button" id="ff117Comment">💬 Comment</button><button type="button" id="ff117Share">↗ Share</button></div>
+    <div class="ff117-reactions" id="ff117Reactions"><button data-kind="like" aria-label="Like">👍</button><button data-kind="love" aria-label="Love">❤️</button><button data-kind="care" aria-label="Care">🥰</button><button data-kind="haha" aria-label="Haha">😆</button><button data-kind="wow" aria-label="Wow">😮</button><button data-kind="sad" aria-label="Sad">😢</button></div>
+    <div class="ff117-status" id="ff117Status"></div>
+    <div class="ff117-comments" id="ff117Comments"></div>
+    <div class="ff117-compose"><input type="text" id="ff117Input" maxlength="500" placeholder="Write a comment…" aria-label="Write a photo comment"><button type="button" id="ff117Send">Send</button></div>
+  </div>
+</div>
+
+<script id="duarte-v117-home-photo-social-js">
+(function(){
+ 'use strict';
+ const q=id=>document.getElementById(id), modal=q('ff117Photo');if(!modal)return;
+ const kinds={like:'👍',love:'❤️',care:'🥰',haha:'😆',wow:'😮',sad:'😢'};
+ let photo=null,serial=0,priorY=0,previousFocus=null;
+ const client=()=>typeof supabaseClient==='undefined'?null:supabaseClient;
+ const userId=()=>typeof currentUser==='undefined'?null:currentUser?.id;
+ const escape=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const status=t=>{q('ff117Status').textContent=t||''};
+ function close(){if(!modal.classList.contains('open'))return;serial++;modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.documentElement.classList.remove('ff117-lock');document.body.classList.remove('ff117-lock');q('ff117Image').removeAttribute('src');q('ff117Reactions').classList.remove('open');photo=null;window.scrollTo(0,priorY);previousFocus?.focus?.()}
+ async function refresh(){if(!photo)return;const db=client(),key=serial,url=photo.url;
+  if(!db){status('Not connected to Supabase');return}
+  const [likes,comments]=await Promise.all([
+   db.from('duarte_post_photo_likes').select('user_id,reaction').eq('photo_url',url),
+   db.from('duarte_post_photo_comments').select('id,user_id,content,created_at').eq('photo_url',url).order('created_at',{ascending:true}).limit(80)
+  ]);
+  if(key!==serial)return;
+  if(likes.error)status('Photo reactions unavailable: '+likes.error.message);
+  else{const mine=(likes.data||[]).find(r=>r.user_id===userId());q('ff117Like').textContent=mine?(kinds[mine.reaction]||'👍')+' Reacted':'👍 Like';status((likes.data||[]).length?likes.data.length+' photo reactions':'')}
+  if(comments.error){q('ff117Comments').textContent='Photo comments unavailable: '+comments.error.message;return}
+  const rows=comments.data||[],ids=[...new Set(rows.map(x=>x.user_id).filter(Boolean))];let names={};
+  if(ids.length){const res=await db.from('profiles').select('id,full_name').in('id',ids);names=Object.fromEntries((res.data||[]).map(x=>[x.id,x.full_name]))}
+  if(key!==serial)return;
+  q('ff117Comments').innerHTML=rows.map(x=>`<div class="ff117-comment"><strong>${escape(names[x.user_id]||'Clan member')}</strong> ${escape(x.content)}</div>`).join('');
+ }
+ function open(url,card){if(!url)return;photo={url,postId:card?.dataset.postId||null};serial++;priorY=window.scrollY;previousFocus=document.activeElement;q('ff117Image').src=url;q('ff117By').textContent=(card?.querySelector('.author-info h3')?.textContent||'Duarte Clan photo');q('ff117Input').value='';q('ff117Comments').textContent='Loading photo comments…';status('');q('ff117Like').textContent='👍 Like';q('ff117Reactions').classList.remove('open');modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.documentElement.classList.add('ff117-lock');document.body.classList.add('ff117-lock');refresh()}
+ document.addEventListener('click',e=>{const img=e.target.closest?.('.post-card[data-post-id] img, .ff-v42-photo img');if(!img||modal.classList.contains('open'))return;
+  const card=img.closest('.post-card[data-post-id]');if(!card)return;
+  if(img.closest('.post-author,.author-avatar,.comment-row,.reaction-wrap,.ff-post-owner-actions'))return;
+  if(!img.currentSrc&&!img.src)return;
+  e.preventDefault();e.stopImmediatePropagation();open(img.currentSrc||img.src,card)
+ },true);
+ q('ff117Close').addEventListener('click',close);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))close()});
+ q('ff117Like').addEventListener('click',()=>q('ff117Reactions').classList.toggle('open'));
+ q('ff117Reactions').addEventListener('click',async e=>{const kind=e.target.closest('button[data-kind]')?.dataset.kind;if(!kind||!photo)return;q('ff117Reactions').classList.remove('open');if(!userId())return alert('Please sign in to react.');const db=client(),url=photo.url;const existing=await db.from('duarte_post_photo_likes').select('reaction').eq('photo_url',url).eq('user_id',userId()).maybeSingle();if(existing.error)return status('Reaction error: '+existing.error.message);const res=existing.data?.reaction===kind?await db.from('duarte_post_photo_likes').delete().eq('photo_url',url).eq('user_id',userId()):await db.from('duarte_post_photo_likes').upsert({photo_url:url,user_id:userId(),reaction:kind},{onConflict:'photo_url,user_id'});if(res.error)return status('Could not save reaction: '+res.error.message);await refresh()});
+ q('ff117Comment').addEventListener('click',()=>q('ff117Input').focus());
+ async function send(){const text=q('ff117Input').value.trim();if(!photo||!text)return;if(!userId())return alert('Please sign in to comment.');const btn=q('ff117Send');btn.disabled=true;try{const res=await client().from('duarte_post_photo_comments').insert({photo_url:photo.url,user_id:userId(),content:text});if(res.error)throw res.error;q('ff117Input').value='';await refresh();q('ff117Comments').scrollTop=q('ff117Comments').scrollHeight}catch(err){status('Could not save comment: '+(err?.message||err))}finally{btn.disabled=false}}
+ q('ff117Send').addEventListener('click',send);q('ff117Input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send()}});
+ q('ff117Share').addEventListener('click',async()=>{if(!photo)return;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',url:photo.url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(photo.url);status('Photo link copied')}else prompt('Copy photo link',photo.url)}catch(err){if(err.name!=='AbortError')status('Sharing unavailable: '+err.message)}});
+ window.ff117CloseHomePhoto=close;
+})();
+</script>
 </body>
 </html>
 

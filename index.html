@@ -2062,6 +2062,45 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 })();
 </script>
 
+
+<style id="duarte-v122-choice-dialog-style">
+#duarteV122Overlay{position:fixed;inset:0;z-index:2147483001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:16px}
+#duarteV122Overlay.open{display:flex}
+#duarteV122Dialog{width:min(430px,100%);background:#202124;color:#f8f8f8;border:1px solid #42464e;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.4);padding:23px 20px 17px;font:15px/1.5 Arial,sans-serif;max-height:88dvh;overflow:auto}
+#duarteV122Message{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:15px}
+#duarteV122Input{display:none;width:100%;padding:12px;border:1px solid #5a616c;background:#15171a;color:#fff;border-radius:8px;font:inherit;min-width:0;margin-bottom:14px}
+#duarteV122Actions{display:flex;gap:9px;justify-content:flex-end}
+#duarteV122Actions button{padding:10px 18px;border:0;border-radius:22px;font-weight:700;cursor:pointer;min-width:74px}
+#duarteV122Cancel{background:#35383e;color:white}#duarteV122Ok{background:#087fd7;color:white}
+</style>
+<script id="duarte-v122-choice-dialog-script">
+(function(){
+ 'use strict';
+ let chain=Promise.resolve();
+ function choose(question,mode,initial){
+  const job=()=>new Promise(resolve=>{
+   const overlay=document.createElement('div');overlay.id='duarteV122Overlay';overlay.className='open';
+   overlay.innerHTML='<div id="duarteV122Dialog" role="dialog" aria-modal="true" aria-label="Duarte Clan confirmation"><div id="duarteV122Message"></div><input id="duarteV122Input" type="text" autocomplete="off"><div id="duarteV122Actions"><button id="duarteV122Cancel" type="button">Cancel</button><button id="duarteV122Ok" type="button">OK</button></div></div>';
+   document.body.appendChild(overlay);
+   const input=overlay.querySelector('#duarteV122Input');
+   overlay.querySelector('#duarteV122Message').textContent=String(question??'');
+   if(mode==='prompt'){input.style.display='block';input.value=String(initial??'');}
+   const previous=document.activeElement;
+   let finished=false;
+   function finish(ok){if(finished)return;finished=true;document.removeEventListener('keydown',keyboard,true);overlay.remove();if(previous?.isConnected&&typeof previous.focus==='function')previous.focus();resolve(mode==='prompt'?(ok?input.value:null):ok)}
+   function keyboard(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish(false)}else if(e.key==='Enter'&&(mode!=='prompt'||document.activeElement===input)){e.preventDefault();e.stopPropagation();finish(true)}}
+   document.addEventListener('keydown',keyboard,true);
+   overlay.querySelector('#duarteV122Cancel').addEventListener('click',()=>finish(false));
+   overlay.querySelector('#duarteV122Ok').addEventListener('click',()=>finish(true));
+   (mode==='prompt'?input:overlay.querySelector('#duarteV122Ok')).focus();
+  });
+  const result=chain.then(job,job);chain=result.then(()=>{},()=>{});return result;
+ }
+ window.duarteConfirm=(text)=>choose(text,'confirm');
+ window.duartePrompt=(text,initial='')=>choose(text,'prompt',initial);
+})();
+</script>
+
 </head>
 
 
@@ -2744,7 +2783,7 @@ async function acknowledgeAnnouncement(id){
  }catch(e){alert("Acknowledgement could not be saved: "+(e.message||"Unknown error"))}
 }
 async function deleteAnnouncement(id){
- if(!(currentProfile && (currentProfile.is_admin===true || currentProfile.clan_role==="Administrator"))||!confirm("Delete this announcement?"))return;
+ if(!(currentProfile && (currentProfile.is_admin===true || currentProfile.clan_role==="Administrator"))||!await window.duarteConfirm("Delete this announcement?"))return;
  const r=await supabaseClient.from("announcements").delete().eq("id",Number(id));
  if(r.error){alert(r.error.message);return}
  closeAnnouncementModal();await loadAnnouncements();
@@ -3615,7 +3654,7 @@ async function setCommentReaction(button,id,reaction,postId){
  }catch(e){alert("Comment reaction could not be saved: "+e.message)}
 }
 async function deleteComment(id,postId){
- if(!confirm("Delete this comment and its replies?"))return;
+ if(!await window.duarteConfirm("Delete this comment and its replies?"))return;
  const {error}=await supabaseClient.from("comments").delete().eq("id",Number(id));if(error){alert(error.message);return}
  const card=document.querySelector(`.post-card[data-post-id="${postId}"]`);if(card)await loadPostActivity(Number(postId),card)
 }
@@ -3981,7 +4020,7 @@ async function loadPosts() {
 async function deletePost(postId) {
     if (!currentUser || !currentProfile?.approved) return;
 
-    if (!confirm("Delete this clan post?")) return;
+    if (!await window.duarteConfirm("Delete this clan post?")) return;
 
     try {
         const { error } = await supabaseClient
@@ -4016,7 +4055,7 @@ async function editPost(postId) {
             return;
         }
 
-        const updated = prompt("Edit your post:", post.content || "");
+        const updated = await window.duartePrompt("Edit your post:", post.content || "");
         if (updated === null) return;
         const content = updated.trim();
         if (!content) {
@@ -4361,7 +4400,7 @@ async function saveEvent() {
 }
 
 async function deleteEvent(id) {
-    if(currentProfile?.is_admin!==true||!confirm("Delete this clan event?")) return;
+    if(currentProfile?.is_admin!==true||!await window.duarteConfirm("Delete this clan event?")) return;
     const {error}=await supabaseClient.from("events").delete().eq("id",id);
     if(error){ alert("Event could not be deleted: "+error.message); return; }
     await loadEvents();
@@ -5055,7 +5094,7 @@ async function uploadGalleryPhoto() {
 }
 
 async function deleteGalleryPhoto(id, storagePath) {
-    if (!confirm("Delete this family photo?")) return;
+    if (!await window.duarteConfirm("Delete this family photo?")) return;
 
     try {
         const { error: rowError } = await supabaseClient
@@ -5767,7 +5806,7 @@ async function saveHistoryEntry(){
  closeHistoryEditor();ffHistoryTab=type;setHistoryTab(type);await loadFamilyHistory();
 }
 async function deleteHistoryEntry(id){
- if(!confirm("Delete this family history entry?"))return;
+ if(!await window.duarteConfirm("Delete this family history entry?"))return;
  const {error}=await supabaseClient.from("family_history").delete().eq("id",id);
  if(error){alert(error.message);return;}await loadFamilyHistory();
 }
@@ -5939,14 +5978,14 @@ async function ffAlbumOptimizeImage(file,statusEl,index,total){
 async function ffAlbumUploadFile(file,albumId){const path=`albums/${currentUser.id}/${albumId}/${Date.now()}-${crypto.randomUUID()}.jpg`;const up=await supabaseClient.storage.from("family-gallery").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg",cacheControl:"3600"});if(up.error)throw up.error;const url=supabaseClient.storage.from("family-gallery").getPublicUrl(path)?.data?.publicUrl;if(!url)throw new Error("Photo URL could not be created.");return url;}
 async function ffAlbumInsertFiles(albumId,files,caption="",statusEl=null){const urls=[],valid=files.filter(f=>f?.type?.startsWith("image/"));let i=0;for(const file of valid){i++;const optimized=await ffAlbumOptimizeImage(file,statusEl,i,valid.length);if(statusEl)statusEl.textContent=`Uploading photo ${i} of ${valid.length}...`;const url=await ffAlbumUploadFile(optimized,albumId);const ins=await supabaseClient.from("family_album_photos").insert({album_id:albumId,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(ins.error)throw ins.error;urls.push(url);await new Promise(r=>setTimeout(r,0));}return urls;}
 async function saveAlbum(){const st=document.getElementById("ffAlbumStatus"),title=document.getElementById("ffAlbumTitle").value.trim();if(!title){st.textContent="Album title is required.";return;}const payload={title,description:(window.ff114Details?.combine(document.getElementById("ffAlbumDescription").value.trim(),"album")||document.getElementById("ffAlbumDescription").value.trim())||null,album_date:document.getElementById("ffAlbumDate").value||null,cover_url:document.getElementById("ffAlbumCover").value.trim()||null};const files=[...(document.getElementById("ffAlbumCreateFiles")?.files||[])];st.textContent=files.length?`Creating album and uploading ${files.length} photo${files.length===1?"":"s"}...`:"Saving...";try{if(ffEditingAlbumId){const r=await supabaseClient.from("family_albums").update(payload).eq("id",ffEditingAlbumId);if(r.error)throw r.error;}else{const r=await supabaseClient.from("family_albums").insert({...payload,created_by:currentUser.id}).select("id").single();if(r.error)throw r.error;ffEditingAlbumId=r.data.id;if(files.length){const urls=await ffAlbumInsertFiles(ffEditingAlbumId,files,"",st);if(!payload.cover_url&&urls[0])await supabaseClient.from("family_albums").update({cover_url:urls[0]}).eq("id",ffEditingAlbumId);}}closeAlbumEditor();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Album could not be saved.";}}
-async function deleteAlbum(id){if(!confirm("Delete this album and all photos inside it?"))return;const {error}=await supabaseClient.from("family_albums").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyAlbums();}
+async function deleteAlbum(id){if(!await window.duarteConfirm("Delete this album and all photos inside it?"))return;const {error}=await supabaseClient.from("family_albums").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyAlbums();}
 async function openAlbum(id){ffCurrentAlbum=ffAlbums.find(x=>Number(x.id)===Number(id));if(!ffCurrentAlbum)return;document.getElementById("ffAlbumViewTitle").textContent=ffCurrentAlbum.title;document.getElementById("ffAlbumViewMeta").textContent=[ffCurrentAlbum.album_date,ffCurrentAlbum.profiles?.full_name].filter(Boolean).join(" · ");document.getElementById("ffAlbumViewDescription").textContent=ffCurrentAlbum.description||"";document.getElementById("ffAlbumView")?.classList.add("open");await loadAlbumPhotos();}
 function closeAlbumView(){document.getElementById("ffAlbumView")?.classList.remove("open");ffCurrentAlbum=null;}
 async function loadAlbumPhotos(){if(!ffCurrentAlbum)return;const box=document.getElementById("ffAlbumPhotos");box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';const {data,error}=await supabaseClient.from("family_album_photos").select("id,image_url,caption,uploaded_by,created_at").eq("album_id",ffCurrentAlbum.id).order("created_at",{ascending:false});if(error){box.innerHTML='<div class="ff-albums-empty">'+ffAlbEsc(error.message)+'</div>';return;}const canAlbum=ffAlbAdmin()||ffCurrentAlbum.created_by===currentUser?.id;box.innerHTML=(data||[]).length?(data||[]).map(p=>`<div class="ff-album-photo"><img src="${ffAlbEsc(p.image_url)}" alt="" onclick="openPhotoViewer(${chr(39)}${ffAlbEsc(p.image_url)}${chr(39)})" style="cursor:pointer"><div class="ff-album-photo-copy">${ffAlbEsc(p.caption||"")}${(canAlbum||p.uploaded_by===currentUser?.id)?`<br><button onclick="deleteAlbumPhoto(${Number(p.id)})">Delete photo</button>`:""}</div></div>`).join(""):'<div class="ff-albums-empty">No photos in this album yet.</div>';}
 function openAlbumPhotoEditor(){if(!ffCurrentAlbum)return;const f=document.getElementById("ffAlbumPhotoFiles");if(f)f.value="";document.getElementById("ffAlbumPhotoUrl").value="";document.getElementById("ffAlbumPhotoCaption").value="";document.getElementById("ffAlbumPhotoStatus").textContent="";document.getElementById("ffAlbumPhotoEditor")?.classList.add("open");}
 function closeAlbumPhotoEditor(){document.getElementById("ffAlbumPhotoEditor")?.classList.remove("open");}
 async function saveAlbumPhoto(){if(!ffCurrentAlbum)return;const st=document.getElementById("ffAlbumPhotoStatus"),url=document.getElementById("ffAlbumPhotoUrl").value.trim(),caption=window.ff114Details?.combine(document.getElementById("ffAlbumPhotoCaption").value.trim(),"albumphoto")||document.getElementById("ffAlbumPhotoCaption").value.trim(),files=[...(document.getElementById("ffAlbumPhotoFiles")?.files||[])];if(!url&&!files.length){st.textContent="Choose at least one photo.";return;}st.textContent=files.length?`Uploading ${files.length} photo${files.length===1?"":"s"}...`:"Adding...";try{if(files.length)await ffAlbumInsertFiles(ffCurrentAlbum.id,files,caption,st);if(url){const r=await supabaseClient.from("family_album_photos").insert({album_id:ffCurrentAlbum.id,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(r.error)throw r.error;}closeAlbumPhotoEditor();await loadAlbumPhotos();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Photo upload failed.";}}
-async function deleteAlbumPhoto(id){if(!confirm("Delete this photo from the album?"))return;const {error}=await supabaseClient.from("family_album_photos").delete().eq("id",id);if(error)return alert(error.message);await loadAlbumPhotos();}
+async function deleteAlbumPhoto(id){if(!await window.duarteConfirm("Delete this photo from the album?"))return;const {error}=await supabaseClient.from("family_album_photos").delete().eq("id",id);if(error)return alert(error.message);await loadAlbumPhotos();}
 </script>
 
 
@@ -6086,7 +6125,7 @@ async function voteFamilyPoll(pollId,optionId){
  const {error}=await supabaseClient.rpc("cast_duarte_poll_vote",{p_poll_id:pollId,p_option_id:optionId});
  if(error){alert(error.message);return;}await loadFamilyPolls();
 }
-async function deleteFamilyPoll(id){if(!confirm("Delete this family poll and its votes?"))return;const {error}=await supabaseClient.from("family_polls").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyPolls();}
+async function deleteFamilyPoll(id){if(!await window.duarteConfirm("Delete this family poll and its votes?"))return;const {error}=await supabaseClient.from("family_polls").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyPolls();}
 </script>
 
 
@@ -6182,7 +6221,7 @@ async function ffADPending(){
 async function ffADApproveMember(memberId,btn){
  if(!ffAdminDashIsAdmin())return alert("Administrator access required.");
  if(!memberId)return;
- if(!confirm("Accept this pending member?"))return;
+ if(!await window.duarteConfirm("Accept this pending member?"))return;
  const row=btn?.closest?.(".ff-admin-row");
  const buttons=row?.querySelectorAll?.("button")||[];
  buttons.forEach(b=>b.disabled=true);
@@ -6209,7 +6248,7 @@ async function ffADApproveMember(memberId,btn){
 async function ffADRejectMember(memberId,btn){
  if(!ffAdminDashIsAdmin())return alert("Administrator access required.");
  if(!memberId)return;
- if(!confirm("Reject this membership request? The account will remain unable to enter the clan community."))return;
+ if(!await window.duarteConfirm("Reject this membership request? The account will remain unable to enter the clan community."))return;
  const row=btn?.closest?.(".ff-admin-row");
  const buttons=row?.querySelectorAll?.("button")||[];
  buttons.forEach(b=>b.disabled=true);
@@ -7888,7 +7927,7 @@ window.openMemberProfileById=openClanProfile;
    box.querySelector("textarea").focus();
  }
  async function remove(card,pid){
-   if(!confirm("Delete this post?"))return;
+   if(!await window.duarteConfirm("Delete this post?"))return;
    try{
      const q=await supabaseClient.from("posts").delete().eq("id",pid).eq("user_id",currentUser.id);if(q.error)throw q.error;
      card.remove();
@@ -8334,7 +8373,7 @@ button:disabled{cursor:not-allowed!important;opacity:.62!important}
 <script id="duarte-v42-messenger-delete-own-js">
 async function ffV42DeleteOwnMessage(messageId,attachmentUrl){
   if(!currentUser?.id || !messageId)return;
-  if(!confirm("Delete this message"+(attachmentUrl?" and its uploaded photo":"")+"?"))return;
+  if(!await window.duarteConfirm("Delete this message"+(attachmentUrl?" and its uploaded photo":"")+"?"))return;
   try{
     // Verify ownership before deleting anything from Storage.
     const q=await supabaseClient.from("messages")
@@ -10066,7 +10105,7 @@ body.ff-offline .ff-online-required{opacity:.55}
   const b=e.target.closest("button[data-act]");if(!b)return;
   const row=b.closest(".ff-sync-item"),id=row?.dataset.id;if(!id)return;
   if(b.dataset.act==="remove"){
-    if(!confirm("Remove this unsent item? It will not be sent to the Duarte Clan app."))return;
+    if(!await window.duarteConfirm("Remove this unsent item? It will not be sent to the Duarte Clan app."))return;
     await window.ffOfflineQueue.remove(id);
   }else{
     if(!navigator.onLine){alert("You are offline. The item will remain saved until a connection is available.");return}
@@ -10787,7 +10826,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  async function del(){
    const client=sb(),s=state.current;if(!client||!s)return;
-   if(!confirm("Delete this story?"))return;
+   if(!await window.duarteConfirm("Delete this story?"))return;
    const {error}=await client.from("family_stories").delete().eq("id",s.id);
    if(error){alert(error.message||"Story could not be deleted.");return}
    closeStory();await load();
@@ -12646,7 +12685,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  function details(r){alert("Message details\n\nID: "+mid(r)+"\n"+(r.querySelector(".ff-bubble-time")?.textContent?.trim()||""))}
  async function report(r){
-   const why=prompt("Why are you reporting this message?\n\nExamples: Spam, Harassment, Inappropriate content, Scam, Other");
+   const why=await window.duartePrompt("Why are you reporting this message?\n\nExamples: Spam, Harassment, Inappropriate content, Scam, Other");
    if(!why||!why.trim())return;
    const messageId=mid(r);
    if(!messageId){alert("This message cannot be reported because its message ID is unavailable.");return;}
@@ -15087,7 +15126,7 @@ html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:no
  q('ff117Comment').addEventListener('click',()=>q('ff117Input').focus());
  async function send(){const text=q('ff117Input').value.trim();if(!photo||!text)return;if(!userId())return alert('Please sign in to comment.');const btn=q('ff117Send');btn.disabled=true;try{const res=await client().from('duarte_post_photo_comments').insert({photo_url:photo.url,user_id:userId(),content:text});if(res.error)throw res.error;q('ff117Input').value='';await refresh();q('ff117Comments').scrollTop=q('ff117Comments').scrollHeight}catch(err){status('Could not save comment: '+(err?.message||err))}finally{btn.disabled=false}}
  q('ff117Send').addEventListener('click',send);q('ff117Input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send()}});
- q('ff117Share').addEventListener('click',async()=>{if(!photo)return;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',url:photo.url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(photo.url);status('Photo link copied')}else prompt('Copy photo link',photo.url)}catch(err){if(err.name!=='AbortError')status('Sharing unavailable: '+err.message)}});
+ q('ff117Share').addEventListener('click',async()=>{if(!photo)return;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',url:photo.url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(photo.url);status('Photo link copied')}else await window.duartePrompt('Copy photo link',photo.url)}catch(err){if(err.name!=='AbortError')status('Sharing unavailable: '+err.message)}});
  window.ff117CloseHomePhoto=close;
 })();
 </script>
@@ -16361,7 +16400,7 @@ window.ffV112TogglePicker=function(e){e?.stopPropagation();const p=el('ffV112Pic
 window.ffV112React=async function(kind){hidePicker();if(!current||!uid())return alert('Please sign in to react.');const cli=sb(),id=current.id;const r=await cli.from('gallery_photo_likes').select('reaction').eq('photo_id',id).eq('user_id',uid()).maybeSingle();if(r.error)return alert('Could not load photo reaction: '+r.error.message);const out=r.data?.reaction===kind?await cli.from('gallery_photo_likes').delete().eq('photo_id',id).eq('user_id',uid()):await cli.from('gallery_photo_likes').upsert({photo_id:id,user_id:uid(),reaction:kind},{onConflict:'photo_id,user_id'});if(out.error)return alert('Could not save reaction: '+out.error.message+' (Run V112 Gallery SQL setup.)');await refresh()};
 window.ffV112Comment=async function(){const inp=el('ffV112Input'),content=inp.value.trim();if(!current||!content)return;if(!uid())return alert('Please sign in to comment.');const cli=sb(),id=current.id,btn=inp.nextElementSibling;btn.disabled=true;try{const out=await cli.from('gallery_photo_comments').insert({photo_id:id,user_id:uid(),content});if(out.error)throw out.error;inp.value='';await refresh();el('ffV112Comments').scrollTop=el('ffV112Comments').scrollHeight}catch(e){alert('Could not save comment: '+(e?.message||e)+' (Run V112 Gallery SQL setup.)')}finally{btn.disabled=false}};
 el('ffV112Input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();window.ffV112Comment()}});
-window.ffV112Share=async function(){if(!current)return;const url=current.image_url;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',text:current.caption||'Family Gallery photo',url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);alert('Photo link copied.')}else prompt('Copy photo link:',url)}catch(e){if(e?.name!=='AbortError')alert('Unable to share: '+e.message)}};
+window.ffV112Share=async function(){if(!current)return;const url=current.image_url;try{if(navigator.share)await navigator.share({title:'Duarte Clan photo',text:current.caption||'Family Gallery photo',url});else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);alert('Photo link copied.')}else await window.duartePrompt('Copy photo link:',url)}catch(e){if(e?.name!=='AbortError')alert('Unable to share: '+e.message)}};
 // Family Gallery opens the new per-image social viewer without altering albums.
 document.addEventListener('click',e=>{const img=e.target.closest('[data-v112-gallery-photo]');if(img){e.preventDefault();e.stopPropagation();window.ffV112OpenGalleryPhoto(Number(img.dataset.v112GalleryPhoto))}else if(!e.target.closest('#ffV112Picker,#ffV112Like'))hidePicker()},true);
 const stage=el('ffV112Stage');stage.addEventListener('touchstart',e=>{if(e.touches.length===2){pinch={distance:Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),start:scale};drag=null}else if(e.touches.length===1)drag={x:e.touches[0].clientX,y:e.touches[0].clientY,dx,dy}},{passive:true});

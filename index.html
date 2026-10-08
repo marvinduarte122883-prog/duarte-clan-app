@@ -14847,6 +14847,105 @@ html body:has(#ffMsgModal.open) #ffFamilyTreeFab {
  window.ff114Details={combine,reset,read,install};
 })();
 </script>
+
+<!-- V116: Fit photo and per-photo controls inside viewport; desktop + mobile. -->
+<style id="ff-v116-photo-fullscreen-fit">
+html:has(#ffV112GalleryPhoto.open),body:has(#ffV112GalleryPhoto.open),
+html:has(#ffV74PhotoViewer.open),body:has(#ffV74PhotoViewer.open){overflow:hidden!important;overscroll-behavior:none!important}
+#ffV112GalleryPhoto.open,#ffV74PhotoViewer.open{
+  position:fixed!important;inset:0!important;
+  width:100%!important;height:100dvh!important;max-height:100dvh!important;
+  min-height:0!important;box-sizing:border-box!important;
+  overflow:hidden!important;overscroll-behavior:contain!important;
+  display:grid!important;grid-template-rows:44px minmax(0,1fr) auto!important;
+  padding:0!important;gap:0!important;
+}
+#ffV112GalleryPhoto header,#ffV74PhotoViewer .ff-v74-pv-head{
+  height:44px!important;min-height:44px!important;padding:0 12px!important;
+}
+#ffV112GalleryPhoto .v112-stage,#ffV74PhotoViewer .ff-v74-pv-stage{
+  min-height:0!important;min-width:0!important;height:100%!important;
+  width:100%!important;overflow:hidden!important;
+}
+#ffV112GalleryPhoto .v112-stage img,#ffV74PhotoViewer .ff-v74-pv-stage img{
+  display:block!important;width:auto!important;height:auto!important;
+  max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;
+}
+#ffV112GalleryPhoto .v112-social,#ffV74PhotoViewer .ff-v74-pv-social{
+  position:relative!important;box-sizing:border-box!important;
+  width:min(900px,100%)!important;margin:0 auto!important;
+  min-height:0!important;height:clamp(150px,25dvh,230px)!important;
+  max-height:35dvh!important;overflow:hidden!important;
+  border-radius:0!important;display:flex!important;flex-direction:column!important;
+  gap:5px!important;padding:7px 10px calc(9px + env(safe-area-inset-bottom,0px))!important;
+}
+#ffV112GalleryPhoto .v112-caption,#ffV74PhotoViewer #ffV74PvCaption{
+  flex:0 0 auto;max-height:25px!important;overflow:hidden!important;
+}
+#ffV112GalleryPhoto .v112-actions,#ffV74PhotoViewer .ff-v74-pv-actions{
+  display:flex!important;flex:0 0 auto!important;flex-wrap:nowrap!important;
+  align-items:center!important;gap:5px!important;overflow:visible!important;
+}
+#ffV112GalleryPhoto .v112-actions button,#ffV74PhotoViewer .ff-v74-pv-actions button{
+  flex:0 0 auto!important;white-space:nowrap!important;font-size:12px!important;
+  padding:7px 9px!important;min-height:36px!important;
+}
+#ffV112GalleryPhoto .v112-count,#ffV74PhotoViewer .ff-v92-react-summary{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
+}
+#ffV112GalleryPhoto .v112-comments,#ffV74PhotoViewer .ff-v74-pv-comments{
+  flex:1 1 auto!important;min-height:0!important;max-height:none!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+}
+#ffV112GalleryPhoto .v112-compose,#ffV74PhotoViewer .ff-v74-pv-compose{
+  flex:0 0 44px!important;min-height:44px!important;display:flex!important;
+  width:100%!important;visibility:visible!important;opacity:1!important;
+}
+#ffV112GalleryPhoto .v112-compose input,#ffV74PhotoViewer .ff-v74-pv-compose input{
+  flex:1 1 auto!important;min-width:0!important;height:42px!important;font-size:16px!important;
+}
+#ffV112GalleryPhoto .v112-compose button,#ffV74PhotoViewer .ff-v74-pv-compose button{
+  flex:0 0 auto!important;min-height:42px!important;
+}
+@media(max-height:520px){
+ #ffV112GalleryPhoto.open,#ffV74PhotoViewer.open{grid-template-rows:36px minmax(0,1fr) 112px!important}
+ #ffV112GalleryPhoto header,#ffV74PhotoViewer .ff-v74-pv-head{height:36px!important;min-height:36px!important}
+ #ffV112GalleryPhoto .v112-social,#ffV74PhotoViewer .ff-v74-pv-social{height:112px!important;max-height:none!important}
+ #ffV112GalleryPhoto .v112-caption,#ffV74PhotoViewer #ffV74PvCaption,
+ #ffV112GalleryPhoto .v112-comments,#ffV74PhotoViewer .ff-v74-pv-comments{display:none!important}
+}
+@media(max-width:760px){
+  #ffV112GalleryPhoto.open{top:var(--ff-gallery-visible-top,0px)!important;
+    height:var(--ff-gallery-visible-height,100dvh)!important;
+    max-height:var(--ff-gallery-visible-height,100dvh)!important}
+  #ffV112GalleryPhoto .v112-social,#ffV74PhotoViewer .ff-v74-pv-social{max-height:none!important}
+  body:has(#ffV74PhotoViewer.open) .ff-v29c-bottom-nav,
+  body:has(#ffV74PhotoViewer.open) #ffV31OBottomNav,
+  body:has(#ffV74PhotoViewer.open) .mobile-bottom-nav{display:none!important}
+}
+</style>
+<script id="ff-v116-legacy-album-photo-social">
+/* Older album thumbnails opened a bare image-only viewer.
+   Resolve their album photo record and reuse the existing per-photo social viewer. */
+(function(){
+  const original=window.openPhotoViewer;
+  window.openPhotoViewer=async function(url){
+    const db=(typeof supabaseClient!=='undefined')?supabaseClient:null;
+    if(db&&typeof window.ffV74OpenPhoto==='function'&&typeof url==='string'){
+      try{
+        const result=await db.from('family_album_photos')
+          .select('id,image_url,caption,uploaded_by,created_at')
+          .eq('image_url',url).limit(1);
+        if(!result.error&&result.data&&result.data[0]){
+          return window.ffV74OpenPhoto(result.data[0]);
+        }
+      }catch(err){console.warn('Album photo lookup unavailable',err)}
+    }
+    if(typeof original==='function')return original(url);
+  };
+})();
+</script>
 </body>
 </html>
 

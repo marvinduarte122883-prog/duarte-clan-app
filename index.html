@@ -5334,7 +5334,7 @@ function renderMembersDirectory(members) {
         return `
             <div class="clan-member-card ff-profile-link"
                  data-user-id="${member.id}"
-                 data-member-id="${member.id}-2"
+                 data-member-id="${member.id}"
                  data-member-name="${escapeHTML((member.full_name || "").toLowerCase())}"
                  data-member-role="${escapeHTML(role.toLowerCase())}"
                  onclick="openClanProfile('${member.id}')"
@@ -6479,6 +6479,20 @@ async function openClanProfile(userId){
       ? `<button class="ff-member-profile-own" onclick="closeFullClanProfile();showSection('profile')">✏️ Edit My Profile</button>`
       : `<button class="ff-member-profile-message" onclick="closeFullClanProfile();startPrivateChat('${userId}','${escapeHTML(name).replace(/'/g,"&#39;")}')">💬 Message</button>`;
 
+    // V127: show the family tree of the profile being viewed, never of the signed-in user.
+    const actionsV127=document.getElementById('ffFullActions');
+    if(actionsV127){
+      const treeButton=document.createElement('button');
+      treeButton.type='button';
+      treeButton.className='ff-v127-profile-tree-button';
+      treeButton.textContent='🌳 Family Tree';
+      treeButton.dataset.treeUserId=userId;
+      treeButton.addEventListener('click',function(event){
+        event.preventDefault();event.stopPropagation();
+        window.ffV127ShowMemberTree(userId);
+      });
+      actionsV127.appendChild(treeButton);
+    }
     const p=(posts||[]);
     const introRows=[];
     introRows.push(`<div class="ff-fb-intro-row"><span class="ff-fb-intro-icon">👥</span><span><strong>${escapeHTML(role)}</strong> of the Duarte Clan</span></div>`);
@@ -15366,6 +15380,91 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
 #ffFullPosts .ff-v125-profile-feed-item .comment-area{max-width:100%}
 @media(max-width:760px){#ffFullPosts .ff-v125-profile-feed-item{margin-bottom:10px}#ffFullPosts .ff-v125-profile-feed-item .post-card{padding:12px!important}#ffFullPosts .ff-v125-profile-feed-item .comment-input{min-width:0;font-size:16px}}
 </style>
+<!-- V126: Profile Photos horizontal responsive grid; keep existing photo handlers. -->
+<style id="ff-v126-profile-photos-horizontal">
+/* The Photos pane contains its own gallery grid. Do not grid the outer pane. */
+#ffFullProfile #ffFullPhotos.active {
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#ffFullProfile #ffFullPhotos > div,
+#ffFullProfile #ffFullPhotos > section {width:100%;min-width:0;box-sizing:border-box}
+/* Gallery / shared photo thumbnails: spread across the full profile width. */
+#ffFullProfile #ffFullPhotos .ff-v3-photos-grid {
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+  width:100% !important;
+}
+#ffFullProfile #ffFullPhotos .ff-v3-photo {min-width:0;aspect-ratio:1/1}
+#ffFullProfile #ffFullPhotos .ff-v3-photo img {display:block;width:100%!important;height:100%!important;object-fit:cover!important}
+#ffFullProfile #ffFullPhotos .ff-v74-profile-album-grid {width:100%;grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+@media(max-width:850px) {
+  #ffFullProfile #ffFullPhotos .ff-v3-photos-grid {grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:6px!important}
+}
+@media(max-width:520px) {
+  #ffFullProfile #ffFullPhotos .ff-v3-photos-grid {grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:4px!important}
+  #ffFullProfile #ffFullPhotos .ff-v74-profile-album-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+}
+</style>
+
+<style id="ff-v127-member-profile-tree-style">
+#ffFullProfile .ff-v127-profile-tree-button{background:#303633!important;color:#fff!important;border:1px solid #68624b!important;border-radius:8px!important;cursor:pointer;min-height:40px}
+#ffFullProfile .ff-v127-profile-tree-button:hover{background:#414333!important}
+@media(max-width:700px){#ffFullProfile .ff-full-actions{display:flex!important;flex-wrap:wrap!important;gap:8px!important}#ffFullProfile .ff-v127-profile-tree-button{flex:1 1 135px!important}}
+</style>
+<script id="ff-v127-member-profile-navigation-and-own-tree">
+(function(){'use strict';
+  const uuid=/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/i;
+  const normalized=value=>{const match=String(value||'').match(uuid);return match?match[0]:null};
+  let currentVisitedMember=null;
+  function isDirectoryMemberElement(el){
+    return el?.closest?.('.clan-member-card,.member-card,.ff-member-card,#membersGrid [data-user-id],#ffFamilyDirectoryBody [data-user-id],.ff-member-list [data-user-id]');
+  }
+  function openRealMemberProfile(id){
+    const userId=normalized(id);
+    if(!userId)return false;
+    currentVisitedMember=userId;
+    try{
+      const result=window.openClanProfile?.(userId);
+      if(result && typeof result.catch==='function')result.catch(e=>console.warn('[V127 member profile]',e));
+      return typeof window.openClanProfile==='function';
+    }catch(e){console.warn('[V127 member profile]',e);return false}
+  }
+  window.ffV127OpenMemberProfile=openRealMemberProfile;
+  window.ffV127ShowMemberTree=async function(id){
+    const userId=normalized(id||currentVisitedMember);
+    if(!userId)return;
+    // Close the viewed member's full-profile overlay so the actual tree dialog is visible.
+    if(typeof window.closeFullClanProfile==='function')window.closeFullClanProfile();
+    if(typeof window.openFamilyTree==='function'){
+      await window.openFamilyTree(userId);
+      const selector=document.getElementById('ffFamilyTreePerson');
+      if(selector && [...selector.options].some(option=>option.value===userId))selector.value=userId;
+      if(typeof window.renderFamilyTree==='function')window.renderFamilyTree(userId);
+    }
+  };
+  // Capture member-card clicks before legacy handlers read suffixed data-member-id fields.
+  document.addEventListener('click',function(event){
+    if(event.target.closest('button,a,input,select,textarea,[contenteditable="true"]'))return;
+    const card=isDirectoryMemberElement(event.target);
+    if(!card)return;
+    const id=normalized(card.dataset.userId||card.dataset.memberId||card.dataset.profileId||card.dataset.id);
+    if(!id)return;
+    event.preventDefault();event.stopImmediatePropagation();
+    openRealMemberProfile(id);
+  },true);
+  document.addEventListener('keydown',function(event){
+    if(event.key!=='Enter'&&event.key!==' ')return;
+    const card=isDirectoryMemberElement(event.target);
+    if(!card || event.target.closest('button,a,input,select,textarea'))return;
+    const id=normalized(card.dataset.userId||card.dataset.memberId);
+    if(!id)return;
+    event.preventDefault();event.stopImmediatePropagation();openRealMemberProfile(id);
+  },true);
+})();
+</script>
 </body>
 </html>
 

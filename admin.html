@@ -351,6 +351,7 @@ body {
     }
 }
 </style>
+<style id="ff124-welcome-style">.ff124-welcome-settings{background:#1b1b1b;border:1px solid #46403a;border-radius:12px;padding:17px;margin:12px 14px 18px;color:#f5f5f5}.ff124-welcome-settings h3{font-size:17px;margin:0 0 9px;color:#f0d477}.ff124-welcome-settings p{font-size:13px;line-height:1.55;color:#c6c6c6;margin:6px 0 12px}.ff124-welcome-settings label{display:block;font-size:13px;margin:12px 0 6px}.ff124-welcome-settings textarea{display:block;width:100%;max-width:100%;box-sizing:border-box;min-height:120px;padding:12px;background:#111;color:#fff;border:1px solid #555;border-radius:9px;font:inherit;font-size:14px;line-height:1.5;resize:vertical}.ff124-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ff124-actions button{border:1px solid #957c37;background:#2b281e;color:#fff;border-radius:8px;padding:11px 15px;font:inherit;font-size:13px;cursor:pointer}.ff124-actions button:last-child{background:#ab8b2d;color:#111;font-weight:700}.ff124-actions button:disabled{opacity:.55;cursor:wait}.ff124-preview{margin-top:12px;border:1px dashed #807451;padding:12px;border-radius:9px;white-space:pre-wrap;line-height:1.5;font-size:14px}.ff124-welcome-settings #ff124WelcomeStatus{min-height:18px;font-size:12px}.ff-admin-dash-shell .ff124-welcome-settings{flex-shrink:0}@media(max-width:600px){.ff124-welcome-settings{margin:10px 8px;padding:12px}.ff124-actions button{flex:1 1 130px}}</style>
 </head>
 
 <body>
@@ -455,6 +456,14 @@ body {
     </section>
 
 
+<section class="ff124-welcome-settings" id="ff124WelcomeSettings" aria-label="Welcome Message Settings">
+  <h3>💌 Welcome Message Settings</h3>
+  <p>Edit the automatic greeting for newly approved members. Enter <strong>{name}</strong> wherever the member’s registered name should appear. Admin approval remains required.</p>
+  <label for="ff124WelcomeText">Welcome notification message</label>
+  <textarea id="ff124WelcomeText" rows="5" maxlength="1500" placeholder="Welcome to Duarte Clan, {name}!" spellcheck="true"></textarea>
+  <div class="ff124-actions"><button type="button" onclick="ff124PreviewWelcome()">Preview</button><button type="button" onclick="ff124SaveWelcome()" id="ff124SaveBtn">Save Welcome Message</button></div>
+  <div id="ff124WelcomePreview" class="ff124-preview" hidden></div><p id="ff124WelcomeStatus" role="status" aria-live="polite"></p>
+</section>
     <!-- PENDING MEMBERS -->
 
     <section class="card">
@@ -1123,5 +1132,17 @@ loadMembers();
 :root{--fb:#18191a;--fb2:#242526;--fb3:#3a3b3c;--fbt:#e4e6eb;--fbm:#b0b3b8}
 body{background:#0f1011!important;color:var(--fbt)!important}.topbar{height:64px!important;background:var(--fb)!important;box-shadow:0 1px 3px rgba(0,0,0,.35)!important}.topbar-inner{width:min(1400px,96%)!important}.logo{background:var(--gold)!important;color:#111!important;border:0!important}.back-btn,.refresh{background:#303031!important;border:0!important;color:#e4e6eb!important}.page{width:min(1180px,94%)!important;margin:24px auto!important}.page-header h2{font-size:28px!important}.stats{gap:12px!important}.stat,.card{background:var(--fb)!important;border:1px solid #303234!important;border-radius:12px!important;box-shadow:0 1px 2px rgba(0,0,0,.25)!important}.stat{padding:18px!important}.stat-label,.page-header p,.member-info p{color:var(--fbm)!important}.card-header{border-color:#3e4042!important}.member{border-color:#303234!important}.member:hover{background:#242526!important}.member-avatar{background:var(--gold)!important}.approve{background:var(--gold)!important;color:#111!important}.reject{background:#3a3b3c!important;border:0!important;color:#ff8a8a!important}@media(max-width:750px){.topbar{height:58px!important}.page{width:100%!important;margin:12px 0 60px!important}.page-header,.stats{margin-left:12px!important;margin-right:12px!important}.card{border-left:0!important;border-right:0!important;border-radius:0!important}.stats{grid-template-columns:repeat(3,1fr)!important}.stat{padding:12px!important}.stat-value{font-size:22px!important}.stat-label{font-size:10px!important}.member{padding:13px!important}.actions{margin-left:0!important}.brand span{display:none!important}}
 </style>\n<script id="duarte-admin-reject-v60">window.DuarteAdminBuild="member-reject-terminal-v60";</script>
+<script id="ff124-welcome-management">
+(function(){
+'use strict';
+const FALLBACK='🎉 Welcome to the Duarte Clan Family, {name}! Your membership has been approved. Explore family stories, share memories and photos, join clan events, and connect with the family. ❤️ — Duarte Clan Administration';
+function api(){return typeof supabaseClient!=='undefined'?supabaseClient:null;}
+function status(message,isError){const el=document.getElementById('ff124WelcomeStatus');if(el){el.textContent=message;el.style.color=isError?'#ff9999':'#9be1b1';}}
+window.ff124LoadWelcomeSettings=async function(){const field=document.getElementById('ff124WelcomeText');if(!field)return;const client=api();if(!client){status('Supabase is not available.',true);return;}status('Loading welcome message…');try{const {data,error}=await client.rpc('duarte_get_welcome_template');if(error)throw error;field.value=typeof data==='string'?data:FALLBACK;status('Current saved greeting loaded.');}catch(err){field.value=FALLBACK;status('Could not load settings. Run V124 SQL in Supabase first. '+(err.message||''),true);}};
+window.ff124PreviewWelcome=function(){const field=document.getElementById('ff124WelcomeText'),el=document.getElementById('ff124WelcomePreview');if(!field||!el)return;el.textContent=field.value.replace(/\{name\}/gi,'Juan Duarte');el.hidden=false;};
+window.ff124SaveWelcome=async function(){const field=document.getElementById('ff124WelcomeText'),btn=document.getElementById('ff124SaveBtn'),client=api();if(!field||!client)return;const value=field.value.trim();if(!value){status('Enter a welcome message before saving.',true);return;}if(value.length>1500){status('Message is too long (maximum 1,500 characters).',true);return;}if(!value.includes('{name}')){status('Include {name} in the message so each member receives a personalized greeting.',true);return;}btn.disabled=true;status('Saving…');try{const {error}=await client.rpc('duarte_set_welcome_template',{p_template:value});if(error)throw error;status('Saved. Newly approved members will receive this greeting automatically.');}catch(err){status('Could not save. '+(err.message||String(err)),true);}finally{btn.disabled=false;}};
+})();
+</script>
+<script>window.addEventListener("load",()=>{setTimeout(()=>ff124LoadWelcomeSettings(),250);});</script>
 </body>
 </html>

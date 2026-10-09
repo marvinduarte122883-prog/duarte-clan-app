@@ -2101,6 +2101,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 })();
 </script>
 
+<style id="ff124-welcome-style">.ff124-welcome-settings{background:#1b1b1b;border:1px solid #46403a;border-radius:12px;padding:17px;margin:12px 14px 18px;color:#f5f5f5}.ff124-welcome-settings h3{font-size:17px;margin:0 0 9px;color:#f0d477}.ff124-welcome-settings p{font-size:13px;line-height:1.55;color:#c6c6c6;margin:6px 0 12px}.ff124-welcome-settings label{display:block;font-size:13px;margin:12px 0 6px}.ff124-welcome-settings textarea{display:block;width:100%;max-width:100%;box-sizing:border-box;min-height:120px;padding:12px;background:#111;color:#fff;border:1px solid #555;border-radius:9px;font:inherit;font-size:14px;line-height:1.5;resize:vertical}.ff124-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ff124-actions button{border:1px solid #957c37;background:#2b281e;color:#fff;border-radius:8px;padding:11px 15px;font:inherit;font-size:13px;cursor:pointer}.ff124-actions button:last-child{background:#ab8b2d;color:#111;font-weight:700}.ff124-actions button:disabled{opacity:.55;cursor:wait}.ff124-preview{margin-top:12px;border:1px dashed #807451;padding:12px;border-radius:9px;white-space:pre-wrap;line-height:1.5;font-size:14px}.ff124-welcome-settings #ff124WelcomeStatus{min-height:18px;font-size:12px}.ff-admin-dash-shell .ff124-welcome-settings{flex-shrink:0}@media(max-width:600px){.ff124-welcome-settings{margin:10px 8px;padding:12px}.ff124-actions button{flex:1 1 130px}}</style>
 </head>
 
 
@@ -6136,6 +6137,14 @@ async function deleteFamilyPoll(id){if(!await window.duarteConfirm("Delete this 
   <div class="ff-admin-dash-head"><div><strong>📊 Duarte Clan Admin Dashboard</strong><small>Administrator-only system overview</small></div><button onclick="closeAdminDashboard()">×</button></div>
   <div id="ffAdminDashboardError"></div>
   <div id="ffAdminSummary" class="ff-admin-summary"></div>
+<section class="ff124-welcome-settings" id="ff124WelcomeSettings" aria-label="Welcome Message Settings">
+  <h3>💌 Welcome Message Settings</h3>
+  <p>Edit the automatic greeting for newly approved members. Enter <strong>{name}</strong> wherever the member’s registered name should appear. Admin approval remains required.</p>
+  <label for="ff124WelcomeText">Welcome notification message</label>
+  <textarea id="ff124WelcomeText" rows="5" maxlength="1500" placeholder="Welcome to Duarte Clan, {name}!" spellcheck="true"></textarea>
+  <div class="ff124-actions"><button type="button" onclick="ff124PreviewWelcome()">Preview</button><button type="button" onclick="ff124SaveWelcome()" id="ff124SaveBtn">Save Welcome Message</button></div>
+  <div id="ff124WelcomePreview" class="ff124-preview" hidden></div><p id="ff124WelcomeStatus" role="status" aria-live="polite"></p>
+</section>
   <div class="ff-admin-panels">
    <section class="ff-admin-panel"><h3>⏳ Pending Members</h3><div id="ffAdminPending" class="ff-admin-panel-body"></div></section>
    <section class="ff-admin-panel"><h3>📅 Upcoming Events</h3><div id="ffAdminEvents" class="ff-admin-panel-body"></div></section>
@@ -6150,7 +6159,7 @@ async function deleteFamilyPoll(id){if(!await window.duarteConfirm("Delete this 
 function ffAdminDashIsAdmin(){return !!(currentProfile&&(currentProfile.is_admin===true||currentProfile.clan_role==="Administrator"));}
 function ffADesc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function syncAdminDashboardAccess(){const b=document.getElementById("ffAdminDashboardFab");if(b)b.style.display=ffAdminDashIsAdmin()?"block":"none";}
-async function openAdminDashboard(){if(!ffAdminDashIsAdmin())return alert("Administrator access required.");document.getElementById("ffAdminDashboardModal")?.classList.add("open");await loadAdminDashboard();}
+async function openAdminDashboard(){if(!ffAdminDashIsAdmin())return alert("Administrator access required.");document.getElementById("ffAdminDashboardModal")?.classList.add("open");await loadAdminDashboard();await ff124LoadWelcomeSettings();}
 function closeAdminDashboard(){document.getElementById("ffAdminDashboardModal")?.classList.remove("open");}
 async function ffADCount(table,apply){let q=supabaseClient.from(table).select("*",{count:"exact",head:true});if(apply)q=apply(q);const {count,error}=await q;return {count:count||0,error};}
 function ffADIsRejectedRole(v){return String(v??"").trim().toLowerCase()==="rejected";}
@@ -15326,6 +15335,17 @@ const start=()=>{upgrade();document.addEventListener('click',e=>{if(e.target.clo
  if(window.ff114Details){const old=window.ff114Details.reset;window.ff114Details.reset=function(key){old.call(this,key);document.querySelectorAll('.ff120-wrap').forEach(w=>w.dispatchEvent(new Event('ff120-reset')))}}
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+<script id="ff124-welcome-management">
+(function(){
+'use strict';
+const FALLBACK='🎉 Welcome to the Duarte Clan Family, {name}! Your membership has been approved. Explore family stories, share memories and photos, join clan events, and connect with the family. ❤️ — Duarte Clan Administration';
+function api(){return typeof supabaseClient!=='undefined'?supabaseClient:null;}
+function status(message,isError){const el=document.getElementById('ff124WelcomeStatus');if(el){el.textContent=message;el.style.color=isError?'#ff9999':'#9be1b1';}}
+window.ff124LoadWelcomeSettings=async function(){const field=document.getElementById('ff124WelcomeText');if(!field)return;const client=api();if(!client){status('Supabase is not available.',true);return;}status('Loading welcome message…');try{const {data,error}=await client.rpc('duarte_get_welcome_template');if(error)throw error;field.value=typeof data==='string'?data:FALLBACK;status('Current saved greeting loaded.');}catch(err){field.value=FALLBACK;status('Could not load settings. Run V124 SQL in Supabase first. '+(err.message||''),true);}};
+window.ff124PreviewWelcome=function(){const field=document.getElementById('ff124WelcomeText'),el=document.getElementById('ff124WelcomePreview');if(!field||!el)return;el.textContent=field.value.replace(/\{name\}/gi,'Juan Duarte');el.hidden=false;};
+window.ff124SaveWelcome=async function(){const field=document.getElementById('ff124WelcomeText'),btn=document.getElementById('ff124SaveBtn'),client=api();if(!field||!client)return;const value=field.value.trim();if(!value){status('Enter a welcome message before saving.',true);return;}if(value.length>1500){status('Message is too long (maximum 1,500 characters).',true);return;}if(!value.includes('{name}')){status('Include {name} in the message so each member receives a personalized greeting.',true);return;}btn.disabled=true;status('Saving…');try{const {error}=await client.rpc('duarte_set_welcome_template',{p_template:value});if(error)throw error;status('Saved. Newly approved members will receive this greeting automatically.');}catch(err){status('Could not save. '+(err.message||String(err)),true);}finally{btn.disabled=false;}};
 })();
 </script>
 </body>

@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v27.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v28.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -14574,14 +14574,27 @@ async function start(type){
  }catch(e){const c=call;if(c)S()?.from('duarte_calls').update({status:'ended',ended_at:new Date().toISOString()}).eq('id',c.id).then(()=>{});cleanup();alert('Call could not start: '+(e?.message||e))}
 }
 async function accept(){
- if(!call)return;
+ const answering=call;
+ if(!answering?.id)return;
+ const answeringId=answering.id;
+ const stillCurrent=()=>call?.id===answeringId;
  try{
   window.duarteCallRingtone?.stop();
-  const who=await callerProfile(call.caller_id);showStage(who.name,callType,'Connecting media…');callPhoto('ffCallAvatar',who.photo,who.name);
-  await directMediaConnect(call);
-  const u=await S().from('duarte_calls').update({status:'accepted',answered_at:new Date().toISOString()}).eq('id',call.id);
-  if(u.error)throw u.error;call.status='accepted';
- }catch(e){await decline();alert('Call could not be answered: '+(e?.message||e))}
+  const who=await callerProfile(answering.caller_id);
+  if(!stillCurrent())return; // The remote member hung up during profile lookup.
+  showStage(who.name,callType,'Connecting media…');callPhoto('ffCallAvatar',who.photo,who.name);
+  await directMediaConnect(answering);
+  if(!stillCurrent())return; // The call ended while media was connecting.
+  const u=await S().from('duarte_calls').update({status:'accepted',answered_at:new Date().toISOString()}).eq('id',answeringId).eq('status','ringing').select('id,status').maybeSingle();
+  if(!stillCurrent())return; // A realtime event cleared the call during the update.
+  if(u.error)throw u.error;
+  if(!u.data){cleanup();return} // Do not revive an already-ended call.
+  answering.status='accepted';
+ }catch(e){
+  if(!stillCurrent())return; // Cancellation is not an answer failure.
+  await decline();
+  alert('Call could not be answered: '+(e?.message||e));
+ }
 }
 async function decline(){const c=call;if(c)try{await S().from('duarte_calls').update({status:'declined',ended_at:new Date().toISOString()}).eq('id',c.id)}catch{}cleanup()}
 async function endCall(write){const c=call;if(write&&c)try{await S().from('duarte_calls').update({status:'ended',ended_at:new Date().toISOString()}).eq('id',c.id)}catch{}cleanup()}

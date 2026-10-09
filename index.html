@@ -6468,20 +6468,21 @@ async function openClanProfile(userId){
     document.body.style.overflow='hidden';
   }
   try{
-    const {data:profile,error}=await supabaseClient.from('profiles')
-      .select('id,full_name,avatar_url,clan_role,approved,birthday')
-      .eq('id',userId).maybeSingle();
-    if(request!==ffV128ProfileRequest)return;
-    if(error)throw error;
-    if(!profile)throw new Error('Clan member profile was not found.');
-
-    const [{data:posts},{data:photos},{data:directory}]=await Promise.all([
+    // V129: all four independent reads start together to reduce profile loading latency.
+    const [{data:profile,error},{data:posts,error:postsError},{data:photos,error:photosError},{data:directory,error:directoryError}]=await Promise.all([
+      supabaseClient.from('profiles').select('id,full_name,avatar_url,clan_role,approved,birthday').eq('id',userId).maybeSingle(),
       supabaseClient.from('posts').select('id,user_id,content,image_url,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(60),
       supabaseClient.from('gallery').select('id,image_url,caption,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(40),
       supabaseClient.from('directory_profiles').select('city,occupation,family_branch,phone,email,show_phone,show_email,show_location,show_occupation').eq('user_id',userId).maybeSingle()
     ]);
-
     if(request!==ffV128ProfileRequest)return;
+    if(error)throw error;
+    if(!profile)throw new Error('Clan member profile was not found.');
+    if(postsError)console.warn('Profile posts:',postsError);
+    if(photosError)console.warn('Profile gallery:',photosError);
+    if(directoryError)console.warn('Profile directory:',directoryError);
+    // Used by delayed album/profile decorators to reject stale results.
+    if(overlay)overlay.dataset.ffV129MemberId=userId;
     const name=profile.full_name||'Duarte Clan Member';
     const role=profile.clan_role||'Member';
     const own=currentUser?.id===userId;
@@ -6534,7 +6535,7 @@ async function openClanProfile(userId){
     const imgs=[];
     (photos||[]).forEach(x=>{if(x.image_url)imgs.push({url:x.image_url,caption:x.caption||''})});
     p.forEach(x=>{if(x.image_url)imgs.push({url:x.image_url,caption:''})});
-    document.getElementById('ffFullPhotos').innerHTML=imgs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${imgs.map(x=>`<div><img src="${escapeHTML(x.url)}" alt="${escapeHTML(x.caption||'Family photo')}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px">${x.caption?`<div style="font-size:11px;color:#aaa;padding:4px">${escapeHTML(x.caption)}</div>`:''}</div>`).join('')}</div>`:'<div class="ff-chat-empty">No photos yet.</div>';
+    document.getElementById('ffFullPhotos').innerHTML=imgs.length?`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${imgs.map(x=>`<div><img loading="lazy" decoding="async" src="${escapeHTML(x.url)}" alt="${escapeHTML(x.caption||'Family photo')}" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:9px">${x.caption?`<div style="font-size:11px;color:#aaa;padding:4px">${escapeHTML(x.caption)}</div>`:''}</div>`).join('')}</div>`:'<div class="ff-chat-empty">No photos yet.</div>';
 
     document.querySelectorAll('#ffFullProfile .ff-profile-tab').forEach(x=>x.classList.toggle('active',x.dataset.pane==='posts'));
     document.querySelectorAll('#ffFullProfile .ff-profile-pane').forEach(x=>x.classList.remove('active'));
@@ -6543,8 +6544,19 @@ async function openClanProfile(userId){
     document.body.style.overflow='hidden';
     /* Hydrate the visible profile's own cards, without reloading the entire Home feed. */
     const profileCards=[...document.querySelectorAll('#ffFullPosts .post-card[data-post-id]')];
-    Promise.allSettled(profileCards.map(card=>loadPostActivity(Number(card.dataset.postId),card)))
-      .catch(e=>console.warn('Profile post activity:',e));
+    // V129: bound concurrent activity reads; dozens of cards no longer
+    // launch database requests simultaneously on a slow mobile connection.
+    (async()=>{
+      let cursor=0;
+      const workers=Array.from({length:Math.min(5,profileCards.length)},async()=>{
+        while(cursor<profileCards.length && request===ffV128ProfileRequest){
+          const card=profileCards[cursor++];
+          try{await loadPostActivity(Number(card.dataset.postId),card)}
+          catch(e){console.warn('Profile post activity:',e)}
+        }
+      });
+      await Promise.allSettled(workers);
+    })();
     if(typeof window.ffV42RefreshPostPhotos==='function')
       window.ffV42RefreshPostPhotos().catch(e=>console.warn('Profile post photos:',e));
   }catch(err){
@@ -15534,6 +15546,19 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
   },true);
 })();
 </script>
+
+<!-- V129: lightweight touch handling for standard app controls; preserves photo gestures. -->
+<style id="ff-v129-lite-ui-stability">
+@media(max-width:760px){
+ #membersGrid .clan-member-card, #ffFullProfile .ff-profile-tab,
+ .ff-v29c-bottom-nav button,.ff-v29c-mobile-nav button{touch-action:manipulation}
+ #ffFullProfile .ff-fb-post-column, #ffFullProfile #ffFullPhotos{min-width:0;max-width:100%}
+ #ffFullProfile img{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ #ffFullProfile .post-card, #membersGrid .clan-member-card{transition:none!important}
+}
+</style>
 </body>
 </html>
 
@@ -16200,7 +16225,7 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
  window.loadAlbumPhotos=async function(){if(!ffCurrentAlbum)return;const box=q('ffAlbumPhotos');box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';const {data,error}=await supabaseClient.from('family_album_photos').select('id,image_url,caption,uploaded_by,created_at').eq('album_id',ffCurrentAlbum.id).order('created_at',{ascending:false});if(error){box.innerHTML='<div class="ff-albums-empty">'+esc(error.message)+'</div>';return}const can=ffAlbAdmin()||ffCurrentAlbum.created_by===currentUser?.id;box.innerHTML=(data||[]).length?(data||[]).map(p=>`<div class="ff-album-photo"><img loading="lazy" decoding="async" src="${esc(p.image_url)}" alt="" data-v74-photo="${Number(p.id)}"><div class="ff-album-photo-copy">${esc(p.caption||'')}<div style="margin-top:5px;color:#aaa;font-size:9px">👍 Like · 💬 Comment · ↗ Share</div>${(can||p.uploaded_by===currentUser?.id)?`<br><button onclick="deleteAlbumPhoto(${Number(p.id)})">Delete photo</button>`:''}</div></div>`).join(''):'<div class="ff-albums-empty">No photos in this album yet.</div>';box.querySelectorAll('[data-v74-photo]').forEach(img=>img.onclick=()=>{const p=(data||[]).find(x=>Number(x.id)===Number(img.dataset.v74Photo));if(p)ffV74OpenPhoto(p)})};
  // Add albums to a member's profile Photos pane. Albums stay profile-centric, not auto-posted to Home.
  const oldOpen=window.openClanProfile;
- if(typeof oldOpen==='function'&&!oldOpen.__v74){const wrapped=async function(uid){await oldOpen(uid);try{const {data:albums}=await supabaseClient.from('family_albums').select('id,title,cover_url,album_date,created_at').eq('created_by',uid).order('created_at',{ascending:false}).limit(24);if(!albums?.length)return;const pane=q('ffFullPhotos');if(!pane)return;const section=document.createElement('section');section.className='ff-v74-profile-albums';section.innerHTML=`<h3>Albums</h3><div class="ff-v74-profile-album-grid">${albums.map(a=>`<article class="ff-v74-profile-album" data-aid="${Number(a.id)}">${a.cover_url?`<img loading="lazy" decoding="async" src="${esc(a.cover_url)}" alt="">`:'<div style="aspect-ratio:1/1;display:grid;place-items:center;font-size:32px">📸</div>'}<div class="meta"><strong>${esc(a.title)}</strong><span>${esc(a.album_date||'Family album')}</span></div></article>`).join('')}</div>`;pane.prepend(section);section.querySelectorAll('[data-aid]').forEach(el=>el.onclick=async()=>{const id=Number(el.dataset.aid);let a=ffAlbums?.find?.(x=>Number(x.id)===id);if(!a){const {data}=await supabaseClient.from('family_albums').select('id,title,description,cover_url,album_date,created_by,created_at').eq('id',id).single();a=data;if(a){ffAlbums=ffAlbums||[];ffAlbums.push(a)}}if(a){ffCurrentAlbum=a;q('ffAlbumViewTitle').textContent=a.title||'Album';q('ffAlbumViewMeta').textContent=a.album_date||'';q('ffAlbumViewDescription').textContent=a.description||'';q('ffAlbumView')?.classList.add('open');await loadAlbumPhotos()}})}catch(e){console.warn('Profile albums:',e)}};wrapped.__v74=true;window.openClanProfile=wrapped;window.openMemberProfile=wrapped;window.openMemberProfileById=wrapped}
+ if(typeof oldOpen==='function'&&!oldOpen.__v74){const wrapped=async function(uid){await oldOpen(uid);const pane=q('ffFullPhotos');if(!pane||pane.closest('#ffFullProfile')?.dataset.ffV129MemberId!==String(uid).match(/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/i)?.[0])return;try{const {data:albums}=await supabaseClient.from('family_albums').select('id,title,cover_url,album_date,created_at').eq('created_by',uid).order('created_at',{ascending:false}).limit(24);if(!albums?.length)return;if(pane.closest('#ffFullProfile')?.dataset.ffV129MemberId!==String(uid).match(/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{12}/i)?.[0])return;pane.querySelector('.ff-v74-profile-albums')?.remove();const section=document.createElement('section');section.className='ff-v74-profile-albums';section.innerHTML=`<h3>Albums</h3><div class="ff-v74-profile-album-grid">${albums.map(a=>`<article class="ff-v74-profile-album" data-aid="${Number(a.id)}">${a.cover_url?`<img loading="lazy" decoding="async" src="${esc(a.cover_url)}" alt="">`:'<div style="aspect-ratio:1/1;display:grid;place-items:center;font-size:32px">📸</div>'}<div class="meta"><strong>${esc(a.title)}</strong><span>${esc(a.album_date||'Family album')}</span></div></article>`).join('')}</div>`;pane.prepend(section);section.querySelectorAll('[data-aid]').forEach(el=>el.onclick=async()=>{const id=Number(el.dataset.aid);let a=ffAlbums?.find?.(x=>Number(x.id)===id);if(!a){const {data}=await supabaseClient.from('family_albums').select('id,title,description,cover_url,album_date,created_by,created_at').eq('id',id).single();a=data;if(a){ffAlbums=ffAlbums||[];ffAlbums.push(a)}}if(a){ffCurrentAlbum=a;q('ffAlbumViewTitle').textContent=a.title||'Album';q('ffAlbumViewMeta').textContent=a.album_date||'';q('ffAlbumViewDescription').textContent=a.description||'';q('ffAlbumView')?.classList.add('open');await loadAlbumPhotos()}})}catch(e){console.warn('Profile albums:',e)}};wrapped.__v74=true;window.openClanProfile=wrapped;window.openMemberProfile=wrapped;window.openMemberProfileById=wrapped}
  // Event modal: prevent body overlay lock conflicts on mobile and restore cleanly.
  const oe=window.openEventModal,ce=window.closeEventModal;if(typeof oe==='function'){window.openEventModal=async function(id=null){await oe(id);if(q('eventModal')?.classList.contains('show')){document.body.classList.add('ff-v74-event-open');q('eventTitle')?.focus?.({preventScroll:true})}}}if(typeof ce==='function'){window.closeEventModal=function(){ce();document.body.classList.remove('ff-v74-event-open')}}
 })();

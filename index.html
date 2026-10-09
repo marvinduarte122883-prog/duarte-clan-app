@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v30.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v32.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10967,11 +10967,13 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    $("ffStoryViewAvatar").innerHTML=avatarHTML(p);$("ffStoryViewCaption").textContent=s.caption||"";
    $("ffStoryDelete").style.display=state.me?.id===s.user_id?"inline-block":"none";
    showMusic(s);
+   /* Opening a story is a user gesture: attempt sound immediately where permitted. */
+   if(state.music.get(s.id)?.music_url) void toggleMusic();
    $("ffStoryViewer").classList.add("open");$("ffStoryViewer").setAttribute("aria-hidden","false");
  }
  function closeStory(){stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
- function openComposer(){$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
- function closeComposer(){$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
+ function openComposer(){document.body.classList.add("ff-story-composing-mobile");$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
+ function closeComposer(){document.body.classList.remove("ff-story-composing-mobile");$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
  async function compress(file){
    if(typeof window.ffStorageSaverImage==="function")try{return await window.ffStorageSaverImage(file,"feed");}catch(_){}
    return file;
@@ -11143,7 +11145,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 .ff-story-progress-track{height:3px;flex:1;background:rgba(255,255,255,.28);border-radius:5px;overflow:hidden}
 .ff-story-progress-fill{height:100%;width:0;background:#fff}
 .ff-story-progress-fill.done{width:100%}
-.ff-story-progress-fill.running{animation:ffStoryProgressV30B 6s linear forwards}
+.ff-story-progress-fill.running{animation:ffStoryProgressV30B 20s linear forwards}
 @keyframes ffStoryProgressV30B{from{width:0}to{width:100%}}
 .ff-story-nav{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:42px;height:70px;border:0;background:rgba(0,0,0,.18);color:#fff;font-size:40px;cursor:pointer}
 .ff-story-prev{left:0;border-radius:0 12px 12px 0}.ff-story-next{right:0;border-radius:12px 0 0 12px}
@@ -11156,13 +11158,35 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 <script id="duarte-family-stories-v30b-script">
 (()=>{
- const DURATION=6000;
+ const DURATION=20000;
  let stories=[], viewed=new Set(), me=null, currentIndex=-1, timer=null, ownerViewCount=new Map();
+ let paused=false,remaining=DURATION,startedAt=0;
  const $=id=>document.getElementById(id);
  const client=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
 
  function currentStory(){return currentIndex>=0?stories[currentIndex]:null}
  function clearTimer(){if(timer){clearTimeout(timer);timer=null}}
+ function scheduleAdvance(duration=DURATION){
+   clearTimer();paused=false;remaining=duration;startedAt=performance.now();
+   if(document.hidden)return pause();
+   timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else pause();},duration);
+   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
+   if(fill){fill.style.animationDuration=duration+'ms';fill.style.animationPlayState='running'}
+ }
+ function pause(){
+   if(!paused&&timer)remaining=Math.max(0,remaining-(performance.now()-startedAt));
+   clearTimer();paused=true;
+   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
+   if(fill)fill.style.animationPlayState='paused';
+ }
+ function resume(){
+   if(!paused||!$('ffStoryViewer')?.classList.contains('open'))return;
+   if(remaining<100)remaining=100;
+   paused=false;startedAt=performance.now();
+   if(!document.hidden)timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else pause()},remaining);
+   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
+   if(fill)fill.style.animationPlayState='running';
+ }
  function progress(){
    const host=$("ffStoryProgress");if(!host)return;
    host.innerHTML=stories.map((_,i)=>`<span class="ff-story-progress-track"><span class="ff-story-progress-fill ${i<currentIndex?"done":i===currentIndex?"running":""}"></span></span>`).join("");
@@ -11223,32 +11247,36 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      if($("ffStoryViewCaption"))$("ffStoryViewCaption").textContent=s.caption||"";
    }
    progress();recordView(s);refreshOwnerCount(s);
-   /* V71: manual-close story viewer; no auto-advance */
+   scheduleAdvance(DURATION);
  }
- function next(){if(!stories.length)return;if(currentIndex>=stories.length-1)return;show(currentIndex+1)}
+ function next(){if(!stories.length)return;if(currentIndex>=stories.length-1){pause();return}show(currentIndex+1)}
  function prev(){if(!stories.length)return;show(Math.max(0,currentIndex-1))}
- function close(){clearTimer();$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
+ function close(){clearTimer();paused=false;$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
  function interceptOpen(e){
    const card=e.target.closest?.("[data-story]");if(!card)return;
    const idx=stories.findIndex(s=>s.id===card.dataset.story);
    if(idx<0)return;
    currentIndex=idx;
-   setTimeout(()=>{progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);clearTimer()},0);
+   setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(DURATION)},0);
  }
  document.addEventListener("click",interceptOpen,true);
  document.addEventListener("DOMContentLoaded",()=>{
    loadViewState();
    $("ffStoryPrev")?.addEventListener("click",e=>{e.stopPropagation();prev()});
    $("ffStoryNext")?.addEventListener("click",e=>{e.stopPropagation();next()});
-   $("ffStoryClose")?.addEventListener("click",clearTimer);
-   $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer"))clearTimer()});
+   $("ffStoryClose")?.addEventListener("click",()=>{clearTimer();paused=false});
+   $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer")){clearTimer();paused=false}});
+   document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();else resume()});
+   const viewer=$("ffStoryViewer");
+   viewer?.addEventListener('focusin',e=>{if(e.target.matches('input,textarea,[contenteditable="true"]'))pause()});
+   viewer?.addEventListener('focusout',e=>{if(e.target.matches('input,textarea,[contenteditable="true"]'))resume()});
    document.addEventListener("keydown",e=>{
      if(!$("ffStoryViewer")?.classList.contains("open"))return;
      if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key==="Escape")close();
    });
    window.addEventListener("online",loadViewState);
  });
- window.ffDuarteStoriesV30B={reload:loadViewState,next,prev};
+ window.ffDuarteStoriesV30B={reload:loadViewState,next,prev,pause,resume};
 })();
 </script>
 
@@ -15814,6 +15842,21 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
 })();
 
 </script>
+
+<style id="duarte-v117-hide-family-tree-in-mobile-story-editor">
+@media (max-width:760px) {
+  body.ff-story-composing-mobile #ffFamilyTreeFab,
+  body.ff-story-composing-mobile .ff-family-tree-fab,
+  body.ff-story-composing-mobile .family-tree-button,
+  body.ff-story-composing-mobile .family-tree-fab,
+  body.ff-story-composing-mobile .ff-family-menu-btn,
+  body.ff-story-composing-mobile .family-menu-button {
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+}
+</style>
 </body>
 </html>
 

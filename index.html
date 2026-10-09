@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v35.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v36.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -15983,6 +15983,55 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
   #ffMobileMoreSheetV50{bottom:calc(58px + env(safe-area-inset-bottom))!important}
 }
 </style>
+
+<!-- V121 — Story viewer clean layout: music above image, caption below and on-demand reactions -->
+<style id="duarte-v121-story-view-layout">
+#ffStoryViewer .ff-story-view{isolation:isolate!important}
+#ffStoryViewer #ffStoryMusicPlayback{position:absolute!important;top:64px!important;bottom:auto!important;left:12px!important;right:12px!important;z-index:80!important;max-height:44px!important}
+#ffStoryViewer #ffStoryViewImage{position:absolute!important;top:118px!important;bottom:175px!important;height:calc(100% - 293px)!important;width:100%!important;object-fit:contain!important;max-height:none!important}
+#ffStoryViewer .ff-story-view-bg{pointer-events:none!important}
+#ffStoryViewer #ffStoryViewCaption{position:absolute!important;top:auto!important;bottom:66px!important;left:14px!important;right:14px!important;max-height:98px!important;overflow:auto!important;overflow-wrap:anywhere!important;white-space:pre-wrap!important;line-height:1.35!important;text-align:left!important;padding:7px 9px!important;border-radius:8px!important;background:rgba(10,10,10,.88)!important;text-shadow:none!important;z-index:90!important}
+#ffStoryViewer #ffStoryViewCaption:empty{display:none!important}
+#ffStoryViewer .ff-story-social-v68{bottom:12px!important;left:12px!important;right:12px!important;display:flex!important;z-index:140!important;gap:8px!important}
+#ffStoryViewer .ff-story-reactions-v71{position:relative!important;display:flex!important;flex:0 0 auto!important;max-width:none!important;overflow:visible!important}
+#ffStoryViewer .ff-story-reactions-v71 [data-reaction]{display:none!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]{display:grid!important}
+#ffStoryViewer .ff-v121-like{border:1px solid #5b5b5b;border-radius:22px;background:#222;color:#fff;padding:9px 14px;min-height:40px;font-weight:700;white-space:nowrap;cursor:pointer}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open{position:relative!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]{position:absolute!important;bottom:48px!important;right:0!important;background:rgba(22,22,22,.96)!important;box-shadow:0 2px 8px #0007;border-radius:100%!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(2){right:0!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(3){right:40px!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(4){right:80px!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(5){right:120px!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(6){right:160px!important}
+#ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-child(7){right:200px!important}
+#ffStoryViewer #ffStoryReactionSummaryV71{bottom:168px!important;z-index:105!important}
+@media(max-width:700px){
+ #ffStoryViewer #ffStoryViewImage{top:112px!important;bottom:244px!important;height:calc(100% - 356px)!important}
+ #ffStoryViewer #ffStoryViewCaption{bottom:calc(135px + env(safe-area-inset-bottom))!important;max-height:100px!important}
+ #ffStoryViewer .ff-story-social-v68{bottom:calc(82px + env(safe-area-inset-bottom))!important}
+ #ffStoryViewer #ffStoryReactionSummaryV71{bottom:calc(241px + env(safe-area-inset-bottom))!important}
+ #ffStoryViewer .ff-story-reactions-v71{overflow:visible!important}
+ #ffStoryViewer .ff-story-reactions-v71.ff-v121-open [data-reaction]{min-width:34px!important;width:34px!important;height:38px!important}
+}
+@media(max-height:600px){#ffStoryViewer #ffStoryViewImage{top:106px!important;bottom:215px!important;height:calc(100% - 321px)!important}#ffStoryViewer #ffStoryViewCaption{max-height:60px!important}}
+</style>
+<script id="duarte-v121-story-reaction-picker">
+(function(){
+ function init(){
+  const bar=document.getElementById('ffStorySocialV68'),reactions=bar?.querySelector('.ff-story-reactions-v71');
+  if(!reactions||reactions.querySelector('.ff-v121-like'))return;
+  const btn=document.createElement('button');btn.type='button';btn.className='ff-v121-like';btn.textContent='👍 Like';btn.setAttribute('aria-expanded','false');
+  btn.setAttribute('aria-label','Choose a story reaction');reactions.prepend(btn);
+  const close=()=>{reactions.classList.remove('ff-v121-open');btn.setAttribute('aria-expanded','false')};
+  btn.addEventListener('click',e=>{e.stopPropagation();const open=reactions.classList.toggle('ff-v121-open');btn.setAttribute('aria-expanded',String(open))});
+  reactions.querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',close));
+  document.addEventListener('click',e=>{if(!reactions.contains(e.target))close()});
+  ['ffStoryNext','ffStoryPrev','ffStoryClose'].forEach(id=>document.getElementById(id)?.addEventListener('click',close));
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body>
 </html>
 

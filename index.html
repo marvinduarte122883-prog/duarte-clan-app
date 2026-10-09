@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v26.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v27.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10631,7 +10631,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </div>
 <script id="ff-health-v25-js">
 (function(){
- window.DUARTE_BUILD="production-facebook-lite-v46";
+ window.DUARTE_BUILD="production-facebook-lite-v46-v111-online-dot-fix";
  const $=id=>document.getElementById(id), modal=$("ffHealthV25"), grid=$("ffHealthGridV25"), details=$("ffHealthDetailsV25");
  let lastReport=null;
  const safeErr=e=>String(e&&e.message||e||"Unknown error").replace(/eyJ[A-Za-z0-9._-]+/g,"[redacted-token]").slice(0,500);
@@ -13938,15 +13938,22 @@ document.addEventListener("DOMContentLoaded",function(){
    }
  }
  function paint(){
+   /* Remove any stray dots that were previously appended to whole rows/cards instead of avatars. */
+   document.querySelectorAll(`.member-row>.ff-online-dot-v41,.clan-member-card>.ff-online-dot-v41,.ff-directory-card>.ff-online-dot-v41,[data-user-id]>.ff-online-dot-v41,[data-member-id]>.ff-online-dot-v41,[data-profile-id]>.ff-online-dot-v41`).forEach(dot=>{
+     const parent=dot.parentElement;
+     if(parent && !parent.matches('.member-avatar,.ff-directory-avatar,.ff-conversation-avatar,[class*="avatar"]')) dot.remove();
+   });
    /* Any existing member/profile/message element carrying a user id can be painted
       without duplicating the app's member or Messenger UI. */
    document.querySelectorAll("[data-user-id],[data-member-id],[data-profile-id]").forEach(el=>{
      const id=el.dataset.userId||el.dataset.memberId||el.dataset.profileId;
      if(!id)return;
-     const avatar=el.matches("img,.avatar,[class*='avatar']")?el:
-       el.querySelector("img,.avatar,[class*='avatar']");
+     const avatar=el.matches(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar,.avatar,[class*='avatar'],img")?el:
+       el.querySelector(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar,.avatar,[class*='avatar'],img");
      if(avatar){
-       const host=avatar.parentElement;
+       const host=avatar.matches(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar,.avatar,[class*='avatar']")
+         ? avatar
+         : (avatar.closest(".member-avatar,.ff-directory-avatar,.ff-conversation-avatar,.avatar,[class*='avatar']")||avatar.parentElement);
        if(host){
          host.classList.add("ff-presence-avatar-v41");
          addStatus(host,id,false);

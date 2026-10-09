@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v37.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v38.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10895,13 +10895,15 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  function showMusic(story){stopMusic();const m=state.music.get(story.id),wrap=$('ffStoryMusicPlayback');if(!wrap)return;wrap.classList.toggle('visible',!!m?.music_url);if(!m?.music_url)return;
    $('ffStoryMusicName').textContent=m.title||'Story music';const a=$('ffStoryMusicAudio');a.src=m.music_url;a.dataset.start=String(Math.max(0,Number(m.start_seconds)||0));a.preload='none';
+   // Playback is attempted after a user opens or advances a story; browsers may block audible autoplay.
+   setTimeout(()=>{if(document.getElementById('ffStoryViewer')?.classList.contains('open') && a.getAttribute('src')===m.music_url) toggleMusic();},80);
  }
  async function toggleMusic(){const a=$('ffStoryMusicAudio'),b=$('ffStoryMusicToggle');if(!a?.getAttribute('src'))return;
    if(!a.paused){a.pause();b.textContent='▶ Play';if(musicStop)clearInterval(musicStop);musicStop=null;return;}
    const start=Number(a.dataset.start)||0;
    try{if(a.readyState<1)await new Promise((resolve,reject)=>{a.addEventListener('loadedmetadata',resolve,{once:true});a.addEventListener('error',reject,{once:true});a.load()});
      a.currentTime=Math.min(start,Math.max(0,(a.duration||start+30)-.1));await a.play();b.textContent='🔇 Pause';
-     if(musicStop)clearInterval(musicStop);musicStop=setInterval(()=>{if(a.paused||a.currentTime>=start+30||a.ended){a.pause();b.textContent='▶ Play';clearInterval(musicStop);musicStop=null;}},200);
+     if(musicStop)clearInterval(musicStop);musicStop=setInterval(()=>{if(a.paused||a.currentTime>=start+30||a.ended){a.pause();b.textContent='▶ Play';clearInterval(musicStop);musicStop=null; if(document.getElementById('ffStoryViewer')?.classList.contains('open')) document.dispatchEvent(new CustomEvent('duarte:story-music-finished'));}},200);
    }catch(e){b.textContent='▶ Play';console.warn('Story music playback:',e)}
  }
  function clearPreviewMusic(){selectedAudius=null;$('ffAudiusSelected').textContent='';const input=$('ffStoryMusicFile');if(input)input.value='';$('ffStoryMusicTitle').value='';$('ffStoryMusicStart').value='0';const audio=$('ffStoryMusicPreview');audio.pause();audio.removeAttribute('src');audio.load();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;}
@@ -11167,6 +11169,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  function currentStory(){return currentIndex>=0?stories[currentIndex]:null}
  function clearTimer(){if(timer){clearTimeout(timer);timer=null}}
  function scheduleAdvance(duration=DURATION){
+   // Song stories use the actual selected 30-second clip window.
+   const music=document.getElementById('ffStoryMusicAudio');
+   if(music?.getAttribute('src')) duration=30000;
    clearTimer();paused=false;remaining=duration;startedAt=performance.now();
    if(document.hidden)return pause();
    timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else pause();},duration);
@@ -11260,6 +11265,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(DURATION)},0);
  }
  document.addEventListener("click",interceptOpen,true);
+ document.addEventListener("duarte:story-music-finished",()=>{if($("ffStoryViewer")?.classList.contains("open") && !paused && currentIndex<stories.length-1)next()});
  document.addEventListener("DOMContentLoaded",()=>{
    loadViewState();
    $("ffStoryPrev")?.addEventListener("click",e=>{e.stopPropagation();prev()});
@@ -17150,5 +17156,41 @@ if(typeof originalAlbumToggle==='function'){
   if(!e.target.closest('#ffStorySocialV68 .ff-story-reactions-v71'))close();
  },false);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+})();
+</script>
+
+<!-- V123: Story reactions and music slideshow compatibility -->
+<style id="duarte-v123-story-reactions">
+#ffStoryViewer #ffStorySocialV68{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:200!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71{overflow:visible!important;flex-shrink:0!important;isolation:isolate}
+#ffStoryViewer #ffStorySocialV68 .ff-v121-like{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;z-index:2!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71:not(.ff-v121-open) [data-reaction]{display:none!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:absolute!important;bottom:calc(100% + 8px)!important;left:auto!important;min-width:34px!important;width:34px!important;height:38px!important;margin:0!important;z-index:230!important;justify-content:center!important;align-items:center!important;background:#252525!important;border-radius:50%!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(2){right:0!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(3){right:36px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(4){right:72px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(5){right:108px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(6){right:144px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(7){right:180px!important}
+@media(max-width:700px){#ffStoryViewer #ffStorySocialV68 .ff-story-reply-wrap-v70{min-width:0!important;flex:1!important}#ffStoryViewer #ffStorySocialV68 .ff-v121-like{min-width:70px!important}}
+</style>
+<script id="duarte-v123-reaction-handler">
+(()=>{
+  const root=document.getElementById('ffStoryViewer');if(!root)return;
+  // The Story social bar stops click propagation, so document-level handlers cannot open the picker.
+  root.addEventListener('click',e=>{
+    const btn=e.target.closest('#ffStorySocialV68 .ff-v121-like');
+    if(!btn)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const row=btn.closest('.ff-story-reactions-v71');if(!row)return;
+    const open=!row.classList.contains('ff-v121-open');
+    row.classList.toggle('ff-v121-open',open);
+    btn.setAttribute('aria-expanded',String(open));
+  },true);
+  root.addEventListener('click',e=>{
+    if(e.target.closest('#ffStorySocialV68 [data-reaction]') || e.target.closest('#ffStoryNext,#ffStoryPrev,#ffStoryClose')){
+      root.querySelectorAll('.ff-story-reactions-v71.ff-v121-open').forEach(row=>{row.classList.remove('ff-v121-open');row.querySelector('.ff-v121-like')?.setAttribute('aria-expanded','false')});
+    }
+  },true);
 })();
 </script>

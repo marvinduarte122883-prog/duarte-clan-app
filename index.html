@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v36.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v37.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -16537,7 +16537,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
  let storyId=null,storyOwner=null,me=null,myReaction=null,rows=[],profileName="Duarte member",busy=false,sending=false;
  function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
  function emoji(k){return REACTIONS.find(x=>x[0]===k)?.[1]||'👍'}
- function ensure(){const view=document.querySelector("#ffStoryViewer .ff-story-view");if(!view)return null;let bar=$("ffStorySocialV68");if(!bar){bar=document.createElement("div");bar.id="ffStorySocialV68";bar.className="ff-story-social-v68";bar.innerHTML='<div class="ff-story-reply-wrap-v70"><input id="ffStoryReplyV70" class="ff-story-reply-v70" type="text" maxlength="1000" autocomplete="off" placeholder="Send message…" aria-label="Send message"><button type="button" id="ffStorySendV70" class="ff-story-send-v70">Send</button></div><div class="ff-story-reactions-v71">'+REACTIONS.map(([k,e])=>`<button type="button" class="ff-story-react-v71" data-reaction="${k}" aria-label="${k}">${e}</button>`).join('')+'</div>';view.appendChild(bar);const summary=document.createElement('button');summary.type='button';summary.id='ffStoryReactionSummaryV71';summary.className='ff-story-reaction-summary-v71';summary.style.display='none';view.appendChild(summary);summary.addEventListener('click',showReactors);bar.querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',()=>setReaction(b.dataset.reaction)));const input=$("ffStoryReplyV70");input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendReply()}});["click","pointerdown","touchstart"].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()))}return bar}
+ function ensure(){const view=document.querySelector("#ffStoryViewer .ff-story-view");if(!view)return null;let bar=$("ffStorySocialV68");if(!bar){bar=document.createElement("div");bar.id="ffStorySocialV68";bar.className="ff-story-social-v68";bar.innerHTML='<div class="ff-story-reply-wrap-v70"><input id="ffStoryReplyV70" class="ff-story-reply-v70" type="text" maxlength="1000" autocomplete="off" placeholder="Send message…" aria-label="Send message"><button type="button" id="ffStorySendV70" class="ff-story-send-v70">Send</button></div><div class="ff-story-reactions-v71"><button type="button" class="ff-v121-like" aria-expanded="false" aria-label="Choose a story reaction">👍 Like</button>'+REACTIONS.map(([k,e])=>`<button type="button" class="ff-story-react-v71" data-reaction="${k}" aria-label="${k}">${e}</button>`).join('')+'</div>';view.appendChild(bar);const summary=document.createElement('button');summary.type='button';summary.id='ffStoryReactionSummaryV71';summary.className='ff-story-reaction-summary-v71';summary.style.display='none';view.appendChild(summary);summary.addEventListener('click',showReactors);bar.querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',()=>setReaction(b.dataset.reaction)));const input=$("ffStoryReplyV70");input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendReply()}});["click","pointerdown","touchstart"].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()))}return bar}
  async function getMe(){if(me)return me;const c=sb();if(!c)return null;const r=await c.auth.getSession();me=r?.data?.session?.user||null;return me}
  async function sync(){const c=sb(),bar=ensure();if(!c||!bar||!storyId)return;await getMe();bar.classList.toggle("owner",!!me&&me.id===storyOwner);const input=$("ffStoryReplyV70");if(input)input.placeholder="Send message…";try{let q=await c.from("family_story_likes").select("user_id,reaction,created_at").eq("story_id",storyId);if(q.error&&String(q.error.message||'').toLowerCase().includes('reaction'))q=await c.from("family_story_likes").select("user_id,created_at").eq("story_id",storyId);if(q.error)throw q.error;rows=(q.data||[]).map(x=>({...x,reaction:x.reaction||'like'}));myReaction=me?(rows.find(x=>x.user_id===me.id)?.reaction||null):null;render()}catch(e){console.warn("Story reactions unavailable:",e)}}
  function render(){document.querySelectorAll('#ffStorySocialV68 [data-reaction]').forEach(b=>b.classList.toggle('selected',b.dataset.reaction===myReaction));const sum=$("ffStoryReactionSummaryV71");if(!sum)return;if(!rows.length){sum.style.display='none';return}const unique=[...new Set(rows.map(x=>emoji(x.reaction)))].slice(0,3).join('');sum.textContent=`${unique} ${rows.length}`;sum.style.display='block'}
@@ -17121,5 +17121,34 @@ if(typeof originalAlbumToggle==='function'){
  const closeAlbum=window.ffV74ClosePhoto;
  if(typeof closeAlbum==='function')window.ffV74ClosePhoto=function(){el('ffV92ReactionPicker')?.classList.remove('open');return closeAlbum.apply(this,arguments)};
 }
+})();
+</script>
+
+<!-- V122: repair missing Story Like control; keep picker hidden until requested. -->
+<style id="duarte-v122-story-like-restore">
+#ffStoryViewer #ffStorySocialV68{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;pointer-events:auto!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reply-wrap-v70{flex:1 1 auto!important;min-width:0!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71{display:flex!important;visibility:visible!important;flex:0 0 auto!important;overflow:visible!important;max-width:none!important;position:relative!important}
+#ffStoryViewer #ffStorySocialV68 .ff-v121-like{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 auto!important;visibility:visible!important;opacity:1!important;min-width:72px!important;min-height:42px!important;padding:8px 11px!important;font-size:14px!important;white-space:nowrap!important;border:1px solid #777!important;border-radius:24px!important;background:#25272a!important;color:#fff!important;cursor:pointer!important;position:relative!important;z-index:155!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71:not(.ff-v121-open) [data-reaction]{display:none!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]{display:grid!important;position:absolute!important;bottom:calc(100% + 9px)!important;width:36px!important;min-width:36px!important;height:38px!important;z-index:160!important;box-sizing:border-box!important;place-items:center!important;overflow:visible!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(1){right:0!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(2){right:37px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(3){right:74px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(4){right:111px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(5){right:148px!important}
+#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open [data-reaction]:nth-of-type(6){right:185px!important}
+@media(max-width:700px){#ffStoryViewer #ffStorySocialV68 .ff-v121-like{min-width:72px!important;padding:8px!important}#ffStoryViewer #ffStorySocialV68 .ff-story-reactions-v71{max-width:none!important;overflow:visible!important}}
+</style>
+<script id="duarte-v122-story-like-handler">
+(function(){
+ function close(){document.querySelectorAll('#ffStorySocialV68 .ff-story-reactions-v71.ff-v121-open').forEach(el=>{el.classList.remove('ff-v121-open');const btn=el.querySelector('.ff-v121-like');if(btn)btn.setAttribute('aria-expanded','false')})}
+ document.addEventListener('click',function(e){
+  const btn=e.target.closest('#ffStorySocialV68 .ff-v121-like');
+  if(btn){e.preventDefault();e.stopPropagation();const row=btn.closest('.ff-story-reactions-v71');const open=!row.classList.contains('ff-v121-open');close();row.classList.toggle('ff-v121-open',open);btn.setAttribute('aria-expanded',String(open));return}
+  if(e.target.closest('#ffStorySocialV68 [data-reaction]')){close();return}
+  if(!e.target.closest('#ffStorySocialV68 .ff-story-reactions-v71'))close();
+ },false);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
 })();
 </script>

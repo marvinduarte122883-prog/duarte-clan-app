@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v38.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v40.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10817,8 +10817,24 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
     <div class="ff-story-compose-head"><span>Create family story</span><button id="ffStoryComposeClose" class="ff-story-view-close" type="button">×</button></div>
     <div class="ff-story-compose-body">
       <label class="ff-story-file">📷 Choose a photo<input id="ffStoryFile" type="file" accept="image/*"></label>
-      <img id="ffStoryPreview" class="ff-story-preview" alt="Story preview">
+      <div id="ffV124Canvas" class="ff-v124-canvas"><img id="ffStoryPreview" class="ff-story-preview" alt="Story preview"><div id="ffV124DragText" class="ff-v124-drag" role="slider" tabindex="0" aria-label="Drag story text to position it" aria-valuetext="Caption position"></div></div><small id="ffV124Hint" class="ff-v124-hint">Type a caption, then drag the text anywhere on your photo. You can also change the text size and font style.</small>
       <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
+      <div id="ffV125TextTools" class="ff-v125-tools" aria-label="Story text controls">
+        <div class="ff-v125-tools-title">Caption style</div>
+        <div class="ff-v125-fonts" role="group" aria-label="Caption font style">
+          <button type="button" class="ff-v125-font active" data-v125-font="sans" aria-pressed="true">Sans</button>
+          <button type="button" class="ff-v125-font" data-v125-font="serif" aria-pressed="false">Serif</button>
+          <button type="button" class="ff-v125-font" data-v125-font="mono" aria-pressed="false">Mono</button>
+          <button type="button" class="ff-v125-font" data-v125-font="script" aria-pressed="false">Script</button>
+        </div>
+        <label class="ff-v125-size" for="ffV125Size">
+          <span>Text size</span>
+          <div class="ff-v125-size-row">
+            <input id="ffV125Size" type="range" min="18" max="42" step="1" value="28" aria-label="Caption text size">
+            <strong id="ffV125SizeValue">28</strong>
+          </div>
+        </label>
+      </div>
       <div class="ff-story-music">
         <label>♫ Add music (optional)</label>
         <div class="ff-audius-tabs"><button id="ffMusicOnlineTab" type="button" aria-pressed="true">Search online</button><button id="ffMusicUploadTab" type="button" aria-pressed="false">Upload music</button></div>
@@ -10966,7 +10982,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const p=state.profiles.get(s.user_id)||{};
    $("ffStoryViewImage").src=s.photo_url||"";
    $("ffStoryViewName").textContent=nameOf(p);$("ffStoryViewTime").textContent=ago(s.created_at);
-   $("ffStoryViewAvatar").innerHTML=avatarHTML(p);$("ffStoryViewCaption").textContent=s.caption||"";
+   $("ffStoryViewAvatar").innerHTML=avatarHTML(p);window.ffV124PositionCaption?.(s.caption||"");
    $("ffStoryDelete").style.display=state.me?.id===s.user_id?"inline-block":"none";
    showMusic(s);
    /* Opening a story is a user gesture: attempt sound immediately where permitted. */
@@ -10975,7 +10991,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  function closeStory(){stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
  function openComposer(){document.body.classList.add("ff-story-composing-mobile");$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
- function closeComposer(){document.body.classList.remove("ff-story-composing-mobile");$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
+ function closeComposer(){document.body.classList.remove("ff-story-composing-mobile");$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";window.ffV124Reset?.();$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
  async function compress(file){
    if(typeof window.ffStorageSaverImage==="function")try{return await window.ffStorageSaverImage(file,"feed");}catch(_){}
    return file;
@@ -10997,7 +11013,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      const pub=client.storage.from("family-gallery").getPublicUrl(path);const photo=pub?.data?.publicUrl;
      if(!photo)throw new Error("Photo URL could not be created.");
      status.textContent="Sharing story…";
-     const ins=await client.from("family_stories").insert({user_id:user.id,caption:caption||null,photo_url:photo}).select("id").single();
+     const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
      if(onlineSong){
        const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:onlineSong.url,title:songTitle||onlineSong.title,start_seconds:startSeconds});
@@ -11249,7 +11265,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      // Fallback when original card list has refreshed differently.
      const viewer=$("ffStoryViewer");if(viewer){viewer.classList.add("open");viewer.setAttribute("aria-hidden","false")}
      if($("ffStoryViewImage"))$("ffStoryViewImage").src=s.photo_url||"";
-     if($("ffStoryViewCaption"))$("ffStoryViewCaption").textContent=s.caption||"";
+     if($("ffStoryViewCaption"))window.ffV124PositionCaption?.(s.caption||"");
    }
    progress();recordView(s);refreshOwnerCount(s);
    scheduleAdvance(DURATION);
@@ -16036,6 +16052,68 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
   ['ffStoryNext','ffStoryPrev','ffStoryClose'].forEach(id=>document.getElementById(id)?.addEventListener('click',close));
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+<style id="duarte-story-movable-caption-v125">
+#ffV124Canvas{display:none;position:relative;width:100%;max-height:clamp(110px,27dvh,245px);margin-top:7px;background:#090909;border-radius:10px;overflow:hidden;touch-action:pan-y}
+#ffV124Canvas.ff-ready{display:block}
+#ffStoryComposer #ffV124Canvas #ffStoryPreview{display:block!important;width:100%;height:clamp(110px,27dvh,245px);max-height:none!important;margin:0!important;object-fit:contain}
+#ffV124DragText{position:absolute;left:50%;top:76%;transform:translate(-50%,-50%);max-width:90%;min-width:20px;min-height:28px;padding:7px 10px;border:1px dashed #efcf63;border-radius:7px;background:rgba(0,0,0,.42);color:white;font-weight:700;text-align:center;line-height:1.3;white-space:pre-wrap;overflow-wrap:anywhere;cursor:grab;touch-action:none;user-select:none;z-index:2}
+#ffV124DragText:empty{display:none}
+#ffV124DragText:active{cursor:grabbing}
+#ffV124Hint{font-size:11px;color:#aeb0b4;margin:4px 0 0;display:none}
+#ffV124Canvas.ff-ready + #ffV124Hint{display:block}
+#ffStoryViewer #ffStoryViewCaption.ff-v124-placed{position:absolute!important;left:var(--ff-v124-x)!important;top:var(--ff-v124-y)!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:max-content!important;max-width:85%!important;max-height:45%!important;overflow-wrap:anywhere!important;white-space:pre-wrap!important;z-index:96!important;text-align:center!important;pointer-events:none!important}
+.ff-v125-tools{margin-top:8px;padding:9px 10px;border:1px solid #373737;border-radius:11px;background:#202020;color:#eee}
+.ff-v125-tools-title{font-size:12px;font-weight:800;margin-bottom:8px;color:#f2f2f2}
+.ff-v125-fonts{display:flex;gap:7px;flex-wrap:wrap}
+.ff-v125-font{border:1px solid #555;border-radius:16px;background:#242424;color:#fff;padding:7px 11px;cursor:pointer;font-size:12px;font-weight:700}
+.ff-v125-font.active{background:rgba(212,175,55,.18);border-color:rgba(212,175,55,.65);color:#f6d96d}
+.ff-v125-size{display:block;margin-top:9px;font-size:12px;color:#eee}
+.ff-v125-size-row{display:flex;align-items:center;gap:10px;margin-top:5px}
+#ffV125Size{flex:1;min-width:0}
+#ffV125SizeValue{display:inline-block;min-width:28px;text-align:right;color:#f6d96d}
+#ffV124DragText[data-v125-font="sans"],#ffStoryViewCaption[data-v125-font="sans"]{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#ffV124DragText[data-v125-font="serif"],#ffStoryViewCaption[data-v125-font="serif"]{font-family:Georgia,"Times New Roman",serif}
+#ffV124DragText[data-v125-font="mono"],#ffStoryViewCaption[data-v125-font="mono"]{font-family:"Courier New",monospace}
+#ffV124DragText[data-v125-font="script"],#ffStoryViewCaption[data-v125-font="script"]{font-family:"Brush Script MT","Segoe Script",cursive;font-weight:600}
+@media(max-width:700px){#ffV124Canvas{max-height:clamp(100px,24dvh,200px)}#ffStoryComposer #ffV124Canvas #ffStoryPreview{height:clamp(100px,24dvh,200px)}.ff-v125-font{padding:7px 10px;font-size:11px}}
+</style>
+<script id="duarte-story-movable-caption-v125-js">
+(()=>{
+ const $=id=>document.getElementById(id);
+ const DEFAULT_SIZE=28, DEFAULT_FONT='sans';
+ let x=50,y=76,moved=false,font=DEFAULT_FONT,size=DEFAULT_SIZE;
+ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+ const format=(raw)=>{
+   const text=String(raw||'');
+   let m=text.match(/^\[\[ffcap:(\d{1,3}),(\d{1,3}),(\d{1,3}),(sans|serif|mono|script)\]\]/);
+   if(m)return {x:clamp(+m[1],5,95),y:clamp(+m[2],5,95),size:clamp(+m[3],18,42),font:m[4],text:text.slice(m[0].length),placed:true};
+   m=text.match(/^\[\[ffpos:(\d{1,3}),(\d{1,3})\]\]/);
+   if(m)return {x:clamp(+m[1],5,95),y:clamp(+m[2],5,95),size:DEFAULT_SIZE,font:DEFAULT_FONT,text:text.slice(m[0].length),placed:true};
+   return {x:50,y:76,size:DEFAULT_SIZE,font:DEFAULT_FONT,text,placed:false};
+ };
+ function syncButtons(){document.querySelectorAll('[data-v125-font]').forEach(btn=>{const on=btn.dataset.v125Font===font;btn.classList.toggle('active',on);btn.setAttribute('aria-pressed',String(on));}); const val=$('ffV125SizeValue'); if(val) val.textContent=String(size); const range=$('ffV125Size'); if(range && String(range.value)!==String(size)) range.value=String(size);}
+ function applyLabelStyle(el){if(!el)return;el.style.fontSize=size+'px';el.dataset.v125Font=font;}
+ function draw(){const el=$('ffV124DragText');if(!el)return;el.style.left=x+'%';el.style.top=y+'%';el.textContent=$('ffStoryCaptionInput')?.value||'';applyLabelStyle(el);syncButtons();}
+ function applyViewer(raw){const el=$('ffStoryViewCaption');if(!el)return;const data=format(raw);el.textContent=data.text;el.classList.toggle('ff-v124-placed',data.placed);el.style.fontSize=data.size+'px';el.dataset.v125Font=data.font;if(data.placed){el.style.setProperty('--ff-v124-x',data.x+'%');el.style.setProperty('--ff-v124-y',data.y+'%')}else{el.style.removeProperty('--ff-v124-x');el.style.removeProperty('--ff-v124-y');}}
+ window.ffV124Reset=()=>{x=50;y=76;moved=false;font=DEFAULT_FONT;size=DEFAULT_SIZE;draw();$('ffV124Canvas')?.classList.remove('ff-ready')};
+ window.ffV124Pack=text=>{if(!text)return text;const changed=moved||size!==DEFAULT_SIZE||font!==DEFAULT_FONT;return changed?`[[ffcap:${Math.round(x)},${Math.round(y)},${Math.round(size)},${font}]]${text}`:text;};
+ window.ffV124PositionCaption=applyViewer;
+ function ready(){const canvas=$('ffV124Canvas'),label=$('ffV124DragText'),input=$('ffStoryCaptionInput'),range=$('ffV125Size');if(!canvas||!label||!input)return;
+   input.addEventListener('input',draw);
+   $('ffStoryFile')?.addEventListener('change',()=>{canvas.classList.toggle('ff-ready',!!$('ffStoryFile')?.files?.length);draw()});
+   document.querySelectorAll('[data-v125-font]').forEach(btn=>btn.addEventListener('click',()=>{font=btn.dataset.v125Font||DEFAULT_FONT;draw()}));
+   range?.addEventListener('input',()=>{size=clamp(parseInt(range.value||DEFAULT_SIZE,10),18,42);draw()});
+   let active=null;
+   label.addEventListener('pointerdown',e=>{if(!label.textContent)return;active=e.pointerId;label.setPointerCapture?.(active);e.preventDefault()});
+   label.addEventListener('pointermove',e=>{if(e.pointerId!==active)return;const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;x=clamp((e.clientX-r.left)/r.width*100,8,92);y=clamp((e.clientY-r.top)/r.height*100,8,92);moved=true;draw();e.preventDefault()});
+   const stop=e=>{if(e.pointerId===active)active=null};label.addEventListener('pointerup',stop);label.addEventListener('pointercancel',stop);
+   label.addEventListener('keydown',e=>{const step=e.shiftKey?5:1;if(e.key==='ArrowLeft')x-=step;else if(e.key==='ArrowRight')x+=step;else if(e.key==='ArrowUp')y-=step;else if(e.key==='ArrowDown')y+=step;else return;e.preventDefault();x=clamp(x,8,92);y=clamp(y,8,92);moved=true;draw()});
+   draw();
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();
 </script>
 </body>

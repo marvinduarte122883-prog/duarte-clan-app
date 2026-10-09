@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v28.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v29.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10760,6 +10760,17 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 .ff-story-caption-input{width:100%;margin-top:12px;background:#222;border:1px solid #3b3b3b;color:#fff;border-radius:10px;padding:11px;font-size:14px;resize:vertical;min-height:70px}
 .ff-story-compose-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}.ff-story-compose-actions button{border:0;border-radius:18px;padding:9px 14px;font-weight:800;cursor:pointer}.ff-story-cancel{background:#292929;color:#fff}.ff-story-publish{background:var(--gold);color:#111}
 .ff-story-status{font-size:10px;color:var(--gold);min-height:16px;margin-top:8px}
+.ff-story-music{margin-top:12px;padding:10px;border:1px solid #373737;border-radius:11px;background:#202020;color:#eee;font-size:12px}
+.ff-story-music label{display:block;margin-bottom:6px;font-weight:700}
+.ff-story-music input[type=file],.ff-story-music input[type=text],.ff-story-music input[type=number]{width:100%;max-width:100%;color:#eee;box-sizing:border-box;margin-top:6px}
+.ff-story-music input[type=text],.ff-story-music input[type=number]{padding:9px;background:#181818;border:1px solid #444;border-radius:8px}
+.ff-story-music small{display:block;color:#aaa;margin-top:7px;line-height:1.4}
+.ff-story-music audio{width:100%;height:36px;margin-top:8px}
+.ff-story-music-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.ff-story-music-actions button,.ff-story-music-toggle{border:1px solid #555;border-radius:16px;background:#242424;color:#fff;padding:7px 12px;cursor:pointer}
+.ff-story-music-playback{position:absolute;left:12px;right:12px;bottom:88px;z-index:6;display:none;align-items:center;gap:8px;background:rgba(0,0,0,.66);color:#fff;padding:7px 10px;border-radius:10px;font-size:11px}
+.ff-story-music-playback.visible{display:flex}.ff-story-music-playback .song{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:700px){.ff-story-compose-body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}}
 @media(max-width:700px){
  .ff-stories{border-radius:10px;padding:10px;margin-bottom:12px}
  .ff-story-card{flex-basis:102px;height:162px}
@@ -10782,6 +10793,8 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
     <button id="ffStoryNext" class="ff-story-nav ff-story-next" type="button" aria-label="Next story">›</button>
     <div id="ffStorySeenBy" class="ff-story-seenby"></div>
     <div id="ffStoryViewCaption" class="ff-story-caption"></div>
+    <div id="ffStoryMusicPlayback" class="ff-story-music-playback"><span aria-hidden="true">♫</span><span id="ffStoryMusicName" class="song"></span><button id="ffStoryMusicToggle" class="ff-story-music-toggle" type="button" aria-label="Play story music">▶ Play</button></div>
+    <audio id="ffStoryMusicAudio" preload="none"></audio>
   </div>
 </div>
 
@@ -10792,6 +10805,14 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
       <label class="ff-story-file">📷 Choose a photo<input id="ffStoryFile" type="file" accept="image/*"></label>
       <img id="ffStoryPreview" class="ff-story-preview" alt="Story preview">
       <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
+      <div class="ff-story-music">
+        <label for="ffStoryMusicFile">♫ Add music (optional)</label>
+        <input id="ffStoryMusicFile" type="file" accept="audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.ogg,.wav,.webm">
+        <input id="ffStoryMusicTitle" type="text" maxlength="100" placeholder="Song title / artist (optional)" aria-label="Music title">
+        <div class="ff-story-music-actions"><label for="ffStoryMusicStart">Start at (seconds) <input id="ffStoryMusicStart" type="number" min="0" step="1" value="0" style="width:88px"></label><button id="ffStoryMusicClear" type="button">Remove music</button></div>
+        <audio id="ffStoryMusicPreview" controls preload="metadata"></audio>
+        <small>Use music you own or have permission to share. Plays up to 30 seconds when viewers press Play. Maximum music file: 8 MB. Requires the included Supabase SQL setup.</small>
+      </div>
       <div id="ffStoryStatus" class="ff-story-status"></div>
       <div class="ff-story-compose-actions"><button id="ffStoryCancel" class="ff-story-cancel" type="button">Cancel</button><button id="ffStoryPublish" class="ff-story-publish" type="button">Share Story</button></div>
     </div>
@@ -10800,7 +10821,28 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 <script id="duarte-family-stories-v29b-script">
 (()=>{
- const state={stories:[],profiles:new Map(),me:null,current:null};
+ const state={stories:[],profiles:new Map(),music:new Map(),me:null,current:null};
+ const MUSIC_MAX=8*1024*1024;
+ let musicPreviewUrl=null,musicStop=null;
+ function stopMusic(){const audio=document.getElementById('ffStoryMusicAudio');if(audio){audio.pause();audio.removeAttribute('src');audio.load();}if(musicStop)clearInterval(musicStop);musicStop=null;const b=document.getElementById('ffStoryMusicToggle');if(b)b.textContent='▶ Play'}
+ async function loadMusic(client,stories){
+   state.music.clear();const ids=stories.map(x=>x.id);if(!ids.length)return;
+   try{const q=await client.from('duarte_story_music').select('story_id,music_url,title,start_seconds').in('story_id',ids);if(q.error)throw q.error;(q.data||[]).forEach(x=>state.music.set(x.story_id,x));}
+   catch(e){console.warn('Story music unavailable (run V113 SQL setup):',e?.message||e)}
+ }
+ function showMusic(story){stopMusic();const m=state.music.get(story.id),wrap=$('ffStoryMusicPlayback');if(!wrap)return;wrap.classList.toggle('visible',!!m?.music_url);if(!m?.music_url)return;
+   $('ffStoryMusicName').textContent=m.title||'Story music';const a=$('ffStoryMusicAudio');a.src=m.music_url;a.dataset.start=String(Math.max(0,Number(m.start_seconds)||0));a.preload='none';
+ }
+ async function toggleMusic(){const a=$('ffStoryMusicAudio'),b=$('ffStoryMusicToggle');if(!a?.getAttribute('src'))return;
+   if(!a.paused){a.pause();b.textContent='▶ Play';if(musicStop)clearInterval(musicStop);musicStop=null;return;}
+   const start=Number(a.dataset.start)||0;
+   try{if(a.readyState<1)await new Promise((resolve,reject)=>{a.addEventListener('loadedmetadata',resolve,{once:true});a.addEventListener('error',reject,{once:true});a.load()});
+     a.currentTime=Math.min(start,Math.max(0,(a.duration||start+30)-.1));await a.play();b.textContent='🔇 Pause';
+     if(musicStop)clearInterval(musicStop);musicStop=setInterval(()=>{if(a.paused||a.currentTime>=start+30||a.ended){a.pause();b.textContent='▶ Play';clearInterval(musicStop);musicStop=null;}},200);
+   }catch(e){b.textContent='▶ Play';console.warn('Story music playback:',e)}
+ }
+ function clearPreviewMusic(){const input=$('ffStoryMusicFile');if(input)input.value='';$('ffStoryMusicTitle').value='';$('ffStoryMusicStart').value='0';const audio=$('ffStoryMusicPreview');audio.pause();audio.removeAttribute('src');audio.load();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;}
+
  const $=id=>document.getElementById(id);
  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
  const sb=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
@@ -10833,6 +10875,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      const {data,error}=await client.from("family_stories").select("id,user_id,caption,photo_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(60);
      if(error)throw error;
      state.stories=data||[];
+     await loadMusic(client,state.stories);
      const ids=[...new Set(state.stories.map(x=>x.user_id).filter(Boolean))];
      if(ids.length){
        const {data:ps}=await client.from("profiles").select("*").in("id",ids);
@@ -10860,20 +10903,23 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    $("ffStoryViewName").textContent=nameOf(p);$("ffStoryViewTime").textContent=ago(s.created_at);
    $("ffStoryViewAvatar").innerHTML=avatarHTML(p);$("ffStoryViewCaption").textContent=s.caption||"";
    $("ffStoryDelete").style.display=state.me?.id===s.user_id?"inline-block":"none";
+   showMusic(s);
    $("ffStoryViewer").classList.add("open");$("ffStoryViewer").setAttribute("aria-hidden","false");
  }
- function closeStory(){$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
+ function closeStory(){stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
  function openComposer(){$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
- function closeComposer(){$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";}
+ function closeComposer(){$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
  async function compress(file){
    if(typeof window.ffStorageSaverImage==="function")try{return await window.ffStorageSaverImage(file,"feed");}catch(_){}
    return file;
  }
  async function publish(){
    const client=sb(),file=$("ffStoryFile").files?.[0],caption=$("ffStoryCaptionInput").value.trim(),status=$("ffStoryStatus"),btn=$("ffStoryPublish");
+   const song=$("ffStoryMusicFile").files?.[0],songTitle=$("ffStoryMusicTitle").value.trim(),startSeconds=Math.max(0,Math.floor(Number($("ffStoryMusicStart").value)||0));
    if(!client){status.textContent="Supabase is not ready.";return}
    if(!navigator.onLine){status.textContent="Stories require internet for photo upload.";return}
    if(!file){status.textContent="Choose a photo first.";return}
+   if(song && (!song.type.startsWith('audio/') || song.size>MUSIC_MAX)){status.textContent='Choose an audio file under 8 MB.';return}
    btn.disabled=true;status.textContent="Preparing photo…";
    try{
      const sess=await client.auth.getSession(),user=sess?.data?.session?.user;if(!user)throw new Error("Please sign in again.");
@@ -10886,6 +10932,16 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      status.textContent="Sharing story…";
      const ins=await client.from("family_stories").insert({user_id:user.id,caption:caption||null,photo_url:photo}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
+     if(song){
+       const extension=(song.name.split('.').pop()||'mp3').toLowerCase();const allowed=['mp3','m4a','aac','wav','ogg','webm'];if(!allowed.includes(extension))throw new Error('Unsupported music file type.');
+       const songPath=`stories/music/${user.id}/${crypto.randomUUID()}.${extension}`;
+       status.textContent='Uploading story music…';
+       const musicUpload=await client.storage.from('family-gallery').upload(songPath,song,{upsert:false,contentType:song.type||'audio/mpeg'});
+       if(musicUpload.error)throw new Error('Music upload failed: '+musicUpload.error.message);
+       const musicUrl=client.storage.from('family-gallery').getPublicUrl(songPath)?.data?.publicUrl;
+       const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:musicUrl,title:songTitle||song.name.replace(/\.[^.]+$/,''),start_seconds:startSeconds});
+       if(musicSave.error){await client.storage.from('family-gallery').remove([songPath]).catch(()=>{});throw new Error('Photo story shared, but music could not be attached: '+musicSave.error.message+' Run the included V113 SQL setup.');}
+     }
      closeComposer();await load();
    }catch(e){status.textContent=e?.message||"Story could not be shared."}finally{btn.disabled=false}
  }
@@ -10899,6 +10955,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  document.addEventListener("DOMContentLoaded",()=>{
    ensureHost();load();
    $("ffStoryClose")?.addEventListener("click",closeStory);
+   $("ffStoryMusicToggle")?.addEventListener('click',toggleMusic);
+   $("ffStoryMusicClear")?.addEventListener('click',clearPreviewMusic);
+   $("ffStoryMusicFile")?.addEventListener('change',e=>{const f=e.target.files?.[0],audio=$('ffStoryMusicPreview');audio.pause();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;audio.removeAttribute('src');if(f){musicPreviewUrl=URL.createObjectURL(f);audio.src=musicPreviewUrl;if(!$('ffStoryMusicTitle').value)$('ffStoryMusicTitle').value=f.name.replace(/\.[^.]+$/,'');}});
    $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer"))closeStory()});
    $("ffStoryDelete")?.addEventListener("click",del);
    $("ffStoryComposeClose")?.addEventListener("click",closeComposer);

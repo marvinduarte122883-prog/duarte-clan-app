@@ -6461,7 +6461,7 @@ async function openClanProfile(userId){
     if(!profile)throw new Error('Clan member profile was not found.');
 
     const [{data:posts},{data:photos},{data:directory}]=await Promise.all([
-      supabaseClient.from('posts').select('id,content,image_url,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(30),
+      supabaseClient.from('posts').select('id,user_id,content,image_url,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(60),
       supabaseClient.from('gallery').select('id,image_url,caption,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(40),
       supabaseClient.from('directory_profiles').select('city,occupation,family_branch,phone,email,show_phone,show_email,show_location,show_occupation').eq('user_id',userId).maybeSingle()
     ]);
@@ -6486,7 +6486,9 @@ async function openClanProfile(userId){
     if(dir.family_branch)introRows.push(`<div class="ff-fb-intro-row"><span class="ff-fb-intro-icon">🌳</span><span>Family branch: ${escapeHTML(dir.family_branch)}</span></div>`);
     if(dir.show_location&&dir.city)introRows.push(`<div class="ff-fb-intro-row"><span class="ff-fb-intro-icon">📍</span><span>Lives in ${escapeHTML(dir.city)}</span></div>`);
     if(dir.show_occupation&&dir.occupation)introRows.push(`<div class="ff-fb-intro-row"><span class="ff-fb-intro-icon">💼</span><span>${escapeHTML(dir.occupation)}</span></div>`);
-    const postCards=p.length?p.map(x=>`<div class="ff-full-post-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:11px"><div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:#292929;display:flex;align-items:center;justify-content:center;font-weight:800">${ffV21ProfileAvatar(profile)}</div><div><div style="font-weight:800;color:#fff">${escapeHTML(name)}</div><div style="font-size:11px;color:#888">${new Date(x.created_at).toLocaleString()}</div></div></div><div style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHTML(x.content||'')}</div>${x.image_url?`<img src="${escapeHTML(x.image_url)}" alt="Post photo" style="width:100%;max-height:520px;object-fit:contain;border-radius:8px;margin-top:12px">`:''}</div>`).join(''):'<div class="ff-profile-empty">No posts yet.</div>';
+    /* V125: Home and Profile share their actual post cards and their database rows.
+       Reaction, comment, edit and photo handlers therefore work in both places. */
+    const postCards=p.length?p.map(x=>`<div class="ff-v125-profile-feed-item">${renderPostCard({...x,user_id:userId},profile)}</div>`).join(''):'<div class="ff-profile-empty">No posts yet.</div>';
     document.getElementById('ffFullPosts').innerHTML=`<aside class="ff-fb-profile-intro"><h3>Intro</h3>${introRows.join('')}</aside><div class="ff-fb-post-column">${postCards}</div>`;
 
     const about=[];
@@ -6509,6 +6511,12 @@ async function openClanProfile(userId){
     document.getElementById('ffFullPosts').classList.add('active');
     document.getElementById('ffFullProfile').classList.add('open');
     document.body.style.overflow='hidden';
+    /* Hydrate the visible profile's own cards, without reloading the entire Home feed. */
+    const profileCards=[...document.querySelectorAll('#ffFullPosts .post-card[data-post-id]')];
+    Promise.allSettled(profileCards.map(card=>loadPostActivity(Number(card.dataset.postId),card)))
+      .catch(e=>console.warn('Profile post activity:',e));
+    if(typeof window.ffV42RefreshPostPhotos==='function')
+      window.ffV42RefreshPostPhotos().catch(e=>console.warn('Profile post photos:',e));
   }catch(err){
     console.error('Open clan profile:',err);
     alert('Profile could not be opened: '+(err?.message||err));
@@ -15348,6 +15356,16 @@ window.ff124PreviewWelcome=function(){const field=document.getElementById('ff124
 window.ff124SaveWelcome=async function(){const field=document.getElementById('ff124WelcomeText'),btn=document.getElementById('ff124SaveBtn'),client=api();if(!field||!client)return;const value=field.value.trim();if(!value){status('Enter a welcome message before saving.',true);return;}if(value.length>1500){status('Message is too long (maximum 1,500 characters).',true);return;}if(!value.includes('{name}')){status('Include {name} in the message so each member receives a personalized greeting.',true);return;}btn.disabled=true;status('Saving…');try{const {error}=await client.rpc('duarte_set_welcome_template',{p_template:value});if(error)throw error;status('Saved. Newly approved members will receive this greeting automatically.');}catch(err){status('Could not save. '+(err.message||String(err)),true);}finally{btn.disabled=false;}};
 })();
 </script>
+
+<style id="duarte-v125-home-profile-same-posts">
+/* The profile Posts tab reuses the Home feed's cards and interactions. */
+#ffFullPosts .ff-v125-profile-feed-item{min-width:0;margin-bottom:12px}
+#ffFullPosts .ff-v125-profile-feed-item .post-card{width:100%;max-width:100%;box-sizing:border-box;margin:0;background:#191a1d;border:1px solid #303236;border-radius:12px}
+#ffFullPosts .ff-v125-profile-feed-item .post-card img{max-width:100%;height:auto}
+#ffFullPosts .ff-v125-profile-feed-item .post-buttons{display:flex;flex-wrap:wrap}
+#ffFullPosts .ff-v125-profile-feed-item .comment-area{max-width:100%}
+@media(max-width:760px){#ffFullPosts .ff-v125-profile-feed-item{margin-bottom:10px}#ffFullPosts .ff-v125-profile-feed-item .post-card{padding:12px!important}#ffFullPosts .ff-v125-profile-feed-item .comment-input{min-width:0;font-size:16px}}
+</style>
 </body>
 </html>
 

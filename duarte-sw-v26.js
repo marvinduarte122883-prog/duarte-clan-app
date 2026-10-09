@@ -1,4 +1,4 @@
-const CACHE_NAME="duarte-clan-v95-shell";
+const CACHE_NAME="duarte-clan-v110-shell";
 const SHELL=[
   "./",
   "./index.html",

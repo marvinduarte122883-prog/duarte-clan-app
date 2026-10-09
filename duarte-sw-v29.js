@@ -1,7 +1,8 @@
-const CACHE_NAME="duarte-clan-v113-shell";
+const CACHE_NAME="duarte-clan-v114-shell";
 const SHELL=[
   "./",
   "./index.html",
+  "./duarte-jamendo-config.js",
   "./login.html",
   "./duarte-manifest-v23.webmanifest",
   "./duarte-icon-192.png",

@@ -10777,6 +10777,20 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  .ff-story-modal{padding:0}.ff-story-view,.ff-story-compose{width:100%;height:100dvh;max-height:none;border:0;border-radius:0}
  .ff-story-compose{overflow:auto}
 }
+/* V114: compact story editor; independent content scrolling and visible action bar */
+#ffStoryComposer .ff-story-compose{height:min(760px,calc(100dvh - 20px));max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+#ffStoryComposer .ff-story-compose-head{flex:0 0 auto;padding:9px 14px}
+#ffStoryComposer .ff-story-compose-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;padding:10px 14px 0}
+#ffStoryComposer .ff-story-preview{max-height:clamp(110px,27dvh,245px);margin-top:7px;object-fit:contain}
+#ffStoryComposer .ff-story-caption-input{min-height:45px;max-height:84px;margin-top:8px}
+#ffStoryComposer .ff-story-file{padding:9px}
+#ffStoryComposer .ff-story-music{margin-top:8px;padding:8px}
+#ffStoryComposer .ff-story-compose-actions{position:sticky;bottom:0;z-index:3;flex:0 0 auto;justify-content:flex-end;margin:8px -14px 0;padding:9px 14px calc(9px + env(safe-area-inset-bottom));background:#181818;border-top:1px solid #333}
+.ff-jamendo-tabs{display:flex;gap:6px;margin-bottom:7px}.ff-jamendo-tabs button{flex:1;border:1px solid #444;color:#fff;background:#252525;border-radius:8px;padding:8px;cursor:pointer}.ff-jamendo-tabs button[aria-pressed=true]{background:#464024;border-color:#9c8732}
+.ff-jamendo-search{display:flex;gap:6px}.ff-jamendo-search input{flex:1;min-width:0}.ff-jamendo-search button,.ff-jamendo-tags button,.ff-jamendo-select{background:#282828;border:1px solid #555;border-radius:8px;color:#fff;padding:7px 9px;cursor:pointer}
+.ff-jamendo-tags{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}.ff-jamendo-tracks{max-height:172px;overflow-y:auto;overscroll-behavior:contain;contain:content}.ff-jamendo-row{display:flex;gap:8px;align-items:center;padding:5px 2px;border-bottom:1px solid #373737}.ff-jamendo-row img{width:37px;height:37px;border-radius:5px;object-fit:cover}.ff-jamendo-details{flex:1;min-width:0}.ff-jamendo-details strong,.ff-jamendo-details span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ff-jamendo-details span{color:#aaa;font-size:10px}.ff-jamendo-note{font-size:11px;color:#bbb;margin:5px 0}.ff-jamendo-selected{font-size:11px;color:#e7ce68;margin:5px 0}
+@media(max-width:700px){#ffStoryComposer .ff-story-compose{height:100dvh;max-height:100dvh;width:100%;border-radius:0;border:0}#ffStoryComposer .ff-story-compose-body{padding:8px 12px 0}#ffStoryComposer .ff-story-preview{max-height:clamp(90px,22dvh,185px)}#ffStoryComposer .ff-story-compose-actions{margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px}}
+@media(prefers-reduced-motion:reduce){#ffStoryComposer *{scroll-behavior:auto!important;transition:none!important}}
 </style>
 
 <div id="ffStoryViewer" class="ff-story-modal" aria-hidden="true">
@@ -10806,8 +10820,19 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
       <img id="ffStoryPreview" class="ff-story-preview" alt="Story preview">
       <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
       <div class="ff-story-music">
-        <label for="ffStoryMusicFile">♫ Add music (optional)</label>
+        <label>♫ Add music (optional)</label>
+        <div class="ff-jamendo-tabs"><button id="ffMusicOnlineTab" type="button" aria-pressed="true">Search online</button><button id="ffMusicUploadTab" type="button" aria-pressed="false">Upload music</button></div>
+        <div id="ffMusicOnlineBox">
+          <div class="ff-jamendo-search"><input id="ffJamendoQuery" type="search" maxlength="80" placeholder="Song, artist, mood…" aria-label="Search online music"><button id="ffJamendoSearch" type="button">Search</button></div>
+          <div class="ff-jamendo-tags"><button type="button" data-jamendo-tag="pop">Pop</button><button type="button" data-jamendo-tag="acoustic">Acoustic</button><button type="button" data-jamendo-tag="happy">Happy</button><button type="button" data-jamendo-tag="romantic">Romantic</button></div>
+          <div id="ffJamendoResultStatus" class="ff-jamendo-note">Explore independent artists on Jamendo. Configure your Jamendo client ID to enable search.</div>
+          <div id="ffJamendoResults" class="ff-jamendo-tracks"></div>
+          <div id="ffJamendoSelected" class="ff-jamendo-selected" aria-live="polite"></div>
+        </div>
+        <div id="ffMusicUploadBox" hidden>
+          <label for="ffStoryMusicFile">Upload an audio file</label>
         <input id="ffStoryMusicFile" type="file" accept="audio/mpeg,audio/mp4,audio/aac,audio/ogg,audio/wav,audio/webm,.mp3,.m4a,.ogg,.wav,.webm">
+        </div>
         <input id="ffStoryMusicTitle" type="text" maxlength="100" placeholder="Song title / artist (optional)" aria-label="Music title">
         <div class="ff-story-music-actions"><label for="ffStoryMusicStart">Start at (seconds) <input id="ffStoryMusicStart" type="number" min="0" step="1" value="0" style="width:88px"></label><button id="ffStoryMusicClear" type="button">Remove music</button></div>
         <audio id="ffStoryMusicPreview" controls preload="metadata"></audio>
@@ -10819,11 +10844,42 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
   </div>
 </div>
 
+<script src="./duarte-jamendo-config.js"></script>
 <script id="duarte-family-stories-v29b-script">
 (()=>{
  const state={stories:[],profiles:new Map(),music:new Map(),me:null,current:null};
  const MUSIC_MAX=8*1024*1024;
- let musicPreviewUrl=null,musicStop=null;
+ let musicPreviewUrl=null,musicStop=null,selectedJamendo=null,jamendoRequest=0,jamendoController=null,jamendoTracks=[];
+ const jamendoId=()=>String(window.DUARTE_JAMENDO_CLIENT_ID||'').trim();
+ function onlineTab(online){$('ffMusicOnlineBox').hidden=!online;$('ffMusicUploadBox').hidden=online;$('ffMusicOnlineTab').setAttribute('aria-pressed',String(online));$('ffMusicUploadTab').setAttribute('aria-pressed',String(!online));}
+ async function searchJamendo(tag=''){
+   const out=$('ffJamendoResults'),notice=$('ffJamendoResultStatus'),clientId=jamendoId();
+   if(!clientId){notice.textContent='Jamendo client ID is not configured. Set DUARTE_JAMENDO_CLIENT_ID in duarte-jamendo-config.js.';out.replaceChildren();return;}
+   const query=$('ffJamendoQuery').value.trim();if(!query&&!tag){notice.textContent='Search a song or choose a suggested genre.';return;}
+   jamendoController?.abort();const controller=new AbortController();jamendoController=controller;const seq=++jamendoRequest;
+   notice.textContent='Searching Jamendo…';out.replaceChildren();
+   const url=new URL('https://api.jamendo.com/v3.0/tracks/');
+   url.searchParams.set('client_id',clientId);url.searchParams.set('format','json');url.searchParams.set('limit','12');url.searchParams.set('imagesize','100');url.searchParams.set('audioformat','mp31');
+   if(tag){url.searchParams.set('fuzzytags',tag);url.searchParams.set('order','popularity_month');}else url.searchParams.set('search',query);
+   try{
+     const res=await fetch(url,{signal:controller.signal});if(!res.ok)throw Error('Jamendo request failed ('+res.status+').');
+     const data=await res.json();if(data.headers?.status==='failed')throw Error(data.headers.error_message||'Music search failed.');
+     if(seq!==jamendoRequest)return;
+     jamendoTracks=(data.results||[]).filter(t=>/^https:\/\//.test(t.audio||''));
+     notice.textContent=jamendoTracks.length?`${jamendoTracks.length} tracks found · Check each track’s license before sharing.`:'No tracks found. Try another search.';
+     for(const [i,t] of jamendoTracks.entries()){
+       const row=document.createElement('div');row.className='ff-jamendo-row';
+       if(/^https:\/\//.test(t.image||'')){const img=document.createElement('img');img.src=t.image;img.alt='';img.loading='lazy';row.appendChild(img)}
+       const d=document.createElement('div');d.className='ff-jamendo-details';const name=document.createElement('strong');name.textContent=t.name||'Untitled';const artist=document.createElement('span');artist.textContent=t.artist_name||'Jamendo artist';d.append(name,artist);row.appendChild(d);
+       const btn=document.createElement('button');btn.className='ff-jamendo-select';btn.type='button';btn.textContent='Choose';btn.addEventListener('click',()=>selectJamendo(i));row.appendChild(btn);out.appendChild(row);
+     }
+   }catch(e){if(e.name!=='AbortError')notice.textContent='Music search unavailable: '+(e.message||'Network error')}
+ }
+ function selectJamendo(i){const t=jamendoTracks[i];if(!t)return;selectedJamendo={url:t.audio,title:(t.name||'Song')+' — '+(t.artist_name||'Jamendo'),id:t.id};
+   const input=$('ffStoryMusicFile');input.value='';if(musicPreviewUrl){URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;}
+   const a=$('ffStoryMusicPreview');a.pause();a.src=selectedJamendo.url;a.load();$('ffStoryMusicTitle').value=selectedJamendo.title.slice(0,100);$('ffJamendoSelected').textContent='Selected: '+selectedJamendo.title;
+ }
+
  function stopMusic(){const audio=document.getElementById('ffStoryMusicAudio');if(audio){audio.pause();audio.removeAttribute('src');audio.load();}if(musicStop)clearInterval(musicStop);musicStop=null;const b=document.getElementById('ffStoryMusicToggle');if(b)b.textContent='▶ Play'}
  async function loadMusic(client,stories){
    state.music.clear();const ids=stories.map(x=>x.id);if(!ids.length)return;
@@ -10841,7 +10897,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      if(musicStop)clearInterval(musicStop);musicStop=setInterval(()=>{if(a.paused||a.currentTime>=start+30||a.ended){a.pause();b.textContent='▶ Play';clearInterval(musicStop);musicStop=null;}},200);
    }catch(e){b.textContent='▶ Play';console.warn('Story music playback:',e)}
  }
- function clearPreviewMusic(){const input=$('ffStoryMusicFile');if(input)input.value='';$('ffStoryMusicTitle').value='';$('ffStoryMusicStart').value='0';const audio=$('ffStoryMusicPreview');audio.pause();audio.removeAttribute('src');audio.load();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;}
+ function clearPreviewMusic(){selectedJamendo=null;$('ffJamendoSelected').textContent='';const input=$('ffStoryMusicFile');if(input)input.value='';$('ffStoryMusicTitle').value='';$('ffStoryMusicStart').value='0';const audio=$('ffStoryMusicPreview');audio.pause();audio.removeAttribute('src');audio.load();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;}
 
  const $=id=>document.getElementById(id);
  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -10915,7 +10971,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  async function publish(){
    const client=sb(),file=$("ffStoryFile").files?.[0],caption=$("ffStoryCaptionInput").value.trim(),status=$("ffStoryStatus"),btn=$("ffStoryPublish");
-   const song=$("ffStoryMusicFile").files?.[0],songTitle=$("ffStoryMusicTitle").value.trim(),startSeconds=Math.max(0,Math.floor(Number($("ffStoryMusicStart").value)||0));
+   const song=$("ffStoryMusicFile").files?.[0],onlineSong=selectedJamendo,songTitle=$("ffStoryMusicTitle").value.trim(),startSeconds=Math.max(0,Math.floor(Number($("ffStoryMusicStart").value)||0));
    if(!client){status.textContent="Supabase is not ready.";return}
    if(!navigator.onLine){status.textContent="Stories require internet for photo upload.";return}
    if(!file){status.textContent="Choose a photo first.";return}
@@ -10932,7 +10988,10 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      status.textContent="Sharing story…";
      const ins=await client.from("family_stories").insert({user_id:user.id,caption:caption||null,photo_url:photo}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
-     if(song){
+     if(onlineSong){
+       const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:onlineSong.url,title:songTitle||onlineSong.title,start_seconds:startSeconds});
+       if(musicSave.error)throw new Error('Photo story shared, but online music could not be attached: '+musicSave.error.message);
+     }else if(song){
        const extension=(song.name.split('.').pop()||'mp3').toLowerCase();const allowed=['mp3','m4a','aac','wav','ogg','webm'];if(!allowed.includes(extension))throw new Error('Unsupported music file type.');
        const songPath=`stories/music/${user.id}/${crypto.randomUUID()}.${extension}`;
        status.textContent='Uploading story music…';
@@ -10957,7 +11016,13 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    $("ffStoryClose")?.addEventListener("click",closeStory);
    $("ffStoryMusicToggle")?.addEventListener('click',toggleMusic);
    $("ffStoryMusicClear")?.addEventListener('click',clearPreviewMusic);
-   $("ffStoryMusicFile")?.addEventListener('change',e=>{const f=e.target.files?.[0],audio=$('ffStoryMusicPreview');audio.pause();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;audio.removeAttribute('src');if(f){musicPreviewUrl=URL.createObjectURL(f);audio.src=musicPreviewUrl;if(!$('ffStoryMusicTitle').value)$('ffStoryMusicTitle').value=f.name.replace(/\.[^.]+$/,'');}});
+   $('ffMusicOnlineTab')?.addEventListener('click',()=>onlineTab(true));
+   $('ffMusicUploadTab')?.addEventListener('click',()=>onlineTab(false));
+   $('ffJamendoSearch')?.addEventListener('click',()=>searchJamendo());
+   $('ffJamendoQuery')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchJamendo();}});
+   document.querySelectorAll('[data-jamendo-tag]').forEach(b=>b.addEventListener('click',()=>searchJamendo(b.dataset.jamendoTag)));
+   if(jamendoId())searchJamendo('pop');
+   $("ffStoryMusicFile")?.addEventListener('change',e=>{const f=e.target.files?.[0],audio=$('ffStoryMusicPreview');if(f){selectedJamendo=null;$('ffJamendoSelected').textContent='';}audio.pause();if(musicPreviewUrl)URL.revokeObjectURL(musicPreviewUrl);musicPreviewUrl=null;audio.removeAttribute('src');if(f){musicPreviewUrl=URL.createObjectURL(f);audio.src=musicPreviewUrl;if(!$('ffStoryMusicTitle').value)$('ffStoryMusicTitle').value=f.name.replace(/\.[^.]+$/,'');}});
    $("ffStoryViewer")?.addEventListener("click",e=>{if(e.target===$("ffStoryViewer"))closeStory()});
    $("ffStoryDelete")?.addEventListener("click",del);
    $("ffStoryComposeClose")?.addEventListener("click",closeComposer);

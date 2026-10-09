@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v32.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v34.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10838,9 +10838,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
         <audio id="ffStoryMusicPreview" controls preload="metadata"></audio>
         <small>Only use audio with permission for your story. Online streams depend on Audius availability; plays up to 30 seconds on viewer interaction. Upload limit: 8 MB. Requires V113 Supabase SQL setup.</small>
       </div>
-      <div id="ffStoryStatus" class="ff-story-status"></div>
-      <div class="ff-story-compose-actions"><button id="ffStoryCancel" class="ff-story-cancel" type="button">Cancel</button><button id="ffStoryPublish" class="ff-story-publish" type="button">Share Story</button></div>
+      <div id="ffStoryStatus" class="ff-story-status" role="status" aria-live="polite"></div>
     </div>
+    <div class="ff-story-compose-actions"><button id="ffStoryCancel" class="ff-story-cancel" type="button">Cancel</button><button id="ffStoryPublish" class="ff-story-publish" type="button">Share Story</button></div>
   </div>
 </div>
 
@@ -14306,6 +14306,7 @@ document.addEventListener("DOMContentLoaded",function(){
  <button type="button" data-v50-go="events"><span class="ff-v50-ico">📅</span><span>Clan Events</span></button>
  <button type="button" data-v50-go="gallery"><span class="ff-v50-ico">📷</span><span>Family Gallery</span></button>
  <button type="button" data-v50-go="profile"><span class="ff-v50-ico">👤</span><span>My Profile</span></button>
+ <button type="button" data-v50-go="refresh"><span class="ff-v50-ico">↻</span><span>Refresh App</span></button>
  <button type="button" data-v50-go="logout"><span class="ff-v50-ico">🚪</span><span>Logout</span></button>
 </div>
 <script id="duarte-mobile-more-v50-script">
@@ -14324,7 +14325,7 @@ document.addEventListener("DOMContentLoaded",function(){
    e.preventDefault();e.stopPropagation();const go=b.dataset.v50Go;
    if(go==="admin"){close();window.location.href="admin.html";}
    else if(go==="announcements"){close();if(typeof window.openAnnouncementDirectory==="function")window.openAnnouncementDirectory();else section("announcements");}
-   else if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
+   else if(go==="events")section("events");else if(go==="gallery")section("gallery");else if(go==="profile")profile();else if(go==="refresh"){close();document.getElementById("ffV118AppRefresh")?.click();}else if(go==="logout"){close();if(typeof window.logout==="function")window.logout();}
  },true);
  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
  window.addEventListener("orientationchange",close,{passive:true});
@@ -14959,6 +14960,30 @@ $('ffV87End')?.addEventListener('click',()=>leave(true));
 
 
 
+<!-- V119: Prevent My Profile from stacking below Home on phones. -->
+<style id="duarte-v119-home-profile-isolation">
+@media (max-width:800px){
+ html:not([data-v119-current-section="profile"]) #profileManager{display:none!important;visibility:hidden!important;pointer-events:none!important}
+ html[data-v119-current-section="profile"] #profileManager.show{display:block!important;visibility:visible!important;pointer-events:auto!important}
+}
+</style>
+<script id="duarte-v119-home-profile-isolation-js">
+(()=>{
+ const root=document.documentElement;
+ function section(name){if(typeof name==='string')root.dataset.v119CurrentSection=name}
+ const original=window.showSection;
+ if(typeof original==='function' && !original.__v119){
+   const wrapped=function(name){section(name);return original.apply(this,arguments)};
+   wrapped.__v119=true;window.showSection=wrapped;
+ }
+ // Default is Home, unless the user explicitly navigates to Profile.
+ section(document.getElementById('profileManager')?.classList.contains('show')?'profile':'home');
+ document.addEventListener('click',e=>{
+   const home=e.target.closest?.('[data-v29c-nav="home"],[data-v50-go="home"]');
+   if(home)section('home');
+ },true);
+})();
+</script>
 <!-- V95: definitive mobile Home/Profile isolation -->
 <style id="duarte-v95-mobile-home-profile-isolation">
 @media (max-width:800px){
@@ -15857,6 +15882,51 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
   }
 }
 </style>
+
+<!-- V118: persistent Story controls and APK-safe refresh -->
+<style id="duarte-v118-sticky-story-and-refresh">
+#ffStoryComposer.open{inset:0!important;align-items:center!important;justify-content:center!important}
+#ffStoryComposer .ff-story-compose{display:flex!important;flex-direction:column!important;min-height:0!important;max-height:calc(100dvh - 16px)!important;overflow:hidden!important}
+#ffStoryComposer .ff-story-compose-head{flex:0 0 auto!important}
+#ffStoryComposer .ff-story-compose-body{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+#ffStoryComposer .ff-story-compose-actions{position:relative!important;inset:auto!important;flex:0 0 auto!important;display:flex!important;visibility:visible!important;min-height:58px!important;margin:0!important;padding:9px 14px calc(9px + env(safe-area-inset-bottom))!important;background:#181818!important;border-top:1px solid #414141!important;z-index:20!important;box-sizing:border-box!important}
+#ffStoryComposer .ff-story-compose-actions button{min-height:42px!important;flex:1 1 0!important;font-size:14px!important}
+#ffStoryComposer .ff-story-preview{width:100%!important;height:auto!important;max-height:min(30dvh,230px)!important;object-fit:contain!important;flex-shrink:0!important}
+@media(max-width:700px){
+ #ffStoryComposer .ff-story-compose{height:100dvh!important;max-height:100dvh!important;border:0!important;border-radius:0!important}
+ #ffStoryComposer .ff-story-preview{max-height:min(22dvh,170px)!important}
+ #ffStoryComposer .ff-story-compose-actions{padding-bottom:calc(10px + env(safe-area-inset-bottom))!important}
+}
+#ffV118AppRefresh{display:none;position:fixed;right:10px;top:calc(55px + env(safe-area-inset-top));z-index:2550;border:1px solid #5a5031;border-radius:20px;background:#292920;color:#f5d77a;padding:8px 10px;font:700 12px/1.2 system-ui,sans-serif;box-shadow:0 2px 8px #0005;cursor:pointer}
+@media(max-width:760px){#ffV118AppRefresh{display:none!important}}
+body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #ffV118AppRefresh{display:none!important}
+</style>
+<button type="button" id="ffV118AppRefresh" title="Check for updates and refresh" aria-label="Refresh app">↻ Refresh</button>
+<script id="duarte-v118-apk-refresh-script">
+(()=>{
+ const button=document.getElementById('ffV118AppRefresh');
+ if(!button)return;
+ button.addEventListener('click',async()=>{
+   if(button.disabled)return;
+   button.disabled=true;button.textContent='↻ Updating…';
+   try{
+     if('serviceWorker' in navigator){
+       const reg=await navigator.serviceWorker.getRegistration();
+       if(reg){
+         await Promise.race([reg.update(),new Promise(resolve=>setTimeout(resolve,3500))]);
+         if(reg.waiting){
+           reg.waiting.postMessage({type:'SKIP_WAITING'});
+           await Promise.race([new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true})),new Promise(resolve=>setTimeout(resolve,1500))]);
+         }
+       }
+     }
+   }catch(e){console.debug('App update check:',e)}
+   // Preserve the current login session. A fresh navigation retrieves the latest app shell when online.
+   location.reload();
+ });
+})();
+</script>
+
 </body>
 </html>
 

@@ -6435,7 +6435,10 @@ function closeClanProfile(){
   document.getElementById('ffMemberProfileModal')?.classList.remove('open');
 }
 function closeFullClanProfile(){
-  document.getElementById('ffFullProfile')?.classList.remove('open');
+  ++ffV128ProfileRequest; // invalidate outstanding profile and activity requests
+  const pane=document.getElementById('ffFullProfile');
+  pane?.classList.remove('open');
+  if(pane)delete pane.dataset.ffV129MemberId;
   document.body.style.overflow='';
 }
 function showFullProfileTab(name,btn){
@@ -6459,6 +6462,7 @@ async function openClanProfile(userId){
   const request=++ffV128ProfileRequest;
   const overlay=document.getElementById('ffFullProfile');
   if(overlay){
+    overlay.dataset.ffV129MemberId=userId;
     document.getElementById('ffFullTopName').textContent='Loading profile…';
     document.getElementById('ffFullName').textContent='Loading profile…';
     document.getElementById('ffFullPosts').innerHTML='<div class="ff-profile-empty">Loading member posts…</div>';
@@ -15219,9 +15223,9 @@ html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:no
   function snapshot(){
     let overlay='';for(const [name,sel] of overlays){if(openEl(document.querySelector(sel))){overlay=name;break;}}
     const chat=!!(document.getElementById('ffMsgShell')?.classList.contains('chat-open')||document.body.classList.contains('ff-mobile-chat-open'));
-    return {section:section(),overlay,chat:overlay==='messenger'&&chat};
+    return {section:section(),overlay,chat:overlay==='messenger'&&chat,memberId:overlay==='profile'?(document.getElementById('ffFullProfile')?.dataset.ffV129MemberId||''):''};
   }
-  const key=v=>[v.section,v.overlay,v.chat?'chat':'list'].join('|');
+  const key=v=>[v.section,v.overlay,v.chat?'chat':'list',v.memberId||''].join('|');
   function record(){
     if(restoring||!mobile())return;
     const next=snapshot(), k=key(next);
@@ -15252,7 +15256,7 @@ html.ff117-lock,body.ff117-lock{overflow:hidden!important;overscroll-behavior:no
       const dest=target?.section||'home';
       if(typeof window.showSection==='function')window.showSection(dest);
       if(target?.overlay==='messenger' && typeof window.openMessenger==='function')window.openMessenger();
-      else if(target?.overlay==='profile')document.getElementById('ffFullProfile')?.classList.add('open');
+      else if(target?.overlay==='profile' && target.memberId && typeof window.openClanProfile==='function')window.openClanProfile(target.memberId);
       // Old closed photo overlays are not reopened with a stale photo URL.
       const v=snapshot(); lastKey=key(v);current=v;
     }catch(e){console.warn('Duarte Back view restore',e)}
@@ -15559,6 +15563,38 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
  #ffFullProfile .post-card, #membersGrid .clan-member-card{transition:none!important}
 }
 </style>
+
+<!-- V130: Lightweight reliability fixes (mobile navigation / profile / visitor tree). -->
+<style id="duarte-v130-lite-stability">
+@media(max-width:760px){
+ #ffFullProfile{max-width:100vw!important;overflow-x:hidden!important}
+ #ffFullProfile .ff-full-actions button{min-height:44px}
+ #ffFullProfile .ff-profile-pane, #ffFullProfile .ff-fb-post-column{min-width:0;overflow-wrap:anywhere}
+ #ffFamilyTreeModal .ff-family-tree-dialog{max-width:100%;box-sizing:border-box}
+}
+#ffFamilyTreeModal.ff-v128-visitor-tree .ff-family-tree-toolbar button{display:none!important}
+#ffFamilyTreeModal.ff-v128-visitor-tree .ff-family-tree-toolbar select{pointer-events:none!important}
+</style>
+<script id="duarte-v130-tree-editor-guard">
+(function(){'use strict';
+ const modal=()=>document.getElementById('ffFamilyTreeModal');
+ const original=window.openMyFamilyRelationships;
+ if(typeof original==='function'&&!original.__v130){
+  const guarded=function(){
+   if(modal()?.classList.contains('ff-v128-visitor-tree'))return;
+   return original.apply(this,arguments);
+  };
+  guarded.__v130=true;
+  window.openMyFamilyRelationships=guarded;
+ }
+ // Reset view-only state when the tree closes so the owner's next visit remains editable.
+ const close=window.closeFamilyTree;
+ if(typeof close==='function'&&!close.__v130){
+  const wrapped=function(){const result=close.apply(this,arguments);modal()?.classList.remove('ff-v128-visitor-tree');return result;};
+  wrapped.__v130=true;window.closeFamilyTree=wrapped;
+ }
+})();
+</script>
 </body>
 </html>
 

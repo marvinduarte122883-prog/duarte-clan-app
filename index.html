@@ -5392,7 +5392,7 @@ function renderSidebarMembers(members) {
     }
 
     box.innerHTML = members.map(member => `
-        <div class="member-row ff-profile-link" data-user-id="${member.id}-3" onclick="openClanProfile('${member.id}')" role="button" tabindex="0">
+        <div class="member-row ff-profile-link" data-user-id="${member.id}" onclick="openClanProfile('${member.id}')" role="button" tabindex="0">
             <div class="member-avatar">
                 ${member.avatar_url
                     ? `<img src="${escapeHTML(member.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
@@ -6451,12 +6451,27 @@ function ffV21ProfileAvatar(profile){
     ? `<img src="${escapeHTML(profile.avatar_url)}" alt="${escapeHTML(name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
     : escapeHTML(initials);
 }
+let ffV128ProfileRequest=0;
 async function openClanProfile(userId){
-  if(!userId)return;
+  const memberId=String(userId||'').match(/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/i)?.[0];
+  if(!memberId)return;
+  userId=memberId;
+  const request=++ffV128ProfileRequest;
+  const overlay=document.getElementById('ffFullProfile');
+  if(overlay){
+    document.getElementById('ffFullTopName').textContent='Loading profile…';
+    document.getElementById('ffFullName').textContent='Loading profile…';
+    document.getElementById('ffFullPosts').innerHTML='<div class="ff-profile-empty">Loading member posts…</div>';
+    document.getElementById('ffFullAbout').innerHTML='';
+    document.getElementById('ffFullPhotos').innerHTML='';
+    overlay.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
   try{
     const {data:profile,error}=await supabaseClient.from('profiles')
       .select('id,full_name,avatar_url,clan_role,approved,birthday')
       .eq('id',userId).maybeSingle();
+    if(request!==ffV128ProfileRequest)return;
     if(error)throw error;
     if(!profile)throw new Error('Clan member profile was not found.');
 
@@ -6466,6 +6481,7 @@ async function openClanProfile(userId){
       supabaseClient.from('directory_profiles').select('city,occupation,family_branch,phone,email,show_phone,show_email,show_location,show_occupation').eq('user_id',userId).maybeSingle()
     ]);
 
+    if(request!==ffV128ProfileRequest)return;
     const name=profile.full_name||'Duarte Clan Member';
     const role=profile.clan_role||'Member';
     const own=currentUser?.id===userId;
@@ -6532,7 +6548,9 @@ async function openClanProfile(userId){
     if(typeof window.ffV42RefreshPostPhotos==='function')
       window.ffV42RefreshPostPhotos().catch(e=>console.warn('Profile post photos:',e));
   }catch(err){
+    if(request!==ffV128ProfileRequest)return;
     console.error('Open clan profile:',err);
+    document.getElementById('ffFullPosts').innerHTML='<div class="ff-profile-empty">Profile could not be loaded. Please try again.</div>';
     alert('Profile could not be opened: '+(err?.message||err));
   }
 }
@@ -15462,6 +15480,57 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
     const id=normalized(card.dataset.userId||card.dataset.memberId);
     if(!id)return;
     event.preventDefault();event.stopImmediatePropagation();openRealMemberProfile(id);
+  },true);
+})();
+</script>
+
+<style id="ff-v128-tree-read-only-style">
+#ffFamilyTreeModal.ff-v128-visitor-tree .ff-family-tree-toolbar button{display:none!important}
+#ffFamilyTreeModal.ff-v128-visitor-tree .ff-family-tree-toolbar select{pointer-events:none!important;opacity:.85}
+#ffFamilyTreeModal.ff-v128-visitor-tree .ff-family-tree-head small::after{content:' · View only';color:#e9c765}
+</style>
+<script id="ff-v128-member-profile-reliability-and-view-only-tree">
+(function(){'use strict';
+  const regex=/[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/i;
+  const idOf=v=>String(v||'').match(regex)?.[0]||null;
+  // Window capture runs before legacy document click handlers, including patches
+  // that swallow member-card clicks after multiple section transitions.
+  window.addEventListener('click',function(e){
+    const target=e.target;
+    if(!(target instanceof Element))return;
+    if(target.closest('.ff-member-message,[data-action="message"],a,button,input,select,textarea,[contenteditable="true"]'))return;
+    const card=target.closest('#membersGrid .clan-member-card,#ffFamilyDirectoryBody .member-row,.member-row[data-user-id],.member-card[data-user-id]');
+    if(!card)return;
+    const id=idOf(card.getAttribute('data-user-id')||card.getAttribute('data-member-id'));
+    if(!id)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    window.openClanProfile?.(id);
+  },true);
+  window.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const target=e.target;
+    if(!(target instanceof Element)||target.closest('button,a,input,select,textarea'))return;
+    const card=target.closest('#membersGrid .clan-member-card,.member-row[data-user-id]');
+    const id=idOf(card?.getAttribute('data-user-id'));
+    if(!id)return;
+    e.preventDefault();e.stopImmediatePropagation();window.openClanProfile?.(id);
+  },true);
+  const originalOpen=window.openFamilyTree;
+  window.openFamilyTree=async function(memberId){
+    const selected=idOf(memberId);
+    const own=idOf(window.currentUser?.id|| (typeof currentUser!=='undefined'?currentUser?.id:null));
+    const modal=document.getElementById('ffFamilyTreeModal');
+    const visitor=!!selected && selected!==own;
+    modal?.classList.toggle('ff-v128-visitor-tree',visitor);
+    if(!visitor)modal?.classList.remove('ff-v128-visitor-tree');
+    return originalOpen?.apply(this,arguments);
+  };
+  // Only expose edit controls when the requested tree is the signed-in member's own.
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#ffFamilyTreeModal .ff-family-tree-toolbar button'))return;
+    if(document.getElementById('ffFamilyTreeModal')?.classList.contains('ff-v128-visitor-tree')){
+      e.preventDefault();e.stopImmediatePropagation();
+    }
   },true);
 })();
 </script>

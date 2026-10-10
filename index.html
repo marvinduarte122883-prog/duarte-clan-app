@@ -9960,7 +9960,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v40.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v42.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -10814,27 +10814,26 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 <div id="ffStoryComposer" class="ff-story-modal" aria-hidden="true">
   <div class="ff-story-compose">
-    <div class="ff-story-compose-head"><span>Create family story</span><button id="ffStoryComposeClose" class="ff-story-view-close" type="button">×</button></div>
+    <div class="ff-story-compose-head"><span>New story</span><button id="ffStoryComposeClose" class="ff-story-view-close" type="button">×</button></div>
     <div class="ff-story-compose-body">
-      <label class="ff-story-file">📷 Choose a photo<input id="ffStoryFile" type="file" accept="image/*"></label>
+      <div id="ffV127Start" class="ff-v127-start">
+        <div class="ff-v127-modes" role="group" aria-label="Choose story type">
+          <button type="button" id="ffV127TextStart"><span>Aa</span>Text</button>
+          <button type="button" id="ffV127MusicStart"><span>♫</span>Music</button>
+          <button type="button" id="ffV127CameraStart"><span>▣</span>Camera</button>
+        </div>
+        <button type="button" id="ffV127GalleryStart" class="ff-v127-gallery">▧ &nbsp; Choose photos from Gallery</button>
+        <p>Choose a photo to open the Story editor. Your phone's gallery opens in its normal photo picker.</p>
+        <input type="file" id="ffV127CameraInput" accept="image/*" capture="environment" hidden aria-label="Take a story photo">
+      </div>
+      <div id="ffV127EditorTools" class="ff-v127-editor-tools" hidden>
+        <button type="button" id="ffV127TextTool" aria-label="Edit story text"><span>Aa</span>Text</button>
+        <button type="button" id="ffV127MusicTool" aria-label="Choose story music"><span>♫</span>Music</button>
+        <button type="button" id="ffV127ChangePhoto" aria-label="Change story photo"><span>▣</span>Photo</button>
+      </div>
+      <label class="ff-story-file ff-v126-photo-select" for="ffStoryFile"><span aria-hidden="true">📷</span><span>Choose a photo</span><input id="ffStoryFile" type="file" accept="image/*" aria-label="Choose a story photo"></label>
       <div id="ffV124Canvas" class="ff-v124-canvas"><img id="ffStoryPreview" class="ff-story-preview" alt="Story preview"><div id="ffV124DragText" class="ff-v124-drag" role="slider" tabindex="0" aria-label="Drag story text to position it" aria-valuetext="Caption position"></div></div><small id="ffV124Hint" class="ff-v124-hint">Type a caption, then drag the text anywhere on your photo. You can also change the text size and font style.</small>
       <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
-      <div id="ffV125TextTools" class="ff-v125-tools" aria-label="Story text controls">
-        <div class="ff-v125-tools-title">Caption style</div>
-        <div class="ff-v125-fonts" role="group" aria-label="Caption font style">
-          <button type="button" class="ff-v125-font active" data-v125-font="sans" aria-pressed="true">Sans</button>
-          <button type="button" class="ff-v125-font" data-v125-font="serif" aria-pressed="false">Serif</button>
-          <button type="button" class="ff-v125-font" data-v125-font="mono" aria-pressed="false">Mono</button>
-          <button type="button" class="ff-v125-font" data-v125-font="script" aria-pressed="false">Script</button>
-        </div>
-        <label class="ff-v125-size" for="ffV125Size">
-          <span>Text size</span>
-          <div class="ff-v125-size-row">
-            <input id="ffV125Size" type="range" min="18" max="42" step="1" value="28" aria-label="Caption text size">
-            <strong id="ffV125SizeValue">28</strong>
-          </div>
-        </label>
-      </div>
       <div class="ff-story-music">
         <label>♫ Add music (optional)</label>
         <div class="ff-audius-tabs"><button id="ffMusicOnlineTab" type="button" aria-pressed="true">Search online</button><button id="ffMusicUploadTab" type="button" aria-pressed="false">Upload music</button></div>
@@ -17270,5 +17269,89 @@ if(typeof originalAlbumToggle==='function'){
       root.querySelectorAll('.ff-story-reactions-v71.ff-v121-open').forEach(row=>{row.classList.remove('ff-v121-open');row.querySelector('.ff-v121-like')?.setAttribute('aria-expanded','false')});
     }
   },true);
+})();
+</script>
+<!-- V126: Mobile Story composer visibility, single-scroll body, native photo chooser -->
+<style id="duarte-v126-mobile-story-compose">
+@media(max-width:760px){
+ #ffStoryComposer.open{position:fixed!important;inset:0!important;display:flex!important;z-index:2147483500!important;padding:0!important;overflow:hidden!important;align-items:stretch!important;justify-content:stretch!important}
+ #ffStoryComposer.open .ff-story-compose{display:flex!important;flex-direction:column!important;box-sizing:border-box!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;min-height:0!important;margin:0!important;overflow:hidden!important;border:0!important;border-radius:0!important}
+ #ffStoryComposer .ff-story-compose-head{display:flex!important;flex:none!important;min-height:52px!important;position:relative!important;z-index:5!important}
+ #ffStoryComposer .ff-story-compose-body{display:block!important;flex:1 1 auto!important;min-height:0!important;height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;padding:10px 12px 12px!important}
+ #ffStoryComposer .ff-story-compose-actions{display:flex!important;flex:none!important;position:relative!important;bottom:auto!important;left:auto!important;right:auto!important;min-height:64px!important;margin:0!important;padding:8px 12px calc(8px + env(safe-area-inset-bottom))!important;background:#181818!important;z-index:6!important;visibility:visible!important;transform:none!important}
+ #ffStoryComposer .ff-story-compose-actions button{display:block!important;min-height:44px!important;flex:1 1 0!important}
+ #ffStoryComposer .ff-v126-photo-select{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;box-sizing:border-box!important;min-height:52px!important;margin:0!important;padding:11px 14px!important;position:relative!important;visibility:visible!important;opacity:1!important;z-index:2!important;border:1px dashed #bca348!important;background:#252525!important;color:#fff!important;font-size:16px!important;font-weight:700!important;cursor:pointer!important}
+ #ffStoryComposer .ff-v126-photo-select input[type=file]{display:block!important;position:absolute!important;inset:0!important;width:100%!important;height:100%!important;opacity:0!important;cursor:pointer!important;z-index:2!important;font-size:0!important}
+ #ffStoryComposer #ffV124Canvas{margin-top:8px!important}
+ #ffStoryComposer .ff-story-caption-input{margin-top:8px!important;min-height:46px!important;max-height:72px!important}
+ #ffStoryComposer .ff-story-music{margin-top:8px!important}
+ #ffStoryComposer .ff-audius-tracks{max-height:min(22dvh,180px)!important;overflow-y:auto!important}
+ #ffStoryComposer #ffV125TextTools{display:none!important}
+}
+</style>
+
+<style id="duarte-story-reference-layout-v127">
+#ffStoryComposer .ff-story-compose{position:relative!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important;background:#101114!important}
+#ffStoryComposer .ff-story-compose-head{min-height:56px!important;flex:none!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:11px 18px!important;background:#141517!important;font-size:18px!important}
+#ffStoryComposer .ff-story-compose-body{position:relative!important;flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;padding:12px!important;display:flex!important;flex-direction:column!important;gap:8px!important}
+#ffStoryComposer .ff-story-compose-actions{flex:none!important;display:flex!important;position:relative!important;margin:0!important;min-height:60px!important;padding:8px 12px calc(8px + env(safe-area-inset-bottom))!important;background:#18191d!important;border-top:1px solid #34363b!important;z-index:40!important;visibility:visible!important}
+#ffStoryComposer .ff-story-compose-actions button{flex:1!important;min-height:44px!important}
+#ffStoryComposer .ff-story-compose:not(.ff-v127-editing) .ff-story-compose-actions{display:none!important}
+#ffV127Start{flex:1;display:flex;flex-direction:column;gap:14px;padding:5px 0}
+.ff-v127-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ff-v127-modes button{display:flex;min-width:0;flex-direction:column;align-items:flex-start;justify-content:space-around;height:108px;border:1px solid #45474d;border-radius:15px;background:#24262a;color:#fff;font-size:13px;text-align:left;padding:12px;cursor:pointer}
+.ff-v127-modes button span{font-size:30px;line-height:1}
+.ff-v127-gallery{padding:16px!important;border:1px solid #5c5d61!important;border-radius:12px!important;background:#242529!important;color:#eee!important;text-align:center;font-weight:700}
+#ffV127Start p{color:#b6b7bb;font-size:12px;line-height:1.5;margin:4px 0}
+#ffStoryComposer .ff-v126-photo-select{display:none!important}
+#ffStoryComposer .ff-v127-editor-tools{position:absolute;top:12px;right:14px;z-index:8;display:flex;flex-direction:column;gap:8px}
+#ffStoryComposer .ff-v127-editor-tools[hidden]{display:none!important}
+.ff-v127-editor-tools button{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;padding:4px;border:1px solid #484b53;border-radius:50%;background:rgba(25,27,32,.94);color:#fff;width:57px;height:57px;font-size:10px;cursor:pointer;box-shadow:0 3px 14px #0006}
+.ff-v127-editor-tools button span{font-size:22px}
+#ffStoryComposer .ff-story-compose:not(.ff-v127-editing) #ffV124Canvas,
+#ffStoryComposer .ff-story-compose:not(.ff-v127-editing) #ffV124Hint,
+#ffStoryComposer .ff-story-compose:not(.ff-v127-editing) #ffStoryCaptionInput,
+#ffStoryComposer .ff-story-compose:not(.ff-v127-editing) .ff-story-music{display:none!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffV127Start{display:none!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffV124Canvas{flex:none;width:calc(100% - 4px)!important;max-height:none!important;height:min(58dvh,540px)!important;margin:0!important;background:#000!important;display:block!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffV124Canvas #ffStoryPreview{width:100%!important;height:100%!important;max-height:none!important;object-fit:contain!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffV124Hint{display:none!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffStoryCaptionInput{display:none!important;flex:none;min-height:64px!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing .ff-story-music{display:none!important;flex:none}
+#ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-text #ffStoryCaptionInput{display:block!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-music .ff-story-music{display:block!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-music #ffV124Canvas{height:min(25dvh,200px)!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-text #ffV124Canvas{height:min(43dvh,390px)!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffStoryStatus{flex:none}
+@media(max-width:760px){
+ #ffStoryComposer.open{position:fixed!important;inset:0!important;z-index:2147480000!important;padding:0!important;display:flex!important}
+ #ffStoryComposer .ff-story-compose{width:100%!important;height:100dvh!important;max-height:100dvh!important;border:0!important;border-radius:0!important}
+ #ffStoryComposer .ff-story-compose-body{padding:9px!important}
+ #ffStoryComposer .ff-story-compose.ff-v127-editing #ffV124Canvas{height:min(61dvh,590px)!important}
+ #ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-text #ffV124Canvas{height:min(40dvh,370px)!important}
+ #ffStoryComposer .ff-story-compose.ff-v127-editing.ff-v127-music #ffV124Canvas{height:min(21dvh,190px)!important}
+ .ff-v127-modes button{height:104px}
+ body:has(#ffStoryComposer.open) .ff-v29c-mobile-nav,body:has(#ffStoryComposer.open) #dcMobileNav{display:none!important}
+}
+</style>
+<script id="duarte-story-reference-layout-v127-js">
+(()=>{
+ const $=id=>document.getElementById(id);const root=$('ffStoryComposer');if(!root)return;
+ const shell=root.querySelector('.ff-story-compose');const file=$('ffStoryFile');const camera=$('ffV127CameraInput');
+ function edit(mode=''){if(!file?.files?.length)return; shell.classList.add('ff-v127-editing'); $('ffV127EditorTools').hidden=false; modeSet(mode);}
+ function modeSet(mode=''){shell.classList.toggle('ff-v127-text',mode==='text');shell.classList.toggle('ff-v127-music',mode==='music');if(mode==='text')$('ffStoryCaptionInput')?.focus({preventScroll:true});}
+ $('ffV127GalleryStart')?.addEventListener('click',()=>file?.click());
+ $('ffV127CameraStart')?.addEventListener('click',()=>camera?.click());
+ $('ffV127TextStart')?.addEventListener('click',()=>file?.click());
+ $('ffV127MusicStart')?.addEventListener('click',()=>file?.click());
+ $('ffV127TextTool')?.addEventListener('click',()=>modeSet(shell.classList.contains('ff-v127-text')?'':'text'));
+ $('ffV127MusicTool')?.addEventListener('click',()=>modeSet(shell.classList.contains('ff-v127-music')?'':'music'));
+ $('ffV127ChangePhoto')?.addEventListener('click',()=>file?.click());
+ file?.addEventListener('change',()=>{if(file.files?.length)edit();});
+ camera?.addEventListener('change',()=>{if(!camera.files?.length)return;try{const dt=new DataTransfer();dt.items.add(camera.files[0]);file.files=dt.files;file.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){console.warn('Camera transfer:',e);file.click();}});
+ const reset=()=>{shell.classList.remove('ff-v127-editing','ff-v127-text','ff-v127-music'); $('ffV127EditorTools').hidden=true;};
+ // Existing close/cancel/publish handlers continue to own the underlying Story state.
+ ['ffStoryCancel','ffStoryComposeClose'].forEach(id=>$(id)?.addEventListener('click',reset));
+ const observer=new MutationObserver(()=>{if(!root.classList.contains('open'))reset();});observer.observe(root,{attributes:true,attributeFilter:['class']});
 })();
 </script>

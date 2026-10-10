@@ -16748,6 +16748,139 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 })();
 </script>
 
+
+<style id="ff-v142-comment-restyle-css">
+#ffCommentModal .ff-comment-dialog{width:min(760px,100%)!important;height:min(94dvh,950px)!important;max-height:94dvh!important;background:#fff!important;border-radius:14px!important;box-shadow:0 12px 34px rgba(0,0,0,.24)!important}
+#ffCommentModal .ff-comment-head{font-size:17px!important;font-weight:800!important;background:#fff!important;border-bottom:1px solid #eceff2!important}
+#ffCommentModal .ff-comment-body{background:#fff!important}
+#ffCommentModal .ff-v142-posttext{padding:10px 14px 6px;color:#1c1e21;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+#ffCommentModal .ff-v142-media{display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;min-height:140px;max-height:min(52dvh,520px)}
+#ffCommentModal .ff-v142-media>img,#ffCommentModal .ff-v142-media>video{display:block;width:100%;height:auto;max-height:min(52dvh,520px);object-fit:contain;background:#000}
+#ffCommentModal .ff-v142-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;width:100%;max-height:min(52dvh,520px)}
+#ffCommentModal .ff-v142-grid img{display:block;width:100%;height:100%;max-height:min(26dvh,250px);min-height:95px;object-fit:cover}
+#ffCommentModal .ff-v142-topstats{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 14px 10px;color:#65676b;font-size:12px;border-bottom:1px solid #e7eaee}
+#ffCommentModal .ff-v142-topstats .ff-v142-reactsum{display:inline-flex;align-items:center;gap:6px}
+#ffCommentModal .ff-v142-topstats .ff-v142-reacticons{display:inline-flex;align-items:center;gap:0;letter-spacing:-2px}
+#ffCommentModal .ff-v142-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:0 6px;border-bottom:1px solid #e7eaee}
+#ffCommentModal .ff-v142-action,#ffCommentModal .ff-v142-actions .reaction-wrap>.like-button{border:0!important;background:transparent!important;color:#606770!important;min-height:42px!important;border-radius:8px!important;cursor:pointer!important;font-size:14px!important;font-weight:600!important;width:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px;padding:0 6px!important}
+#ffCommentModal .ff-v142-action:hover,#ffCommentModal .ff-v142-actions .reaction-wrap>.like-button:hover{background:#f2f3f5!important}
+#ffCommentModal .ff-v142-actions .reaction-wrap>.like-button.selected-reaction{color:#1877f2!important}
+#ffCommentModal .ff-v142-actions .reaction-wrap{position:relative;display:flex;justify-content:center}
+#ffCommentModal .ff-v142-actions .reaction-picker{left:50%!important;transform:translateX(-50%);bottom:100%!important;background:#fff!important;border:1px solid #dadde1!important;box-shadow:0 12px 28px rgba(0,0,0,.18)!important}
+#ffCommentModal .ff-v142-filter{padding:10px 14px 6px;color:#65676b;font-size:14px;font-weight:600}
+#ffCommentModal .ff-v142-filter button{border:0;background:transparent;color:inherit;font:inherit;padding:0;cursor:pointer}
+#ffCommentModal .ff-v142-comments{padding:0 14px 10px;background:#fff}
+#ffCommentModal .ff-v142-comments .comments-list{display:block!important}
+#ffCommentModal .comment-item{margin-top:10px!important}
+#ffCommentModal .comment-row{gap:8px!important;align-items:flex-start!important}
+#ffCommentModal .comment-avatar{width:36px!important;height:36px!important;min-width:36px!important;border-radius:50%!important;overflow:hidden!important;background:#d8b24c;color:#1b1b1b;display:flex;align-items:center;justify-content:center;font-weight:700}
+#ffCommentModal .comment-avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#ffCommentModal .comment-bubble{background:#f0f2f5!important;border-radius:18px!important;padding:8px 11px!important;max-width:calc(100% - 44px)!important}
+#ffCommentModal .comment-author{font-size:13px!important;font-weight:700!important;color:#1c1e21!important;margin-bottom:1px!important}
+#ffCommentModal .comment-text{font-size:14px!important;line-height:1.33!important;color:#1c1e21!important}
+#ffCommentModal .comment-actions{margin:4px 0 0 44px!important;gap:12px!important;font-size:12px!important;color:#65676b!important;flex-wrap:wrap}
+#ffCommentModal .comment-action{color:#65676b!important;font-size:12px!important;font-weight:600!important;min-height:auto!important}
+#ffCommentModal .comment-action.active{color:#1877f2!important}
+#ffCommentModal .comment-replies{margin-left:16px!important;padding-left:10px!important;border-left:1px solid #eceff2!important}
+#ffCommentModal .comment-reply-box{margin:8px 0 4px 44px!important}
+#ffCommentModal .reply-input{background:#fff!important;border:1px solid #d9dde3!important;border-radius:18px!important;padding:9px 12px!important;color:#1c1e21!important}
+#ffCommentModal .reply-send{border:0!important;border-radius:18px!important;background:#1877f2!important;color:#fff!important;font-weight:700!important;padding:8px 14px!important}
+#ffCommentModal .ff-comment-footer{padding:10px 12px calc(10px + env(safe-area-inset-bottom))!important;background:#fff!important;border-top:1px solid #eceff2!important}
+#ffCommentModal .ff-v142-compose{display:flex;align-items:flex-start;gap:9px}
+#ffCommentModal .ff-v142-avatar{width:36px;height:36px;min-width:36px;border-radius:50%;overflow:hidden;background:#d8b24c;color:#1b1b1b;display:flex;align-items:center;justify-content:center;font-weight:700}
+#ffCommentModal .ff-v142-shell{flex:1;min-width:0;background:#eef1f4;border-radius:18px;padding:7px 10px 6px}
+#ffCommentModal .ff-v142-entry{display:flex;align-items:center;gap:8px}
+#ffCommentModal #ffModalCommentInput{flex:1;min-width:0;background:transparent!important;border:0!important;padding:5px 2px!important;color:#1c1e21!important;font-size:14px!important;outline:none!important}
+#ffCommentModal .ff-v142-send{border:0;background:transparent;color:#1877f2;padding:4px 6px;font-size:20px;cursor:pointer;min-width:30px;min-height:30px}
+#ffCommentModal .ff-v142-tools{display:flex;align-items:center;gap:8px;padding-top:3px}
+#ffCommentModal .ff-v142-tool{border:0;background:transparent;color:#65676b;font-size:18px;min-width:28px;min-height:28px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+#ffCommentModal .ff-v142-tool:hover{background:#e4e6eb;border-radius:50%}
+#ffCommentModal .ff-v142-filelabel{display:inline-flex;align-items:center;justify-content:center}
+#ffCommentModal .ff-v142-selected{margin-left:auto;color:#65676b;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+@media(max-width:760px){
+ #ffCommentModal{padding:0!important}
+ #ffCommentModal .ff-comment-dialog{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
+ #ffCommentModal .ff-v142-media,#ffCommentModal .ff-v142-media>img,#ffCommentModal .ff-v142-media>video{max-height:42dvh}
+ #ffCommentModal .ff-v142-grid{max-height:42dvh}
+ #ffCommentModal .ff-v142-grid img{max-height:21dvh;min-height:88px}
+ #ffCommentModal .ff-v142-action,#ffCommentModal .ff-v142-actions .reaction-wrap>.like-button{font-size:13px!important;min-height:40px!important}
+ #ffCommentModal .ff-v142-comments{padding:0 10px 8px}
+ #ffCommentModal .ff-comment-footer{padding:9px 10px calc(9px + env(safe-area-inset-bottom))!important}
+ #ffCommentModal .ff-v142-selected{max-width:90px}
+}
+</style>
+<script id="ff-v142-comment-restyle-js">
+(()=>{'use strict';
+ const $=id=>document.getElementById(id), esc=x=>escapeHTML(String(x||''));
+ let pending=false, epoch=0, priorOverflow='';
+ const saveKey=id=>`duarteSavedPost:${id}`;
+ function selected(){return Number(window.ffActiveCommentPostId||0)}
+ function avatar(){const a=$('ffV142Avatar'); if(a) a.innerHTML=duarteAvatarHTML(currentProfile||{full_name:'Member'});}
+ function mediaHTML(source){
+   const video=source.querySelector('video');
+   if(video){ const url=video.currentSrc||video.getAttribute('src')||video.querySelector('source')?.src; if(url) return `<div class="ff-v142-media"><video src="${esc(url)}" controls preload="none" playsinline></video></div>`; }
+   const group=source.querySelector('.ff-v42-collage');
+   if(group){ const urls=[...group.querySelectorAll('img')].slice(0,4).map(img=>img.currentSrc||img.src).filter(Boolean); if(urls.length) return `<div class="ff-v142-media"><div class="ff-v142-grid">${urls.map(url=>`<img loading="lazy" decoding="async" src="${esc(url)}" alt="Post photo">`).join('')}</div></div>`; }
+   const img=source.querySelector('img[alt="Duarte Clan post image"],.post-image img');
+   return img?`<div class="ff-v142-media"><img loading="eager" decoding="async" src="${esc(img.currentSrc||img.src)}" alt="Post photo"></div>`:'';
+ }
+ function compose(){
+   const foot=$('ffCommentModal')?.querySelector('.ff-comment-footer'); if(!foot) return;
+   foot.innerHTML=`<div class="ff-v142-compose"><div class="ff-v142-avatar" id="ffV142Avatar"></div><div class="ff-v142-shell"><div class="ff-v142-entry"><input id="ffModalCommentInput" maxlength="1000" autocomplete="off" placeholder="Comment as ${esc((currentProfile?.full_name||'Member'))}" aria-label="Write a comment"><button type="button" class="ff-v142-send" id="ffV142Send" aria-label="Send comment">➤</button></div><div class="ff-v142-tools"><button type="button" class="ff-v142-tool" id="ffV142EmojiBtn" aria-label="Insert emoji">😊</button><label class="ff-v142-tool ff-v142-filelabel" aria-label="Add photo or video"><input id="ffV142MediaInput" type="file" accept="image/*,video/*" hidden>📷</label><span class="ff-v142-selected" id="ffV142Selected"></span></div></div></div>`;
+   avatar();
+   const input=$('ffModalCommentInput');
+   $('ffV142Send')?.addEventListener('click',()=>window.sendModalComment());
+   input?.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); window.sendModalComment(); }});
+   $('ffV142EmojiBtn')?.addEventListener('click',()=>{ if(!input) return; input.value += '😊'; input.focus(); });
+   $('ffV142MediaInput')?.addEventListener('change',e=>{ const file=e.target.files?.[0]; const slot=$('ffV142Selected'); if(slot) slot.textContent=file?file.name:''; });
+ }
+ async function refresh(){
+   const postId=selected(), stamp=++epoch; if(!postId) return;
+   const fake=document.createElement('div'); fake.className='post-card'; fake.dataset.postId=postId;
+   fake.innerHTML='<span class="reaction-count"></span><span class="comment-count"></span><button class="like-button"></button><div class="comments-list"></div>';
+   await loadPostActivity(postId, fake); if(stamp!=epoch || postId!==selected()) return;
+   const comments=$('ffV142Comments'), stats=$('ffV142Stats');
+   if(comments) comments.innerHTML = fake.querySelector('.comments-list')?.innerHTML || '';
+   const reactionRaw = fake.querySelector('.reaction-count')?.textContent?.trim() || '0 reactions';
+   const commentRaw = fake.querySelector('.comment-count')?.textContent?.trim() || '0 comments';
+   const icons = [...new Set((fake.querySelector('.reaction-icons')?.textContent || '').split(/\s+/).filter(Boolean))].slice(0,3).join(' ');
+   if(stats) stats.innerHTML = `<span class="ff-v142-reactsum"><span class="ff-v142-reacticons">${esc(icons||'❤️ 👍')}</span><span>${esc(reactionRaw)}</span></span><span>${esc(commentRaw)}</span>`;
+   const likeBtn=$('ffV142Like'), fakeLike=fake.querySelector('.like-button');
+   if(likeBtn && fakeLike){ likeBtn.innerHTML=fakeLike.innerHTML; likeBtn.classList.toggle('selected-reaction', fakeLike.classList.contains('selected-reaction')); }
+   updateSaveButton(); avatar();
+ }
+ function updateSaveButton(){ const btn=$('ffV142Save'); if(!btn) return; const saved=localStorage.getItem(saveKey(selected()))==='1'; btn.textContent=saved?'🔖 Saved':'🔖 Save'; }
+ window.loadModalComments = refresh;
+ window.openFacebookComments = async function(postId){
+   const source=document.querySelector(`.post-card[data-post-id="${Number(postId)}"]`); if(!source) return;
+   window.ffActiveCommentPostId=Number(postId); window.ffActiveCommentSourceCard=source; ffActiveCommentPostId=Number(postId); ffActiveCommentSourceCard=source;
+   const author=source.querySelector('.author-info h3,.post-author-name,.post-author strong')?.textContent?.trim()||'Member';
+   const title=$('ffCommentTitle'); if(title) title.textContent=`${author.split(/\s+/)[0]}'s Post`;
+   const content=source.querySelector('.post-text,.post-content')?.textContent?.trim()||'';
+   const reactionWrap = source.querySelector('.reaction-wrap');
+   const body=$('ffCommentBody'); if(!body) return;
+   body.innerHTML=`<section class="ff-v142-view">${content?`<div class="ff-v142-posttext">${esc(content)}</div>`:''}${mediaHTML(source)}<div class="ff-v142-topstats" id="ffV142Stats"></div><div class="ff-v142-actions"><div class="reaction-wrap"><button type="button" class="like-button" id="ffV142Like">👍 Like</button>${reactionWrap?.querySelector('.reaction-picker')?.outerHTML||'<div class="reaction-picker"></div>'}</div><button type="button" class="ff-v142-action" id="ffV142Comment">💬 Comment</button><button type="button" class="ff-v142-action" id="ffV142Save">🔖 Save</button><button type="button" class="ff-v142-action" id="ffV142Share">↗ Share</button></div><div class="ff-v142-filter"><button type="button">Most relevant ▾</button></div><div class="ff-v142-comments post-card" data-post-id="${Number(postId)}"><div class="comments-list" id="ffV142Comments"></div></div></section>`;
+   compose(); priorOverflow=document.body.style.overflow; $('ffCommentModal')?.classList.add('open'); document.body.style.overflow='hidden';
+   $('ffV142Comment')?.addEventListener('click',()=> $('ffModalCommentInput')?.focus());
+   $('ffV142Share')?.addEventListener('click',()=>{ if(typeof sharePost==='function') sharePost(); });
+   $('ffV142Save')?.addEventListener('click',()=>{ const k=saveKey(selected()); const on=localStorage.getItem(k)==='1'; localStorage.setItem(k, on?'0':'1'); updateSaveButton(); });
+   $('ffV142Like')?.addEventListener('click', async ()=>{ const like=source.querySelector('.reaction-choice[title="Like"]'); if(like && typeof chooseReaction==='function'){ await chooseReaction({stopPropagation(){},preventDefault(){}}, like, 'like'); await refresh(); }});
+   await refresh();
+ };
+ window.sendModalComment = async function(){
+   const input=$('ffModalCommentInput'), content=input?.value.trim(), postId=selected();
+   if(!content || !postId || pending) return;
+   if(!currentUser?.id) return alert('Sign in to comment.');
+   pending=true; const btn=$('ffV142Send'); if(btn) btn.disabled=true;
+   try{ const r=await supabaseClient.from('comments').insert({post_id:postId,user_id:currentUser.id,content,parent_comment_id:null}); if(r.error) throw r.error; input.value=''; const slot=$('ffV142Selected'); if(slot) slot.textContent=''; const picker=$('ffV142MediaInput'); if(picker) picker.value=''; await refresh(); const pane=$('ffCommentBody'); if(pane) pane.scrollTop=pane.scrollHeight; }
+   catch(e){ alert('Comment could not be sent: '+(e.message||e)); }
+   finally{ pending=false; if(btn) btn.disabled=false; }
+ };
+ window.closeFacebookComments = async function(){ ++epoch; $('ffCommentModal')?.querySelectorAll('video').forEach(v=>{ try{v.pause();}catch(_){} }); $('ffCommentModal')?.classList.remove('open'); document.body.style.overflow=priorOverflow; const post=selected(), source=window.ffActiveCommentSourceCard; ffActiveCommentPostId=null; ffActiveCommentSourceCard=null; window.ffActiveCommentPostId=null; window.ffActiveCommentSourceCard=null; if(post && source?.isConnected) await loadPostActivity(post,source); };
+ document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('ffCommentModal')?.classList.contains('open')){ e.preventDefault(); window.closeFacebookComments(); } },true);
+})();
+</script>
+
 </body>
 </html>
 

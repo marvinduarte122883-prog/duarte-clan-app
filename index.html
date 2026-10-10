@@ -1770,7 +1770,9 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Duarte Clan">
-<link rel="manifest" href="./duarte-manifest-v23.webmanifest">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./duarte-manifest-v24.webmanifest">
 
 
 <link rel="apple-touch-icon" sizes="180x180" href="./duarte-apple-touch-icon.png">
@@ -10097,7 +10099,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v49.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v50.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();

@@ -1,0 +1,8 @@
+Duarte Clan Facebook Lite-style photo viewer update
+- Desktop: dark image stage + light right-side comment panel, full-screen without page scroll.
+- Mobile: dark image stage + compact white comments panel, comment input stays accessible.
+- Multi-photo post: previous/next controls, counter, keyboard arrows and touch swipe.
+- Album: previous/next among currently loaded album images.
+- Existing Supabase photo reactions/comments/share logic remains in place.
+- No new frameworks, polling, libraries or database migrations.
+Upload all website files, replacing index.html. No APK reinstall needed if WebView loads the live website; webview cache/service-worker may need refresh.

@@ -16332,6 +16332,77 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
  setInterval(()=>{if(!document.hidden)check()},30*60*1000);
 })();
 </script>
+
+<!-- Duarte V128: lightweight responsive photo viewer; keeps existing social handlers -->
+<style id="duarte-v128-photo-lite">
+/* Desktop: Facebook-inspired dark photo canvas, white interactive right rail. */
+@media(min-width:761px){
+ #ff117Photo.open{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(310px,355px)!important;grid-template-rows:1fr!important}
+ #ff117Photo .ff117-head{position:absolute;top:0;left:0;right:355px;height:52px;z-index:3;border:0;background:linear-gradient(#111b,transparent);color:#fff}
+ #ff117Photo .ff117-stage{grid-column:1;grid-row:1;height:100%;width:100%;padding:54px 54px 15px!important;background:#000}
+ #ff117Photo .ff117-panel{grid-column:2;grid-row:1;width:100%!important;height:100%!important;max-height:none!important;flex-basis:auto!important;min-width:0;margin:0!important;padding:22px 14px 16px!important;background:#fff;color:#1c1e21;border:0;gap:12px}
+ #ffV74PhotoViewer.open,#ffV112GalleryPhoto.open{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(310px,355px)!important;grid-template-rows:minmax(0,1fr)!important;padding:0!important}
+ #ffV74PhotoViewer .ff-v74-pv-head,#ffV112GalleryPhoto header{position:absolute;top:0;left:0;right:355px;z-index:3;height:52px!important;min-height:52px!important;color:white;background:linear-gradient(#111b,transparent)}
+ #ffV74PhotoViewer .ff-v74-pv-stage,#ffV112GalleryPhoto .v112-stage{grid-column:1;grid-row:1;width:100%!important;height:100%!important;min-height:0!important;background:#000;padding:52px 52px 12px!important;box-sizing:border-box}
+ #ffV74PhotoViewer .ff-v74-pv-social,#ffV112GalleryPhoto .v112-social{grid-column:2;grid-row:1;align-self:stretch;width:100%!important;height:100%!important;max-height:none!important;min-height:0!important;margin:0!important;padding:22px 14px 16px!important;background:#fff!important;color:#1c1e21!important;border:0!important;border-radius:0!important;gap:12px!important}
+ #ff117Photo .ff117-comments,#ffV74PhotoViewer .ff-v74-pv-comments,#ffV112GalleryPhoto .v112-comments{max-height:none!important;flex:1!important;font-size:13px!important;color:#303236!important}
+}
+/* Accessible right panel controls. */
+#ff117Photo .ff117-actions,#ffV74PhotoViewer .ff-v74-pv-actions,#ffV112GalleryPhoto .v112-actions{justify-content:space-around;border-block:1px solid #e5e7eb;padding:7px 0;gap:3px!important}
+#ff117Photo .ff117-actions button,#ffV74PhotoViewer .ff-v74-pv-actions button,#ffV112GalleryPhoto .v112-actions button{background:transparent!important;border:0!important;color:#65676b!important;font-size:13px!important;min-width:0!important;padding:8px 4px!important}
+#ff117Photo .ff117-compose input,#ffV74PhotoViewer .ff-v74-pv-compose input,#ffV112GalleryPhoto .v112-compose input{background:#f0f2f5!important;color:#1c1e21!important;border:0!important;border-radius:22px!important;font-size:16px!important}
+#ff117Photo .ff117-compose button,#ffV74PhotoViewer .ff-v74-pv-compose button,#ffV112GalleryPhoto .v112-compose button{background:#1877f2!important;color:#fff!important;border-radius:20px!important}
+#ff117Photo .ff117-by,#ffV74PhotoViewer #ffV74PvCaption,#ffV112GalleryPhoto .v112-caption{color:inherit!important;font-size:14px!important;white-space:normal!important;max-height:80px!important}
+#ff117Photo .ff117-status,#ffV74PhotoViewer .ff-v92-react-summary,#ffV112GalleryPhoto .v112-count{color:#65676b!important}
+#ff117Photo .ff117-comment,#ffV74PhotoViewer .ff-v74-pv-comment,#ffV112GalleryPhoto .v112-comment{border-bottom:1px solid #edf0f2!important}
+#ff117Photo .ff117-reactions{background:#fff;border-radius:20px;padding:4px}
+#ff117Photo .ff117-stage,#ffV74PvStage,#ffV112Stage{position:relative}
+.ff128-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:42px;height:42px;border-radius:50%;border:0;background:#c8c9ccbf;color:#242526;display:grid;place-items:center;font-size:30px;line-height:1;cursor:pointer;padding:0;touch-action:manipulation}
+.ff128-prev{left:8px}.ff128-next{right:8px}.ff128-nav[hidden],.ff128-counter[hidden]{display:none!important}
+.ff128-counter{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:#151515b8;color:#fff;border-radius:15px;padding:4px 11px;font:12px Arial,sans-serif;pointer-events:none}
+@media(max-width:760px){
+ #ff117Photo.open{height:100dvh!important;padding:0!important;background:#000!important}
+ #ff117Photo .ff117-head{height:44px!important;flex:0 0 44px!important;background:#111!important}
+ #ff117Photo .ff117-stage{min-height:0!important;padding:4px 35px!important}
+ #ff117Photo .ff117-panel{width:100%!important;min-height:0!important;max-height:44dvh!important;flex:0 0 clamp(175px,32dvh,290px)!important;background:white!important;color:#1c1e21!important;gap:5px!important;padding:8px 10px calc(8px + env(safe-area-inset-bottom))!important}
+ #ffV74PhotoViewer.open,#ffV112GalleryPhoto.open{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:44px minmax(0,1fr) clamp(175px,32dvh,290px)!important}
+ #ffV74PhotoViewer .ff-v74-pv-head,#ffV112GalleryPhoto header{height:44px!important;min-height:44px!important;background:#111!important}
+ #ffV74PhotoViewer .ff-v74-pv-social,#ffV112GalleryPhoto .v112-social{height:100%!important;max-height:none!important;min-height:0!important;overflow:hidden!important;background:#fff!important;color:#1c1e21!important;padding:8px 10px calc(8px + env(safe-area-inset-bottom))!important;gap:5px!important}
+ #ff117Photo .ff117-comments,#ffV74PhotoViewer .ff-v74-pv-comments,#ffV112GalleryPhoto .v112-comments{display:block!important;flex:1 1 auto!important;min-height:0!important;max-height:none!important;overflow:auto!important;color:#252525!important}
+ #ffV112GalleryPhoto .v112-caption,#ffV74PhotoViewer #ffV74PvCaption{display:block!important;max-height:30px!important}
+ #ff117Photo .ff117-by{display:block!important}
+ #ff117Photo .ff117-compose,#ffV74PhotoViewer .ff-v74-pv-compose,#ffV112GalleryPhoto .v112-compose{display:flex!important;flex:0 0 43px!important;min-height:43px!important}
+ #ff117Photo .ff117-compose input,#ffV74PhotoViewer .ff-v74-pv-compose input,#ffV112GalleryPhoto .v112-compose input{height:42px!important;min-height:42px!important}
+ .ff128-nav{width:32px;height:38px;font-size:24px}.ff128-prev{left:2px}.ff128-next{right:2px}
+}
+@media(max-height:480px) and (max-width:760px){#ff117Photo .ff117-panel{flex-basis:130px!important}#ffV74PhotoViewer.open,#ffV112GalleryPhoto.open{grid-template-rows:36px minmax(0,1fr) 130px!important}#ff117Photo .ff117-by{display:none!important}}
+@media(prefers-reduced-motion:reduce){.ff128-nav{transition:none!important}}
+</style>
+<script id="duarte-v128-photo-lite-js">
+(()=>{'use strict';
+ const $=id=>document.getElementById(id);
+ const views=[['ff117Photo','.ff117-stage'],['ffV74PhotoViewer','.ff-v74-pv-stage']];
+ for(const [id,stageSelector] of views){const modal=$(id),stage=modal?.querySelector(stageSelector);if(!stage)continue;
+  for(const [dir,cls,txt] of [[-1,'ff128-prev','‹'],[1,'ff128-next','›']]){const b=document.createElement('button');b.type='button';b.className='ff128-nav '+cls;b.textContent=txt;b.setAttribute('aria-label',dir<0?'Previous photo':'Next photo');b.hidden=true;b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();step(id,dir)});stage.append(b)}
+  const count=document.createElement('span');count.className='ff128-counter';count.hidden=true;stage.append(count);
+ }
+ let photos=[],index=0,postCard=null;const home=$('ff117Photo'),album=$('ffV74PhotoViewer');
+ function matches(src,a){try{return new URL(src,location.href).href===new URL(a,location.href).href}catch(_){return src===a}}
+ function homeImages(card){return [...card.querySelectorAll('img')].filter(im=>!im.closest('.post-author,.author-avatar,.comment-row,.reaction-wrap,.ff-post-owner-actions')&&im.getAttribute('src')&&im.naturalWidth!==1).map(im=>im.currentSrc||im.src).filter((url,i,list)=>list.findIndex(x=>matches(x,url))===i)}
+ function showControls(id,items,idx){const stage=$(id)?.querySelector(id==='ff117Photo'?'.ff117-stage':'.ff-v74-pv-stage');if(!stage)return;const multi=items.length>1;stage.querySelectorAll('.ff128-nav').forEach(b=>b.hidden=!multi);const c=stage.querySelector('.ff128-counter');if(c){c.hidden=!multi;c.textContent=multi?`${idx+1} / ${items.length}`:''}}
+ function syncHome(){const src=$('ff117Image')?.getAttribute('src');if(!src)return;const card=postCard||[...document.querySelectorAll('.post-card[data-post-id]')].find(c=>homeImages(c).some(u=>matches(u,src)));if(!card)return;postCard=card;photos=homeImages(card);index=Math.max(0,photos.findIndex(x=>matches(x,src)));showControls('ff117Photo',photos,index)}
+ function syncAlbum(){const current=$('ffV74PvImage')?.getAttribute('src');const imgs=[...document.querySelectorAll('#ffAlbumPhotos img[data-v74-photo]')];photos=imgs;index=Math.max(0,imgs.findIndex(im=>matches(im.getAttribute('src'),current)));showControls('ffV74PhotoViewer',photos,index)}
+ function step(id,dir){if(id==='ff117Photo'){if(photos.length<2)return;index=(index+dir+photos.length)%photos.length;const url=photos[index];$('ff117Image').src=url;/* Preserve existing per-photo social identity by invoking the existing image click handler. */const img=[...postCard.querySelectorAll('img')].find(im=>matches(im.currentSrc||im.src,url));if(img){home.classList.remove('open');home.setAttribute('aria-hidden','true');document.documentElement.classList.remove('ff117-lock');document.body.classList.remove('ff117-lock');img.click()}else $('ff117Image').src=url;showControls(id,photos,index)}
+  else if(id==='ffV74PhotoViewer'){if(photos.length<2)return;index=(index+dir+photos.length)%photos.length;photos[index].click();showControls(id,photos,index)}
+ }
+ document.addEventListener('click',e=>{const img=e.target.closest?.('.post-card[data-post-id] img');if(img&&!home?.classList.contains('open')){postCard=img.closest('.post-card');queueMicrotask(()=>{if(home?.classList.contains('open'))syncHome()})}},false);
+ // Open function finishes before mutation observer notification; no Supabase requests added.
+ for(const [id,fn] of [['ff117Photo',syncHome],['ffV74PhotoViewer',syncAlbum]]){const modal=$(id);if(!modal)continue;new MutationObserver(()=>{if(modal.classList.contains('open'))fn();else if(id==='ff117Photo'){postCard=null;photos=[]}}).observe(modal,{attributes:true,attributeFilter:['class']})}
+ document.addEventListener('keydown',e=>{if(e.target.closest?.('input,textarea,[contenteditable]'))return;const id=home?.classList.contains('open')?'ff117Photo':album?.classList.contains('open')?'ffV74PhotoViewer':null;if(!id)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();step(id,e.key==='ArrowLeft'?-1:1)}});
+ for(const [id,selector] of views){const stage=$(id)?.querySelector(selector);if(!stage)continue;let start=null;stage.addEventListener('touchstart',e=>{if(e.touches.length===1)start={x:e.touches[0].clientX,y:e.touches[0].clientY}},{passive:true});stage.addEventListener('touchend',e=>{if(!start||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;start=null;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.6)step(id,dx<0?1:-1)},{passive:true})}
+})();
+</script>
+
 </body>
 </html>
 

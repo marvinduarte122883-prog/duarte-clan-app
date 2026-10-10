@@ -11315,7 +11315,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 <script id="duarte-family-stories-v30b-script">
 (()=>{
- const DURATION=20000;
+ const DURATION=5000;
  let stories=[], viewed=new Set(), me=null, currentIndex=-1, timer=null, ownerViewCount=new Map();
  let paused=false,remaining=DURATION,startedAt=0;
  const $=id=>document.getElementById(id);
@@ -11329,7 +11329,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(music?.getAttribute('src')) duration=30000;
    clearTimer();paused=false;remaining=duration;startedAt=performance.now();
    if(document.hidden)return pause();
-   timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else pause();},duration);
+   timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else close();},duration);
    const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
    if(fill){fill.style.animationDuration=duration+'ms';fill.style.animationPlayState='running'}
  }
@@ -11343,7 +11343,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(!paused||!$('ffStoryViewer')?.classList.contains('open'))return;
    if(remaining<100)remaining=100;
    paused=false;startedAt=performance.now();
-   if(!document.hidden)timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else pause()},remaining);
+   if(!document.hidden)timer=setTimeout(()=>{timer=null;if(currentIndex<stories.length-1)next();else close()},remaining);
    const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
    if(fill)fill.style.animationPlayState='running';
  }
@@ -11417,7 +11417,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const idx=stories.findIndex(s=>s.id===card.dataset.story);
    if(idx<0)return;
    currentIndex=idx;
-   setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(DURATION)},0);
+   setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(stories[idx]?.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION)},0);
  }
  document.addEventListener("click",interceptOpen,true);
  document.addEventListener("duarte:story-music-finished",()=>{if($("ffStoryViewer")?.classList.contains("open") && !paused && currentIndex<stories.length-1)next()});
@@ -16347,7 +16347,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v146';
+ const VERSION='v150';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -16771,67 +16771,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
   #ffStoryViewer .ff-story-progress{left:8px!important;right:8px!important;top:8px!important}
 }
 </style>
-<script id="duarte-story-facebook-lite-v144">
-(()=>{'use strict';
- const $=id=>document.getElementById(id);
- let patchTimer=null, patchPaused=false, patchRemaining=5000, patchStarted=0, currentDuration=5000, currentStoryId='';
- function stop(){ if(patchTimer){ clearTimeout(patchTimer); patchTimer=null; } }
- function progressFill(){ const rows=[...document.querySelectorAll('#ffStoryProgress .ff-story-progress-fill')]; return rows.find(x=>x.classList.contains('running')) || null; }
- function pause(){ if(patchPaused) return; if(patchTimer){ patchRemaining=Math.max(120, patchRemaining-(performance.now()-patchStarted)); } stop(); patchPaused=true; const fill=progressFill(); if(fill) fill.style.animationPlayState='paused'; }
- function resume(){ if(!patchPaused || !$('ffStoryViewer')?.classList.contains('open')) return; patchPaused=false; patchStarted=performance.now(); patchTimer=setTimeout(advance, patchRemaining); const fill=progressFill(); if(fill) fill.style.animationPlayState='running'; }
- function schedule(ms){ stop(); patchPaused=false; currentDuration=ms; patchRemaining=ms; patchStarted=performance.now(); const fill=progressFill(); if(fill){ fill.style.animationDuration=ms+'ms'; fill.style.animationPlayState='running'; }
-   patchTimer=setTimeout(advance, ms);
- }
- function advance(){ stop(); if(!$('ffStoryViewer')?.classList.contains('open')) return; document.getElementById('ffStoryNext')?.click(); setTimeout(()=>{ const running=progressFill(); if(!running){ if($('ffStoryViewer')?.classList.contains('open')) document.getElementById('ffStoryClose')?.click(); } }, 180); }
- function durationForCurrent(){
-   const vid=$('ffV139StoryVideo');
-   if(vid && !vid.hidden && Number.isFinite(vid.duration) && vid.duration>0) return Math.min(60000, Math.max(3000, Math.round(vid.duration*1000)));
-   const hasMusic=!!$('ffStoryMusicAudio')?.getAttribute('src');
-   return hasMusic ? 30000 : 5000;
- }
- function syncSchedule(force=false){
-   if(!$('ffStoryViewer')?.classList.contains('open')) return;
-   const visibleVid=$('ffV139StoryVideo');
-   const storyKey = (($('ffStoryViewImage')?.getAttribute('src')||'')+'|'+($('ffStoryViewName')?.textContent||'')+'|'+(visibleVid && !visibleVid.hidden ? visibleVid.currentSrc||visibleVid.getAttribute('src')||'video':''));
-   const ms=durationForCurrent();
-   if(!force && storyKey===currentStoryId && ms===currentDuration) return;
-   currentStoryId=storyKey; schedule(ms);
- }
- function markExpiredCards(){
-   const now=Date.now();
-   document.querySelectorAll('[data-story-expiry]').forEach(el=>{ const ts=Date.parse(el.getAttribute('data-story-expiry')||''); if(ts && ts<=now) el.remove(); });
-   if(!document.querySelector('#ffStoriesStrip [data-story]')){ const strip=document.getElementById('ffStoriesStrip'); if(strip && !strip.querySelector('.ff-story-empty')) strip.insertAdjacentHTML('beforeend','<div class="ff-story-empty">No active stories yet.</div>'); }
- }
- document.addEventListener('DOMContentLoaded',()=>{
-   markExpiredCards();
-   document.querySelectorAll('#ffStoriesStrip [data-story]').forEach(card=>{ if(!card.hasAttribute('data-story-expiry')){} });
-   $('ffStoryPrev')?.addEventListener('click',e=>{ e.stopPropagation(); setTimeout(()=>syncSchedule(true), 80); }, true);
-   $('ffStoryNext')?.addEventListener('click',e=>{ e.stopPropagation(); setTimeout(()=>syncSchedule(true), 80); }, true);
-   $('ffStoryClose')?.addEventListener('click',()=>{ stop(); patchPaused=false; currentStoryId=''; }, true);
-   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else resume(); });
-   $('ffStoryViewer')?.addEventListener('pointerdown',e=>{ if(!e.target.closest('#ffStoryPrev,#ffStoryNext,#ffStoryClose,#ffStoryDelete')) pause(); }, true);
-   $('ffStoryViewer')?.addEventListener('pointerup',()=>{ resume(); }, true);
-   $('ffStoryViewer')?.addEventListener('pointercancel',()=>{ resume(); }, true);
-   $('ffV139StoryVideo')?.addEventListener('loadedmetadata',()=>syncSchedule(true));
-   $('ffV139StoryVideo')?.addEventListener('play',()=>syncSchedule(true));
-   document.addEventListener('duarte:story-music-finished',()=>{ if($('ffStoryViewer')?.classList.contains('open')) advance(); });
-   const obs=new MutationObserver(()=>{ if($('ffStoryViewer')?.classList.contains('open')) setTimeout(()=>syncSchedule(true), 50); });
-   const prog=$('ffStoryProgress'); if(prog) obs.observe(prog,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
-   const viewer=$('ffStoryViewer'); if(viewer) obs.observe(viewer,{attributes:true,attributeFilter:['class','aria-hidden']});
-   // Stamp expiry metadata on cards whenever stories are rendered.
-   const strip=document.getElementById('ffStoriesStrip');
-   if(strip){ new MutationObserver(()=>{
-      const cards=[...strip.querySelectorAll('[data-story]')];
-      const rows=(window.__ffStoryRowsV30B||[]); const map=new Map(rows.map(x=>[String(x.id), x.expires_at||'']));
-      cards.forEach(card=>{ const exp=map.get(card.dataset.story)||''; if(exp) card.setAttribute('data-story-expiry', exp); });
-      markExpiredCards();
-   }).observe(strip,{childList:true,subtree:true}); }
-   setInterval(markExpiredCards, 60000);
-   // Initial kick if a story is already open.
-   setTimeout(()=>syncSchedule(true), 250);
- });
-})();
-</script>
+
 
 
 <style id="duarte-v145-close-multi-photo-layout">
@@ -16939,52 +16879,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
   #ffStoryViewer #ffStoryMusicPlayback{top:66px!important;left:10px!important;right:10px!important}
 }
 </style>
-<script id="duarte-story-facebook-lite-v148">
-(()=>{'use strict';
- const $=id=>document.getElementById(id);
- let timer=null, startedAt=0, remaining=0, paused=false, key='';
- function stop(){ if(timer){ clearTimeout(timer); timer=null; } }
- function runningFill(){ return document.querySelector('#ffStoryProgress .ff-story-progress-fill.running'); }
- function currentDuration(){
-   const vid=$('ffV139StoryVideo');
-   if(vid && !vid.hidden && Number.isFinite(vid.duration) && vid.duration>0) return Math.min(60000, Math.max(3000, Math.round(vid.duration*1000)));
-   return 5000;
- }
- function schedule(force=false){
-   if(!$('ffStoryViewer')?.classList.contains('open')) return;
-   const vid=$('ffV139StoryVideo');
-   const k = (($('ffStoryViewImage')?.getAttribute('src')||'')+'|'+($('ffStoryViewName')?.textContent||'')+'|'+(vid && !vid.hidden ? (vid.currentSrc||vid.getAttribute('src')||'video') : 'photo'));
-   const duration=currentDuration();
-   if(!force && k===key && remaining>0) return;
-   key=k; stop(); paused=false; remaining=duration; startedAt=performance.now();
-   const fill=runningFill(); if(fill){ fill.style.animationDuration=duration+'ms'; fill.style.animationPlayState='running'; }
-   timer=setTimeout(()=>{ timer=null; document.getElementById('ffStoryNext')?.click(); setTimeout(()=>{ if(!$('ffStoryViewer')?.classList.contains('open')) return; if(document.querySelector('#ffStoryProgress .ff-story-progress-fill.running')) return; document.getElementById('ffStoryClose')?.click(); },160); }, duration);
- }
- function pause(){ if(paused) return; if(timer){ remaining=Math.max(120, remaining-(performance.now()-startedAt)); } stop(); paused=true; const fill=runningFill(); if(fill) fill.style.animationPlayState='paused'; }
- function resume(){ if(!paused || !$('ffStoryViewer')?.classList.contains('open')) return; paused=false; startedAt=performance.now(); const fill=runningFill(); if(fill) fill.style.animationPlayState='running'; timer=setTimeout(()=>{ timer=null; document.getElementById('ffStoryNext')?.click(); }, remaining); }
- function refreshTopLine(){
-   const time=$('ffStoryViewTime'); if(!time) return;
-   const music=$('ffStoryMusicName')?.textContent?.trim();
-   const base=time.getAttribute('data-base') || time.textContent || '';
-   if(!time.getAttribute('data-base')) time.setAttribute('data-base', base);
-   time.textContent = music ? `${base} · ♫ ${music}` : base;
- }
- document.addEventListener('DOMContentLoaded',()=>{
-   $('ffStoryPrev')?.addEventListener('click',()=>setTimeout(()=>schedule(true),90),true);
-   $('ffStoryNext')?.addEventListener('click',()=>setTimeout(()=>schedule(true),90),true);
-   $('ffStoryClose')?.addEventListener('click',()=>{ stop(); key=''; paused=false; },true);
-   $('ffStoryViewer')?.addEventListener('pointerdown',e=>{ if(!e.target.closest('#ffStoryPrev,#ffStoryNext,#ffStoryClose,#ffStoryDelete')) pause(); }, true);
-   $('ffStoryViewer')?.addEventListener('pointerup',()=>resume(), true);
-   $('ffStoryViewer')?.addEventListener('pointercancel',()=>resume(), true);
-   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else resume(); });
-   $('ffV139StoryVideo')?.addEventListener('loadedmetadata',()=>schedule(true));
-   $('ffV139StoryVideo')?.addEventListener('play',()=>schedule(true));
-   const obs=new MutationObserver(()=>{ if($('ffStoryViewer')?.classList.contains('open')){ refreshTopLine(); setTimeout(()=>schedule(true),60); } });
-   ['ffStoryViewer','ffStoryProgress','ffStoryViewName','ffStoryViewTime','ffStoryMusicName'].forEach(id=>{ const el=$(id); if(el) obs.observe(el,{attributes:true,childList:true,subtree:true,characterData:true}); });
-   setTimeout(()=>{ refreshTopLine(); schedule(true); }, 250);
- });
-})();
-</script>
+
 
 
 <style id="duarte-v149-story-video-preview-fix">

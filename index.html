@@ -11139,6 +11139,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    /* Opening a story is a user gesture: attempt sound immediately where permitted. */
    if(state.music.get(s.id)?.music_url) void toggleMusic();
    $("ffStoryViewer").classList.add("open");$("ffStoryViewer").setAttribute("aria-hidden","false");
+   window.ffDuarteStorySocialV71?.selectStory?.(s.id,s.user_id);
  }
  function closeStory(){window.ffV139StopStoryVideo?.();stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
  function openComposer(){document.body.classList.add("ff-story-composing-mobile");$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
@@ -11422,6 +11423,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      const viewer=$("ffStoryViewer");if(viewer){viewer.classList.add("open");viewer.setAttribute("aria-hidden","false")}
      if($("ffStoryViewImage"))$("ffStoryViewImage").src=s.video_url?"":(s.photo_url||"");window.ffV139SetStoryMedia?.(s);
      if($("ffStoryViewCaption"))window.ffV124PositionCaption?.(s.caption||"");
+     window.ffDuarteStorySocialV71?.selectStory?.(s.id,s.user_id);
    }
    progress();recordView(s);refreshOwnerCount(s);
    scheduleAdvance(s.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION);
@@ -17330,6 +17332,20 @@ html.ff-v154-profile-active #profileManager.show {
 .ff-v42-collage[data-layout="columns"]>.ff-v42-photo:nth-child(n+4),.ff-v42-collage[data-layout="frame"]>.ff-v42-photo:nth-child(n+4){display:none}
 @media(max-width:600px){#createPostBox .ff-v41-photo-preview[data-layout="columns"],#createPostBox .ff-v41-photo-preview[data-layout="frame"]{grid-template-rows:repeat(2,110px)}#createPostBox .ff-v41-photo-preview .ff-v41-preview-item{height:110px}.ff-v42-collage[data-layout="columns"],.ff-v42-collage[data-layout="frame"]{grid-template-rows:repeat(2,minmax(90px,1fr))!important}}
 </style>
+
+<!-- V162: Persistent Story actions across next/previous stories, mobile and desktop. -->
+<style id="duarte-v162-story-actions-persist">
+#ffStoryViewer.open .ff-story-view #ffStorySocialV68{
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  pointer-events:auto!important;z-index:250!important;
+}
+#ffStoryViewer.open .ff-story-view #ffStorySocialV68 .ff-story-reply-wrap-v70{
+  display:flex!important;min-width:0!important;flex:1 1 auto!important;
+}
+#ffStoryViewer.open .ff-story-view #ffStorySocialV68 .ff-v121-like{
+  display:inline-flex!important;visibility:visible!important;opacity:1!important;
+}
+</style>
 </body>
 </html>
 
@@ -17832,20 +17848,30 @@ html.ff-v154-profile-active #profileManager.show {
 (()=>{
  const $=id=>document.getElementById(id), sb=()=>((typeof supabaseClient!=="undefined"&&supabaseClient?.auth)?supabaseClient:null);
  const REACTIONS=[['like','👍'],['love','❤️'],['care','🥰'],['haha','😆'],['wow','😮'],['sad','😢'],['angry','😡']];
- let storyId=null,storyOwner=null,me=null,myReaction=null,rows=[],profileName="Duarte member",busy=false,sending=false;
+ let storyId=null,storyOwner=null,me=null,myReaction=null,rows=[],profileName="Duarte member",busy=false,sending=false,storyEpoch=0;
  function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
  function emoji(k){return REACTIONS.find(x=>x[0]===k)?.[1]||'👍'}
- function ensure(){const view=document.querySelector("#ffStoryViewer .ff-story-view");if(!view)return null;let bar=$("ffStorySocialV68");if(!bar){bar=document.createElement("div");bar.id="ffStorySocialV68";bar.className="ff-story-social-v68";bar.innerHTML='<div class="ff-story-reply-wrap-v70"><input id="ffStoryReplyV70" class="ff-story-reply-v70" type="text" maxlength="1000" autocomplete="off" placeholder="Send message…" aria-label="Send message"><button type="button" id="ffStorySendV70" class="ff-story-send-v70">Send</button></div><div class="ff-story-reactions-v71"><button type="button" class="ff-v121-like" aria-expanded="false" aria-label="Choose a story reaction">👍 Like</button>'+REACTIONS.map(([k,e])=>`<button type="button" class="ff-story-react-v71" data-reaction="${k}" aria-label="${k}">${e}</button>`).join('')+'</div>';view.appendChild(bar);const summary=document.createElement('button');summary.type='button';summary.id='ffStoryReactionSummaryV71';summary.className='ff-story-reaction-summary-v71';summary.style.display='none';view.appendChild(summary);summary.addEventListener('click',showReactors);bar.querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',()=>setReaction(b.dataset.reaction)));const input=$("ffStoryReplyV70");input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendReply()}});["click","pointerdown","touchstart"].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()))}return bar}
+ function ensure(){const view=document.querySelector("#ffStoryViewer .ff-story-view");if(!view)return null;let bar=$("ffStorySocialV68");if(bar&&bar.parentElement!==view)view.appendChild(bar);if(!bar){bar=document.createElement("div");bar.id="ffStorySocialV68";bar.className="ff-story-social-v68";bar.innerHTML='<div class="ff-story-reply-wrap-v70"><input id="ffStoryReplyV70" class="ff-story-reply-v70" type="text" maxlength="1000" autocomplete="off" placeholder="Send message…" aria-label="Send message"><button type="button" id="ffStorySendV70" class="ff-story-send-v70">Send</button></div><div class="ff-story-reactions-v71"><button type="button" class="ff-v121-like" aria-expanded="false" aria-label="Choose a story reaction">👍 Like</button>'+REACTIONS.map(([k,e])=>`<button type="button" class="ff-story-react-v71" data-reaction="${k}" aria-label="${k}">${e}</button>`).join('')+'</div>';view.appendChild(bar);const summary=document.createElement('button');summary.type='button';summary.id='ffStoryReactionSummaryV71';summary.className='ff-story-reaction-summary-v71';summary.style.display='none';view.appendChild(summary);summary.addEventListener('click',showReactors);bar.querySelectorAll('[data-reaction]').forEach(b=>b.addEventListener('click',()=>setReaction(b.dataset.reaction)));const input=$("ffStoryReplyV70");input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendReply()}});["click","pointerdown","touchstart"].forEach(t=>bar.addEventListener(t,e=>e.stopPropagation()))}return bar}
  async function getMe(){if(me)return me;const c=sb();if(!c)return null;const r=await c.auth.getSession();me=r?.data?.session?.user||null;return me}
- async function sync(){const c=sb(),bar=ensure();if(!c||!bar||!storyId)return;await getMe();bar.classList.toggle("owner",!!me&&me.id===storyOwner);const input=$("ffStoryReplyV70");if(input)input.placeholder="Send message…";try{let q=await c.from("family_story_likes").select("user_id,reaction,created_at").eq("story_id",storyId);if(q.error&&String(q.error.message||'').toLowerCase().includes('reaction'))q=await c.from("family_story_likes").select("user_id,created_at").eq("story_id",storyId);if(q.error)throw q.error;rows=(q.data||[]).map(x=>({...x,reaction:x.reaction||'like'}));myReaction=me?(rows.find(x=>x.user_id===me.id)?.reaction||null):null;render()}catch(e){console.warn("Story reactions unavailable:",e)}}
+ async function sync(){const c=sb(),bar=ensure();if(!bar||!storyId)return;const epoch=storyEpoch,activeStory=storyId;if(!c)return;await getMe();if(epoch!==storyEpoch)return;bar.classList.toggle("owner",!!me&&me.id===storyOwner);const input=$("ffStoryReplyV70");if(input)input.placeholder="Send message…";try{let q=await c.from("family_story_likes").select("user_id,reaction,created_at").eq("story_id",storyId);if(q.error&&String(q.error.message||'').toLowerCase().includes('reaction'))q=await c.from("family_story_likes").select("user_id,created_at").eq("story_id",storyId);if(q.error)throw q.error;if(epoch!==storyEpoch||activeStory!==storyId)return;rows=(q.data||[]).map(x=>({...x,reaction:x.reaction||'like'}));myReaction=me?(rows.find(x=>x.user_id===me.id)?.reaction||null):null;render()}catch(e){console.warn("Story reactions unavailable:",e)}}
  function render(){document.querySelectorAll('#ffStorySocialV68 [data-reaction]').forEach(b=>b.classList.toggle('selected',b.dataset.reaction===myReaction));const sum=$("ffStoryReactionSummaryV71");if(!sum)return;if(!rows.length){sum.style.display='none';return}const unique=[...new Set(rows.map(x=>emoji(x.reaction)))].slice(0,3).join('');sum.textContent=`${unique} ${rows.length}`;sum.style.display='block'}
  async function setReaction(kind){if(busy||!storyId)return;const c=sb(),u=await getMe();if(!c||!u){alert("Please sign in to react to this story.");return}busy=true;try{if(myReaction===kind){const r=await c.from("family_story_likes").delete().eq("story_id",storyId).eq("user_id",u.id);if(r.error)throw r.error;rows=rows.filter(x=>x.user_id!==u.id);myReaction=null}else{const payload={story_id:storyId,user_id:u.id,reaction:kind};let r=await c.from("family_story_likes").upsert(payload,{onConflict:"story_id,user_id"});if(r.error)throw r.error;const old=rows.find(x=>x.user_id===u.id);if(old)old.reaction=kind;else rows.push({user_id:u.id,reaction:kind,created_at:new Date().toISOString()});myReaction=kind}render()}catch(err){alert("Story reaction could not be saved: "+(err.message||err)+"\n\nRun the included V71 SQL setup once in Supabase if needed.")}finally{busy=false}}
  async function sendReply(){if(sending)return;const input=$("ffStoryReplyV70"),content=input?.value.trim();if(!content||!storyOwner)return;const c=sb(),u=await getMe();if(!c||!u){alert("Please sign in to send a message.");return}if(u.id===storyOwner)return;sending=true;try{const chat=await c.rpc("start_duarte_private_chat",{p_other_user:storyOwner});if(chat.error)throw chat.error;const conversationId=Number(chat.data);const r=await c.from("messages").insert({conversation_id:conversationId,sender_id:u.id,content});if(r.error)throw r.error;input.value="";input.placeholder="Sent ✓";setTimeout(()=>{if(input)input.placeholder="Send message…"},1200)}catch(err){alert("Message could not be sent: "+(err.message||err))}finally{sending=false}}
  async function showReactors(){const c=sb();if(!c||!storyId)return;const modal=$("ffStoryLikersV68"),list=$("ffStoryLikersListV68");modal.classList.add("open");modal.setAttribute("aria-hidden","false");list.innerHTML='<div style="padding:22px;color:#aaa;text-align:center">Loading…</div>';try{await sync();const ids=rows.map(x=>x.user_id);let profiles={};if(ids.length){const p=await c.from("profiles").select("id,full_name,avatar_url,photo_url,profile_photo_url").in("id",ids);if(p.error)throw p.error;(p.data||[]).forEach(x=>profiles[x.id]=x)}list.innerHTML=ids.length?rows.map(r=>{const p=profiles[r.user_id]||{},n=p.full_name||"Duarte member",a=p.avatar_url||p.photo_url||p.profile_photo_url||"";return `<div class="ff-story-liker-v68">${a?`<img src="${esc(a)}" alt="">`:`<span class="ff-story-liker-avatar-v68">${esc(n.charAt(0).toUpperCase())}</span>`}<strong>${esc(n)}</strong><span class="rx">${emoji(r.reaction)}</span></div>`}).join(""):'<div style="padding:22px;color:#aaa;text-align:center">No reactions yet.</div>'}catch(_){list.innerHTML='<div style="padding:22px;color:#f0a0a0;text-align:center">Reactions could not be loaded.</div>'}}
- async function selectStory(id){storyId=id||null;if(!storyId)return;const c=sb();try{const r=await c.from("family_stories").select("id,user_id").eq("id",storyId).maybeSingle();storyOwner=r.data?.user_id||null;profileName=$("ffStoryViewName")?.textContent||"Duarte member";setTimeout(sync,30)}catch(_){}}
+ async function selectStory(id,owner){
+   if(!id)return;
+   storyId=id;storyOwner=owner||null;storyEpoch++;const epoch=storyEpoch;
+   rows=[];myReaction=null;
+   const bar=ensure();if(bar){bar.style.removeProperty("display");bar.classList.remove("owner");bar.querySelector(".ff-story-reactions-v71")?.classList.remove("ff-v121-open");const inp=$("ffStoryReplyV70");if(inp){inp.value="";inp.placeholder="Send message…";}}
+   const summary=$("ffStoryReactionSummaryV71");if(summary)summary.style.display="none";
+   if(!owner){const c=sb();if(c)try{const r=await c.from("family_stories").select("id,user_id").eq("id",id).maybeSingle();if(epoch!==storyEpoch)return;storyOwner=r.data?.user_id||null}catch(_){}}
+   if(epoch!==storyEpoch)return;
+   profileName=$("ffStoryViewName")?.textContent||"Duarte member";
+   await sync();
+ }
  document.addEventListener("click",e=>{const card=e.target.closest?.("[data-story]");if(card)selectStory(card.dataset.story)},true);
  document.addEventListener("DOMContentLoaded",()=>{ensure();$("ffStoryLikersCloseV68")?.addEventListener("click",()=>$("ffStoryLikersV68").classList.remove("open"));$("ffStoryLikersV68")?.addEventListener("click",e=>{if(e.target===$("ffStoryLikersV68"))e.currentTarget.classList.remove("open")})});
- window.ffDuarteStorySocialV71={refresh:sync,showReactors};
+ window.ffDuarteStorySocialV71={refresh:sync,showReactors,selectStory};
 })();
 </script>
 

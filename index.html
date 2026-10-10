@@ -3975,7 +3975,7 @@ function renderPostCard(post, profile) {
 
             ${post.image_url ? `
                 <img src="${escapeHTML(post.image_url)}"
-                     alt="Duarte Clan post image"
+                     alt="Duarte Clan post image" loading="lazy" decoding="async"
                      style="width:100%;max-height:520px;object-fit:contain;border-radius:12px;margin-bottom:15px;background:#101010;">
             ` : ""}
 
@@ -10049,7 +10049,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v45.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v46.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -14872,7 +14872,7 @@ function cleanup(){const oldRoom=directRoom;directRoom=null;if(oldRoom){oldRoom.
 function subscribeSignals(){if(!call||signalChannel)return;signalChannel=S().channel('duarte-call-signal-'+call.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'duarte_call_signals',filter:'call_id=eq.'+call.id},p=>processSignal(p.new).catch(console.warn)).subscribe()}
 function startSignalPolling(){clearInterval(signalPoll);signalPoll=setInterval(async()=>{if(!call)return;try{let q=S().from('duarte_call_signals').select('*').eq('call_id',call.id).eq('to_user',uid()).order('id',{ascending:true});if(lastSignalId)q=q.gt('id',lastSignalId);const r=await q.limit(50);if(!r.error)for(const x of r.data||[])await processSignal(x)}catch(e){console.warn('call signal poll',e)}},1200)}
 async function checkIncoming(){if(call||!uid())return;try{const r=await S().from('duarte_calls').select('*').eq('callee_id',uid()).eq('status','ringing').order('created_at',{ascending:false}).limit(1).maybeSingle();if(r.data&&!call){let name='Clan member';try{const q=await S().from('profiles').select('full_name').eq('id',r.data.caller_id).maybeSingle();if(q.data?.full_name)name=q.data.full_name}catch{}incoming(r.data,name)}}catch(e){console.warn('incoming call check',e)}}
-async function boot(){if(booted){buttons();return true}const sb=S(),me=uid();if(!sb||!me)return false;booted=true;buttons();window.ffStartAudioCall=()=>start('audio');window.ffStartVideoCall=()=>start('video');const ab=document.getElementById('ffAudioCallBtn'),vb=document.getElementById('ffVideoCallBtn');if(ab)ab.onclick=e=>{e.preventDefault();e.stopPropagation();start('audio')};if(vb)vb.onclick=e=>{e.preventDefault();e.stopPropagation();start('video')};document.addEventListener('click',e=>{const a=e.target.closest?.('#ffAudioCallBtn'),v=e.target.closest?.('#ffVideoCallBtn');if(a){e.preventDefault();e.stopPropagation();start('audio')}else if(v){e.preventDefault();e.stopPropagation();start('video')}},true);callChannel=sb.channel('duarte-calls-'+me).on('postgres_changes',{event:'INSERT',schema:'public',table:'duarte_calls',filter:'callee_id=eq.'+me},p=>{if(!call&&p.new.status==='ringing')checkIncoming()}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duarte_calls'},p=>{if(call&&p.new.id===call.id){call.status=p.new.status;if(['declined','ended','missed','cancelled','canceled','rejected','unavailable','busy'].includes(p.new.status))cleanup();else if(p.new.status==='accepted'){window.duarteCallRingtone?.stop();const st=document.getElementById('ffCallState');if(st)st.textContent=directRoom?(directRoom.remoteParticipants.size?'Media connected':'Waiting for member…'):(pc?.connectionState==='connected'?'Media connected':'Connecting media…')}}}).subscribe();incomingPoll=setInterval(checkIncoming,4000);setInterval(buttons,700);checkIncoming();return true}
+async function boot(){if(booted){buttons();return true}const sb=S(),me=uid();if(!sb||!me)return false;booted=true;buttons();window.ffStartAudioCall=()=>start('audio');window.ffStartVideoCall=()=>start('video');const ab=document.getElementById('ffAudioCallBtn'),vb=document.getElementById('ffVideoCallBtn');if(ab)ab.onclick=e=>{e.preventDefault();e.stopPropagation();start('audio')};if(vb)vb.onclick=e=>{e.preventDefault();e.stopPropagation();start('video')};document.addEventListener('click',e=>{const a=e.target.closest?.('#ffAudioCallBtn'),v=e.target.closest?.('#ffVideoCallBtn');if(a){e.preventDefault();e.stopPropagation();start('audio')}else if(v){e.preventDefault();e.stopPropagation();start('video')}},true);callChannel=sb.channel('duarte-calls-'+me).on('postgres_changes',{event:'INSERT',schema:'public',table:'duarte_calls',filter:'callee_id=eq.'+me},p=>{if(!call&&p.new.status==='ringing')checkIncoming()}).on('postgres_changes',{event:'UPDATE',schema:'public',table:'duarte_calls'},p=>{if(call&&p.new.id===call.id){call.status=p.new.status;if(['declined','ended','missed','cancelled','canceled','rejected','unavailable','busy'].includes(p.new.status))cleanup();else if(p.new.status==='accepted'){window.duarteCallRingtone?.stop();const st=document.getElementById('ffCallState');if(st)st.textContent=directRoom?(directRoom.remoteParticipants.size?'Media connected':'Waiting for member…'):(pc?.connectionState==='connected'?'Media connected':'Connecting media…')}}}).subscribe();incomingPoll=setInterval(checkIncoming,4000);setInterval(()=>{if(!document.hidden)buttons()},2500);checkIncoming();return true}
 // V110: independent status check; Realtime can be delayed on mobile connections.
 let v110StatusBusy=false;
 setInterval(async()=>{
@@ -16264,6 +16264,18 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
   window.addEventListener('load',()=>{const source=document.getElementById('createPostProfileAvatar'); if(source) mo.observe(source,{childList:true,subtree:true,characterData:true});});
 })();
 </script>
+
+<style id="duarte-v131-lite-performance">
+/* Reduce feed rendering cost; maintain native scroll and accessible content. */
+@media(max-width:760px){
+ #postsContainer .post-card{content-visibility:auto;contain-intrinsic-size:auto 480px;}
+ #postsContainer img{max-width:100%;}
+ .ff-story-card img,.post-card img{image-rendering:auto;}
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+ .post-card,.ff-story-card{transition:none!important;animation:none!important;}
+}
+</style>
 </body>
 </html>
 

@@ -352,6 +352,13 @@ body {
 }
 </style>
 <style id="ff124-welcome-style">.ff124-welcome-settings{background:#1b1b1b;border:1px solid #46403a;border-radius:12px;padding:17px;margin:12px 14px 18px;color:#f5f5f5}.ff124-welcome-settings h3{font-size:17px;margin:0 0 9px;color:#f0d477}.ff124-welcome-settings p{font-size:13px;line-height:1.55;color:#c6c6c6;margin:6px 0 12px}.ff124-welcome-settings label{display:block;font-size:13px;margin:12px 0 6px}.ff124-welcome-settings textarea{display:block;width:100%;max-width:100%;box-sizing:border-box;min-height:120px;padding:12px;background:#111;color:#fff;border:1px solid #555;border-radius:9px;font:inherit;font-size:14px;line-height:1.5;resize:vertical}.ff124-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.ff124-actions button{border:1px solid #957c37;background:#2b281e;color:#fff;border-radius:8px;padding:11px 15px;font:inherit;font-size:13px;cursor:pointer}.ff124-actions button:last-child{background:#ab8b2d;color:#111;font-weight:700}.ff124-actions button:disabled{opacity:.55;cursor:wait}.ff124-preview{margin-top:12px;border:1px dashed #807451;padding:12px;border-radius:9px;white-space:pre-wrap;line-height:1.5;font-size:14px}.ff124-welcome-settings #ff124WelcomeStatus{min-height:18px;font-size:12px}.ff-admin-dash-shell .ff124-welcome-settings{flex-shrink:0}@media(max-width:600px){.ff124-welcome-settings{margin:10px 8px;padding:12px}.ff124-actions button{flex:1 1 130px}}</style>
+<style id="v166-admin-style">
+#v166AdminCard .v166-help{padding:12px 18px;color:#b0b3b8;font-size:13px;line-height:1.5}
+#v166AdminCard button:disabled{opacity:.4;cursor:not-allowed}
+#v166AdminCard .member-info{min-width:0}
+#v166AdminCard .member-info h4{overflow-wrap:anywhere}
+@media(max-width:750px){#v166AdminCard .member{display:flex;flex-wrap:wrap;gap:9px}#v166AdminCard .actions{width:100%;justify-content:flex-end}#v166AdminCard .actions button{min-height:42px}}
+</style>
 </head>
 
 <body>
@@ -463,6 +470,13 @@ body {
   <textarea id="ff124WelcomeText" rows="5" maxlength="1500" placeholder="Welcome to Duarte Clan, {name}!" spellcheck="true"></textarea>
   <div class="ff124-actions"><button type="button" onclick="ff124PreviewWelcome()">Preview</button><button type="button" onclick="ff124SaveWelcome()" id="ff124SaveBtn">Save Welcome Message</button></div>
   <div id="ff124WelcomePreview" class="ff124-preview" hidden></div><p id="ff124WelcomeStatus" role="status" aria-live="polite"></p>
+</section>
+
+<!-- V166: Admin role management -->
+<section class="card" id="v166AdminCard" aria-label="Administrator Management">
+  <div class="card-header"><h3>🛡️ Administrator Management</h3><button class="refresh" type="button" onclick="loadMembers()">↻ Refresh</button></div>
+  <div class="v166-help">Promote approved members or remove admin access. Changes are confirmed and recorded. The final administrator cannot be removed.</div>
+  <div id="v166AdminList" aria-live="polite"><div class="loading">Loading administrators…</div></div>
 </section>
     <!-- PENDING MEMBERS -->
 
@@ -704,6 +718,7 @@ async function loadMembers() {
         }
 
         const members = data || [];
+        v166RenderAdmins(members, user.id);
 
         /* V60: Rejected is a terminal membership-request state. A rejected
            profile stays unapproved for access control, but must never be shown
@@ -894,6 +909,53 @@ function renderApproved(members) {
 
 }
 
+
+
+/* V166 Role management: all changes go through an authenticated database RPC. */
+let v166Busy = false;
+function v166RenderAdmins(members, currentId) {
+    const target = document.getElementById('v166AdminList');
+    if (!target) return;
+    const approved = (members || []).filter(m => m.approved === true);
+    approved.sort((a,b) => Number(Boolean(b.is_admin)) - Number(Boolean(a.is_admin)) ||
+        String(a.full_name || '').localeCompare(String(b.full_name || '')));
+    if (!approved.length) { target.innerHTML = '<div class="empty">No approved members.</div>'; return; }
+    target.innerHTML = '';
+    approved.forEach(m => {
+        const row = document.createElement('div'); row.className = 'member';
+        const avatar = document.createElement('div'); avatar.className = 'member-avatar';
+        avatar.textContent = getInitials(m.full_name); row.appendChild(avatar);
+        const info = document.createElement('div'); info.className = 'member-info';
+        const name = document.createElement('h4'); name.textContent = m.full_name || 'Clan member';
+        const note = document.createElement('p'); note.textContent = m.is_admin ? 'Administrator' : 'Approved member';
+        info.append(name,note); row.appendChild(info);
+        const controls = document.createElement('div'); controls.className = 'actions';
+        const btn = document.createElement('button'); btn.type = 'button';
+        btn.className = m.is_admin ? 'reject' : 'approve';
+        btn.textContent = m.is_admin ? 'REMOVE ADMIN' : 'PROMOTE TO ADMIN';
+        btn.disabled = m.id === currentId || v166Busy;
+        if (m.id === currentId) btn.title = 'You cannot remove or change your own administrator access here.';
+        btn.addEventListener('click', () => v166SetAdmin(m.id, m.full_name || 'this member', !Boolean(m.is_admin)));
+        controls.appendChild(btn); row.appendChild(controls); target.appendChild(row);
+    });
+}
+async function v166SetAdmin(id,name,makeAdmin) {
+    if (v166Busy) return;
+    if (!confirm((makeAdmin ? 'Promote ' : 'Remove administrator access from ') + name + (makeAdmin ? ' to Administrator?' : '?'))) return;
+    v166Busy = true;
+    const card = document.getElementById('v166AdminCard');
+    card?.querySelectorAll('button').forEach(b => b.disabled = true);
+    try {
+        const {data,error} = await supabaseClient.rpc('duarte_set_member_admin', {p_member_id:id,p_make_admin:makeAdmin});
+        if (error) throw error;
+        showMessage(makeAdmin ? 'Administrator access granted.' : 'Administrator access removed.', 'success');
+    } catch(e) {
+        showMessage('Admin change failed: ' + (e.message || String(e)) + '. Check V166 SQL installation and permissions.', 'error');
+    } finally {
+        v166Busy = false;
+        await loadMembers();
+    }
+}
 
 /* APPROVE */
 

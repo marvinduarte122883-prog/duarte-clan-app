@@ -8147,46 +8147,50 @@ window.openMemberProfileById=openClanProfile;
 .ff-v41-collage img{width:100%;height:100%;min-height:180px;max-height:320px;object-fit:cover;display:block}
 </style>
 <script id="duarte-rich-composer-v41-js">
-(function(){
- let files=[];
- function composer(){
-   const cp=document.querySelector(".create-post"); if(!cp)return null;
-   let input=cp.querySelector('input[type="file"]');
-   if(!input){
-     input=document.createElement("input");input.type="file";input.accept="image/jpeg,image/png,image/webp";input.multiple=true;input.hidden=true;input.id="ffV41MultiPhoto";
-     cp.appendChild(input);
-   } else {input.multiple=true;input.accept="image/jpeg,image/png,image/webp"}
-   let preview=cp.querySelector(".ff-v41-photo-preview");
-   if(!preview){preview=document.createElement("div");preview.className="ff-v41-photo-preview";cp.appendChild(preview)}
-   let note=cp.querySelector(".ff-v41-note");if(!note){note=document.createElement("div");note.className="ff-v41-note";note.textContent="You can select up to 4 photos.";cp.appendChild(note)}
-   input.onchange=()=>{files=[...(input.files||[])].slice(0,4);draw(preview,note)};
-   const photoBtns=[...cp.querySelectorAll("button,.post-action")].filter(b=>/photo|image/i.test(b.textContent||""));
-   photoBtns.forEach(b=>{if(b.dataset.v41)return;b.dataset.v41="1";b.addEventListener("click",e=>{if(input){e.preventDefault();input.click()}},true)});
-   return {cp,input,preview,note};
+(()=>{'use strict';
+ const LIMIT=12;let files=[],urls=[],layout='classic',input=null,preview=null,note=null,chooser=null;
+ const cssLayout=()=>layout;
+ function setup(){
+  const cp=document.getElementById('createPostBox');if(!cp)return;
+  input=document.getElementById('photoInput');if(!input)return;
+  input.multiple=true;input.accept='image/jpeg,image/png,image/webp';
+  preview=cp.querySelector('.ff-v41-photo-preview');if(!preview){preview=document.createElement('div');preview.className='ff-v41-photo-preview';cp.appendChild(preview)}
+  note=cp.querySelector('.ff-v41-note');if(!note){note=document.createElement('div');note.className='ff-v41-note';cp.appendChild(note)}
+  chooser=cp.querySelector('.ff-v161-layout-chooser');if(!chooser){
+   chooser=document.createElement('section');chooser.className='ff-v161-layout-chooser';chooser.setAttribute('aria-label','Choose photo layout');
+   chooser.innerHTML='<div class="ff-v161-layout-head"><strong>Choose a layout</strong><small>Tap a style to preview your photos</small></div><div class="ff-v161-layout-tabs"><button type="button" data-layout="classic">▦ Classic</button><button type="button" data-layout="columns">▥ Columns</button><button type="button" data-layout="frame">▣ Frame</button></div>';
+   preview.insertAdjacentElement('beforebegin',chooser);
+   chooser.addEventListener('click',e=>{const b=e.target.closest('[data-layout]');if(!b)return;layout=b.dataset.layout;draw()});
+  }
+  // Existing photoSelected handler remains in place; update the selected file list after it runs.
+  if(!input.dataset.v161){input.dataset.v161='1';input.addEventListener('change',()=>{
+   const incoming=[...input.files].filter(f=>f.type.startsWith('image/'));
+   if(incoming.length>LIMIT)alert('Up to '+LIMIT+' photos per post. Only the first '+LIMIT+' were selected.');
+   files=incoming.slice(0,LIMIT);draw();
+   // The older single-photo preview must not overlay the multi-photo grid.
+   if(files.length>1){const old=document.getElementById('postPhotoPreviewWrap');if(old)old.style.display='none';}
+  });}
+  draw();
  }
- function draw(preview,note){
-   preview.innerHTML="";
-   files.forEach((f,i)=>{
-     const d=document.createElement("div");d.className="ff-v41-preview-item";
-     const img=document.createElement("img");img.src=URL.createObjectURL(f);img.onload=()=>URL.revokeObjectURL(img.src);
-     const x=document.createElement("button");x.type="button";x.className="ff-v41-preview-remove";x.textContent="×";x.onclick=()=>{files.splice(i,1);draw(preview,note)};
-     d.append(img,x);preview.appendChild(d);
-   });
-   preview.classList.toggle("show",files.length>0);note.classList.toggle("show",files.length>0);
+ function draw(){if(!preview||!chooser||!note)return;
+  urls.forEach(u=>URL.revokeObjectURL(u));urls=[];preview.replaceChildren();
+  preview.dataset.layout=layout;
+  const shown=files.slice(0,layout==='classic'?4:3);
+  shown.forEach((f,i)=>{
+    const item=document.createElement('div');item.className='ff-v41-preview-item';
+    const img=document.createElement('img');const u=URL.createObjectURL(f);urls.push(u);img.src=u;img.alt='Selected photo '+(i+1);img.decoding='async';
+    const remove=document.createElement('button');remove.type='button';remove.className='ff-v41-preview-remove';remove.textContent='×';remove.setAttribute('aria-label','Remove photo '+(i+1));remove.onclick=()=>{files.splice(i,1);draw()};
+    item.append(img,remove);
+    if(i===shown.length-1&&files.length>shown.length){const more=document.createElement('span');more.className='ff-v161-more';more.textContent='+'+(files.length-shown.length);item.append(more)}
+    preview.append(item);
+  });
+  preview.classList.toggle('show',files.length>0);document.getElementById('createPostBox')?.classList.toggle('ff-v161-multi',files.length>1);
+  chooser.hidden=files.length<2;
+  chooser.querySelectorAll('[data-layout]').forEach(b=>{b.classList.toggle('active',b.dataset.layout===layout);b.setAttribute('aria-pressed',String(b.dataset.layout===layout))});
+  note.textContent=files.length?files.length+' of '+LIMIT+' photos selected · add more using the photo button':'';note.classList.toggle('show',files.length>0);
  }
- function enhancePostImages(){
-   document.querySelectorAll(".post-card").forEach(card=>{
-     if(card.dataset.v41imgs)return;card.dataset.v41imgs="1";
-     const imgs=[...card.querySelectorAll("img.post-image,.post-image img")];
-     if(imgs.length>1){
-       const col=document.createElement("div");col.className="ff-v41-collage";col.dataset.count=Math.min(imgs.length,4);
-       const first=imgs[0];first.parentNode.insertBefore(col,first);
-       imgs.slice(0,4).forEach(i=>col.appendChild(i));
-     }
-   });
- }
- document.addEventListener("DOMContentLoaded",()=>{composer();enhancePostImages();new MutationObserver(()=>{composer();enhancePostImages()}).observe(document.querySelector(".create-post")?.parentElement,{childList:true,subtree:true})});
- window.ffRichComposerV41={getFiles:()=>files.slice(),clear:()=>{files=[];const c=composer();if(c){c.input.value="";draw(c.preview,c.note)}}};
+ window.ffRichComposerV41={getFiles:()=>files.slice(),getLayout:()=>layout,clear:()=>{files=[];layout='classic';if(input)input.value='';draw()},setFiles:incoming=>{setup();files=[...incoming].filter(f=>f.type.startsWith('image/')).slice(0,LIMIT);draw()}};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
 </script>
 
@@ -8212,7 +8216,7 @@ window.openMemberProfileById=openClanProfile;
    const files=api?.getFiles?.()||[];
    if(files.length<2)return [];
    const rows=[];
-   for(let i=0;i<Math.min(files.length,4);i++){
+   for(let i=0;i<Math.min(files.length,12);i++){
      const f=await window.ffStorageSaverImage(files[i],"feed"), ext=(f.name.split(".").pop()||"jpg").toLowerCase();
      const path=`${currentUser.id}/posts/${postId}/${Date.now()}-${i}.${ext}`;
      const up=await supabaseClient.storage.from(BUCKET).upload(path,f,{upsert:false,contentType:f.type||"image/jpeg"});
@@ -8224,6 +8228,11 @@ window.openMemberProfileById=openClanProfile;
    }
    const ins=await supabaseClient.from("post_photos").insert(rows);
    if(ins.error)throw ins.error;
+   const chosen=window.ffRichComposerV41?.getLayout?.()||'classic';
+   if(chosen!=='classic'){
+     const saved=await supabaseClient.from('posts').update({photo_layout:chosen}).eq('id',postId);
+     if(saved.error)console.warn('Photo layout needs V161 SQL migration:',saved.error.message);
+   }
    return rows;
  }
  async function loadForCards(){
@@ -8233,14 +8242,18 @@ window.openMemberProfileById=openClanProfile;
    const q=await supabaseClient.from("post_photos").select("id,post_id,image_url,sort_order").in("post_id",ids).order("sort_order",{ascending:true});
    if(q.error){ if(!/post_photos/i.test(q.error.message||""))console.warn(q.error); return; }
    const by={};(q.data||[]).forEach(x=>(by[x.post_id]??=[]).push(x));
+   let layoutBy={};const lm=await supabaseClient.from('posts').select('id,photo_layout').in('id',ids);
+   if(!lm.error)(lm.data||[]).forEach(x=>layoutBy[x.id]=x.photo_layout||'classic');
    cards.forEach(card=>{
      const arr=by[Number(card.dataset.postId)]||[]; if(arr.length<2||card.querySelector(".ff-v42-collage"))return;
      card.querySelectorAll(".post-image").forEach(x=>x.remove());
-     const col=document.createElement("div");col.className="ff-v42-collage";col.dataset.count=Math.min(arr.length,4);
-     arr.slice(0,4).forEach((p,i)=>{
+     const col=document.createElement("div");col.className="ff-v42-collage";col.dataset.count=Math.min(arr.length,4);col.dataset.layout=layoutBy[Number(card.dataset.postId)]||"classic";
+     arr.slice(0,Math.min(arr.length,4)).forEach((p,i)=>{
        const d=document.createElement("div");d.className="ff-v42-photo";
        const im=document.createElement("img");im.src=p.image_url;im.alt="Post photo";im.loading="lazy";im.decoding="async";
-       d.appendChild(im);d.onclick=()=>{if(typeof window.openPhotoViewer==="function")openPhotoViewer(p.image_url);else window.open(p.image_url,"_blank")};
+       d.appendChild(im);
+       if(i===(col.dataset.layout==='classic'?3:2)&&arr.length>(col.dataset.layout==='classic'?4:3)){const more=document.createElement('span');more.className='ff-v42-more';more.textContent='+'+(arr.length-(col.dataset.layout==='classic'?4:3));d.appendChild(more)}
+       d.onclick=()=>{if(typeof window.openPhotoViewer==="function")openPhotoViewer(p.image_url);else window.open(p.image_url,"_blank")};
        col.appendChild(d);
      });
      const text=card.querySelector(".post-text,.post-content"); if(text)text.insertAdjacentElement("afterend",col);else card.appendChild(col);
@@ -16715,14 +16728,14 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
    const files=[...(picker.files||[])];if(!files.length)return;
    const videos=files.filter(f=>f.type.startsWith('video/'));
    if(videos.length){
-     if(files.length!==1){alert('Choose one video at a time, or up to four photos.');return}
+     if(files.length!==1){alert('Choose one video at a time, or up to twelve photos.');return}
      const target=document.getElementById('ff135VideoInput');if(!target)return;
      try{const dt=new DataTransfer();dt.items.add(files[0]);target.files=dt.files;target.dispatchEvent(new Event('change',{bubbles:true}));}
      catch(e){alert('This device could not select the video. Please try a different browser.');}
    }else{
-     if(files.length>4){alert('You can select up to four photos.');return}
+     if(files.length>12){alert('You can select up to twelve photos.');return}
      const target=document.getElementById('photoInput');if(!target)return;
-     try{const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));target.files=dt.files;target.dispatchEvent(new Event('change',{bubbles:true}));window.ff135ClearVideo?.();window.ffV130SyncComposer?.();}
+     try{const dt=new DataTransfer();files.forEach(f=>dt.items.add(f));target.files=dt.files;target.dispatchEvent(new Event('change',{bubbles:true}));window.ffRichComposerV41?.setFiles?.(files);window.ff135ClearVideo?.();window.ffV130SyncComposer?.();}
      catch(e){alert('Photo selection is not supported on this browser.');}
    }
  });
@@ -17296,6 +17309,26 @@ html.ff-v154-profile-active #profileManager.show {
 #ffStoriesStrip .ff-story-card.ff-v155-playing .ff-v153-video-mark{display:none!important}
 #ffStoriesStrip .ff-story-card .ff-story-shade{z-index:1!important;pointer-events:none!important}
 #ffStoriesStrip .ff-story-card .ff-story-avatar,#ffStoriesStrip .ff-story-card .ff-story-name{z-index:3!important}
+</style>
+
+<style id="duarte-v161-photo-layouts">
+#createPostBox.ff-v161-multi #postPhotoPreviewWrap{display:none!important}
+#createPostBox .ff-v161-layout-chooser{margin:12px 0 4px;padding:12px;border:1px solid #d8dfe8;border-radius:14px;background:#f8fafc;color:#222!important}
+#createPostBox .ff-v161-layout-chooser[hidden]{display:none!important}
+.ff-v161-layout-head{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:space-between;align-items:center;font-size:14px}.ff-v161-layout-head small{font-size:11px;color:#64748b}
+.ff-v161-layout-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px}.ff-v161-layout-tabs button{min-width:0;padding:12px 4px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#283747;cursor:pointer;font-weight:600;font-size:12px;touch-action:manipulation}.ff-v161-layout-tabs button.active{border:2px solid #1877f2;background:#eaf3ff;color:#0865d3}
+#createPostBox .ff-v41-photo-preview{max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;max-height:390px;overflow:hidden}
+#createPostBox .ff-v41-photo-preview[data-layout="columns"]{grid-template-columns:1.25fr 1fr;grid-template-rows:repeat(2,145px)}
+#createPostBox .ff-v41-photo-preview[data-layout="columns"]>.ff-v41-preview-item:first-child{grid-row:1/3}
+#createPostBox .ff-v41-photo-preview[data-layout="frame"]{grid-template-columns:1.4fr 1fr;grid-template-rows:repeat(2,145px)}
+#createPostBox .ff-v41-photo-preview[data-layout="frame"]>.ff-v41-preview-item:first-child{grid-row:1/3}
+#createPostBox .ff-v41-photo-preview .ff-v41-preview-item{min-height:0;aspect-ratio:auto;height:145px}
+#createPostBox .ff-v41-photo-preview[data-layout="columns"]>.ff-v41-preview-item:first-child,#createPostBox .ff-v41-photo-preview[data-layout="frame"]>.ff-v41-preview-item:first-child{height:auto}
+.ff-v161-more{position:absolute;inset:0;display:grid;place-items:center;color:white;background:#0008;font-size:27px;font-weight:800;pointer-events:none}
+.ff-v42-collage[data-layout="columns"],.ff-v42-collage[data-layout="frame"]{grid-template-columns:1.4fr 1fr!important;grid-template-rows:repeat(2,minmax(120px,1fr))!important;max-height:450px}
+.ff-v42-collage[data-layout="columns"]>.ff-v42-photo:first-child,.ff-v42-collage[data-layout="frame"]>.ff-v42-photo:first-child{grid-row:1/3!important}
+.ff-v42-collage[data-layout="columns"]>.ff-v42-photo:nth-child(n+4),.ff-v42-collage[data-layout="frame"]>.ff-v42-photo:nth-child(n+4){display:none}
+@media(max-width:600px){#createPostBox .ff-v41-photo-preview[data-layout="columns"],#createPostBox .ff-v41-photo-preview[data-layout="frame"]{grid-template-rows:repeat(2,110px)}#createPostBox .ff-v41-photo-preview .ff-v41-preview-item{height:110px}.ff-v42-collage[data-layout="columns"],.ff-v42-collage[data-layout="frame"]{grid-template-rows:repeat(2,minmax(90px,1fr))!important}}
 </style>
 </body>
 </html>

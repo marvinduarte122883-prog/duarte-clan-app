@@ -6599,13 +6599,24 @@ async function openClanProfile(userId){
     document.body.style.overflow='hidden';
   }
   try{
-    // V129: all four independent reads start together to reduce profile loading latency.
-    const [{data:profile,error},{data:posts,error:postsError},{data:photos,error:photosError},{data:directory,error:directoryError}]=await Promise.all([
-      supabaseClient.from('profiles').select('id,full_name,avatar_url,clan_role,approved,birthday').eq('id',userId).maybeSingle(),
-      supabaseClient.from('posts').select('id,user_id,content,image_url,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(60),
-      supabaseClient.from('gallery').select('id,image_url,caption,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(40),
-      supabaseClient.from('directory_profiles').select('city,occupation,family_branch,phone,email,show_phone,show_email,show_location,show_occupation').eq('user_id',userId).maybeSingle()
+    // V164: profile identity is required; posts, photos and directory are optional.
+    // Never hold the full-screen profile in a loading state because an optional
+    // Supabase request stalls (common in Android WebView / weak connectivity).
+    const ffV164Timed=(promise,ms,label)=>Promise.race([
+      Promise.resolve(promise),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error(label+' request timed out')),ms))
     ]);
+    const [identityResult,postsResult,photosResult,directoryResult]=await Promise.allSettled([
+      ffV164Timed(supabaseClient.from('profiles').select('id,full_name,avatar_url,clan_role,approved,birthday').eq('id',userId).maybeSingle(),10000,'Profile'),
+      ffV164Timed(supabaseClient.from('posts').select('id,user_id,content,image_url,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(60),6500,'Posts'),
+      ffV164Timed(supabaseClient.from('gallery').select('id,image_url,caption,created_at').eq('user_id',userId).order('created_at',{ascending:false}).limit(40),6500,'Gallery'),
+      ffV164Timed(supabaseClient.from('directory_profiles').select('city,occupation,family_branch,phone,email,show_phone,show_email,show_location,show_occupation').eq('user_id',userId).maybeSingle(),6500,'Directory')
+    ]);
+    const unpack=(r)=>r.status==='fulfilled'?r.value:{data:null,error:r.reason};
+    const {data:profile,error}=unpack(identityResult);
+    const {data:posts,error:postsError}=unpack(postsResult);
+    const {data:photos,error:photosError}=unpack(photosResult);
+    const {data:directory,error:directoryError}=unpack(directoryResult);
     if(request!==ffV128ProfileRequest)return;
     if(error)throw error;
     if(!profile)throw new Error('Clan member profile was not found.');
@@ -6693,8 +6704,10 @@ async function openClanProfile(userId){
   }catch(err){
     if(request!==ffV128ProfileRequest)return;
     console.error('Open clan profile:',err);
-    document.getElementById('ffFullPosts').innerHTML='<div class="ff-profile-empty">Profile could not be loaded. Please try again.</div>';
-    alert('Profile could not be opened: '+(err?.message||err));
+    document.getElementById('ffFullTopName').textContent='Profile unavailable';
+    document.getElementById('ffFullName').textContent='Profile unavailable';
+    document.getElementById('ffFullPosts').innerHTML='<div class="ff-profile-empty">Profile could not be loaded. Check your connection and try again. <button type="button" id="ffV164RetryProfile">Retry</button></div>';
+    document.getElementById('ffV164RetryProfile')?.addEventListener('click',()=>openClanProfile(userId));
   }
 }
 window.openMemberProfile=openClanProfile;

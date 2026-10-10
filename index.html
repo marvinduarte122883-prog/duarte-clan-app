@@ -2066,9 +2066,12 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 <style id="duarte-v122-choice-dialog-style">
 #duarteV122Overlay{position:fixed;inset:0;z-index:2147483001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:16px}
 #duarteV122Overlay.open{display:flex}
-#duarteV122Dialog{width:min(430px,100%);background:#202124;color:#f8f8f8;border:1px solid #42464e;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.4);padding:23px 20px 17px;font:15px/1.5 Arial,sans-serif;max-height:88dvh;overflow:auto}
+#duarteV122Dialog{width:min(560px,100%);background:#202124;color:#f8f8f8;border:1px solid #42464e;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.4);padding:23px 20px 17px;font:15px/1.5 Arial,sans-serif;max-height:88dvh;overflow:auto}
 #duarteV122Message{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:15px}
 #duarteV122Input{display:none;width:100%;padding:12px;border:1px solid #5a616c;background:#15171a;color:#fff;border-radius:8px;font:inherit;min-width:0;margin-bottom:14px}
+#duarteV122PostInput{display:none;width:100%;box-sizing:border-box;min-width:0;min-height:126px;max-height:min(52dvh,420px);overflow-y:auto;resize:vertical;padding:13px 14px;border:1px solid #5a616c;background:#15171a;color:#fff;border-radius:9px;font:400 16px/1.5 Arial,Helvetica,sans-serif;overflow-wrap:anywhere;white-space:pre-wrap;margin-bottom:14px;overscroll-behavior:contain}
+#duarteV122PostInput:focus{outline:2px solid #b38e34;outline-offset:1px}
+@media(max-width:600px){#duarteV122Dialog{width:min(96vw,560px);padding:16px 14px;max-height:calc(100dvh - 24px)}#duarteV122PostInput{min-height:140px;max-height:45dvh}#duarteV122Actions button{min-height:44px}}
 #duarteV122Actions{display:flex;gap:9px;justify-content:flex-end}
 #duarteV122Actions button{padding:10px 18px;border:0;border-radius:22px;font-weight:700;cursor:pointer;min-width:74px}
 #duarteV122Cancel{background:#35383e;color:white}#duarteV122Ok{background:#087fd7;color:white}
@@ -2080,24 +2083,33 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
  function choose(question,mode,initial){
   const job=()=>new Promise(resolve=>{
    const overlay=document.createElement('div');overlay.id='duarteV122Overlay';overlay.className='open';
-   overlay.innerHTML='<div id="duarteV122Dialog" role="dialog" aria-modal="true" aria-label="Duarte Clan confirmation"><div id="duarteV122Message"></div><input id="duarteV122Input" type="text" autocomplete="off"><div id="duarteV122Actions"><button id="duarteV122Cancel" type="button">Cancel</button><button id="duarteV122Ok" type="button">OK</button></div></div>';
+   overlay.innerHTML='<div id="duarteV122Dialog" role="dialog" aria-modal="true" aria-label="Duarte Clan confirmation"><div id="duarteV122Message"></div><input id="duarteV122Input" type="text" autocomplete="off"><textarea id="duarteV122PostInput" aria-label="Edit post content" rows="5"></textarea><div id="duarteV122Actions"><button id="duarteV122Cancel" type="button">Cancel</button><button id="duarteV122Ok" type="button">OK</button></div></div>';
    document.body.appendChild(overlay);
    const input=overlay.querySelector('#duarteV122Input');
+   const postInput=overlay.querySelector('#duarteV122PostInput');
+   const isPost=mode==='post';
+   const field=isPost?postInput:input;
    overlay.querySelector('#duarteV122Message').textContent=String(question??'');
-   if(mode==='prompt'){input.style.display='block';input.value=String(initial??'');}
+   if(mode==='prompt'||isPost){field.style.display='block';field.value=String(initial??'');}
+   if(isPost){
+     const resize=()=>{postInput.style.height='auto';postInput.style.height=Math.min(Math.max(postInput.scrollHeight,126),Math.min(window.innerHeight*.52,420))+'px'};
+     postInput.addEventListener('input',resize,{passive:true});
+     requestAnimationFrame(resize);
+   }
    const previous=document.activeElement;
    let finished=false;
-   function finish(ok){if(finished)return;finished=true;document.removeEventListener('keydown',keyboard,true);overlay.remove();if(previous?.isConnected&&typeof previous.focus==='function')previous.focus();resolve(mode==='prompt'?(ok?input.value:null):ok)}
-   function keyboard(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish(false)}else if(e.key==='Enter'&&(mode!=='prompt'||document.activeElement===input)){e.preventDefault();e.stopPropagation();finish(true)}}
+   function finish(ok){if(finished)return;finished=true;document.removeEventListener('keydown',keyboard,true);overlay.remove();if(previous?.isConnected&&typeof previous.focus==='function')previous.focus();resolve((mode==='prompt'||isPost)?(ok?field.value:null):ok)}
+   function keyboard(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();finish(false)}else if(isPost&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();e.stopPropagation();finish(true)}else if(e.key==='Enter'&&!isPost&&(mode!=='prompt'||document.activeElement===input)){e.preventDefault();e.stopPropagation();finish(true)}}
    document.addEventListener('keydown',keyboard,true);
    overlay.querySelector('#duarteV122Cancel').addEventListener('click',()=>finish(false));
    overlay.querySelector('#duarteV122Ok').addEventListener('click',()=>finish(true));
-   (mode==='prompt'?input:overlay.querySelector('#duarteV122Ok')).focus();
+   ((mode==='prompt'||isPost)?field:overlay.querySelector('#duarteV122Ok')).focus();
   });
   const result=chain.then(job,job);chain=result.then(()=>{},()=>{});return result;
  }
  window.duarteConfirm=(text)=>choose(text,'confirm');
  window.duartePrompt=(text,initial='')=>choose(text,'prompt',initial);
+ window.duartePostPrompt=(text,initial='')=>choose(text,'post',initial);
 })();
 </script>
 
@@ -4155,7 +4167,7 @@ async function editPost(postId) {
             return;
         }
 
-        const updated = await window.duartePrompt("Edit your post:", post.content || "");
+        const updated = await window.duartePostPrompt("Edit your post:", post.content || "");
         if (updated === null) return;
         const content = updated.trim();
         if (!content) {

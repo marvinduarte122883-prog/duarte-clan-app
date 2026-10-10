@@ -2166,6 +2166,18 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 @media(prefers-reduced-motion:reduce){#createPostBox *{transition:none!important;animation:none!important}}
 </style>
 
+
+<style id="duarte-v130-readable-member-cards">
+/* Leave a dedicated full-width name line before action buttons. */
+#membersGrid .clan-member-card{display:flex!important;flex-wrap:wrap!important;align-content:center!important;gap:8px 11px!important;min-width:0!important;height:auto!important;min-height:112px!important;padding:12px!important;box-sizing:border-box!important;overflow:hidden!important;transform:none!important}
+#membersGrid .clan-member-card > .member-avatar{flex:0 0 52px!important;width:52px!important;height:52px!important;min-width:52px!important}
+#membersGrid .clan-member-card > div:not(.member-avatar):not(.ff-v31-member-actions){flex:1 1 calc(100% - 70px)!important;min-width:0!important;max-width:calc(100% - 70px)!important}
+#membersGrid .member-name{font-size:clamp(13px,1.15vw,16px)!important;line-height:1.28!important;font-weight:700!important;white-space:normal!important;overflow-wrap:anywhere!important;overflow:visible!important;text-overflow:clip!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+#membersGrid .ff-v31-member-actions{position:static!important;flex:0 0 100%!important;width:100%!important;margin:0!important;display:flex!important;flex-direction:row!important;justify-content:flex-end!important;gap:8px!important}
+#membersGrid .ff-v31-member-actions button{flex:1 1 0!important;min-width:0!important;min-height:36px!important;padding:6px 8px!important;font-size:12px!important;line-height:1.15!important;white-space:normal!important}
+@media(max-width:760px){#membersGrid .member-name{font-size:15px!important}#membersGrid .clan-member-card{min-height:109px!important}}
+@media(max-width:380px){#membersGrid .member-name{font-size:14px!important}#membersGrid .clan-member-card{padding:10px!important}}
+</style>
 </head>
 
 
@@ -11983,13 +11995,16 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    for(const s of sels){const e=document.querySelector(s);if(e){e.click();return true}}
    return false;
  }
- function openPost(id,commentId){
+ async function openPost(id,commentId){
    if(!id)return false;
-   clickSel(["[data-section='home']","[data-target='home']"]);
+   if(typeof showSection==='function')showSection('home');
+   if(typeof loadPosts==='function')await loadPosts();
    const p=document.querySelector(`[data-post-id="${CSS.escape(String(id))}"],#post-${CSS.escape(String(id))}`);
    if(p){
-     p.scrollIntoView({behavior:"smooth",block:"start"});
-     if(commentId) setTimeout(()=>p.querySelector("[data-action='comment'],.comment-button")?.click(),250);
+     p.scrollIntoView({behavior:'auto',block:'center'});
+     p.classList.add('ff-notification-target');
+     setTimeout(()=>p.classList.remove('ff-notification-target'),2200);
+     if(commentId && typeof openFacebookComments==='function')openFacebookComments(Number(id));
      return true;
    }
    try{if(typeof window.openPostDetails==="function"){window.openPostDetails(id,commentId);return true}}catch(_){}
@@ -12039,9 +12054,14 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
    if(/message|messenger|chat/.test(type)||convId)return openConversation(convId,userId);
    if(/event|rsvp/.test(type)||eventId)return openEvent(eventId);
-   if(userId)return openProfile(userId);
-   if(/story/.test(type)||storyId)return openStory(storyId);
-   if(/post|comment|reply|reaction|like|photo|share/.test(type)||postId)return openPost(postId,commentId);
+   // Content IDs take precedence over the actor's profile ID.
+   if(/story/.test(type)&&storyId)return openStory(storyId);
+   if(postId)return openPost(postId,commentId);
+   if(eventId)return openEvent(eventId);
+   if(storyId)return openStory(storyId);
+   if(/profile|member|birthday|relationship|friend/.test(type)&&userId)return openProfile(userId);
+   // No subject ID: do not incorrectly open the actor's profile.
+   return false;
    return false;
  }
 
@@ -12078,8 +12098,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(e.target.closest(".ff-v31s-back,.ff-v31s-read"))return;
    const row=e.target.closest("[data-notification-id],.notification-item,.notification-row");
    if(!row)return;
-   const routed=await fromElement(row);
-   if(routed){e.preventDefault();e.stopImmediatePropagation()}
+   // Block the cloned row's click forwarding before asynchronous database work.
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   try { await fromElement(row); } catch(err) { console.warn("Notification route failed",err); }
  },true);
 
  window.ffDuarteNotificationDeepLinkV31T={route,fromElement};
@@ -16403,6 +16424,21 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 })();
 </script>
 
+
+<style id="duarte-v129-readable-member-cards">
+/* Readable names, separate action row: same lightweight layout on desktop and mobile. */
+#membersGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}
+#membersGrid .clan-member-card{display:grid!important;grid-template-columns:54px minmax(0,1fr);grid-template-rows:auto auto;align-items:center!important;column-gap:11px;row-gap:10px;min-width:0;min-height:0;padding:13px!important;overflow:hidden}
+#membersGrid .member-avatar{grid-column:1;grid-row:1;width:54px;height:54px;min-width:54px;margin:0}
+#membersGrid .clan-member-card > div:nth-child(2){grid-column:2;grid-row:1;min-width:0;width:100%;align-self:center}
+#membersGrid .member-name{font-size:clamp(13px,1.2vw,16px)!important;line-height:1.32!important;font-weight:700;white-space:normal!important;overflow-wrap:anywhere;text-overflow:clip!important;overflow:visible!important;display:block;max-width:100%}
+#membersGrid .clan-member-card p{font-size:11px;line-height:1.35;white-space:normal;overflow-wrap:anywhere}
+#membersGrid .ff-v31-member-actions{grid-column:1/-1;grid-row:2;position:static!important;display:flex!important;flex-direction:row!important;align-items:stretch;justify-content:stretch;width:100%;margin:0!important;gap:8px;min-width:0}
+#membersGrid .ff-v31-member-actions button{flex:1 1 0;min-width:0;min-height:36px;height:auto;padding:7px 8px!important;font-size:12px!important;line-height:1.2;white-space:normal;overflow-wrap:normal;text-align:center}
+#membersGrid .clan-member-card > .ff-member-message{grid-column:1/-1;grid-row:2;min-width:0}
+@media(max-width:760px){#membersGrid{grid-template-columns:1fr!important}#membersGrid .clan-member-card{padding:12px!important}#membersGrid .member-name{font-size:15px!important}}
+@media(max-width:360px){#membersGrid .clan-member-card{grid-template-columns:46px minmax(0,1fr)}#membersGrid .member-avatar{width:46px;height:46px;min-width:46px}}
+</style>
 </body>
 </html>
 

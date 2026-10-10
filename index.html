@@ -9936,27 +9936,22 @@ img{max-width:100%}
    return nativeSetInterval(wrapped,delay,...args);
  };
 
- function tuneImages(root=document){
-   root.querySelectorAll?.("img").forEach(img=>{
-     if(!img.loading)img.loading="lazy";
-     img.decoding="async";
-     img.draggable=false;
-   });
+ function tuneImages(root){
+   const visit=el=>{
+     if(el.nodeType!==1)return;
+     const imgs=el.matches?.('img')?[el]:el.querySelectorAll?.('img')||[];
+     for(const img of imgs){if(!img.loading)img.loading='lazy';img.decoding='async';img.draggable=false;}
+     const buttons=el.matches?.('button:not([type])')?[el]:el.querySelectorAll?.('button:not([type])')||[];
+     for(const b of buttons)b.type='button';
+   };
+   visit(root);
  }
- function tuneInteractive(root=document){
-   root.querySelectorAll?.("button:not([type])").forEach(b=>b.type="button");
- }
- let queued=false;
- function schedule(){
-   if(queued)return;queued=true;
-   requestAnimationFrame(()=>{queued=false;tuneImages();tuneInteractive()});
- }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});else schedule();
-
- // One scoped observer for final lightweight attributes only.
- // It is debounced to one animation frame and does not rewrite app content.
- const appRoot=document.querySelector("main,.page,#app")||document.body;
- new MutationObserver(schedule).observe(appRoot,{childList:true,subtree:true});
+ let pendingRoots=new Set(),queued=false;
+ function flush(){queued=false;const roots=[...pendingRoots];pendingRoots.clear();for(const root of roots)tuneImages(root)}
+ function schedule(root){if(root?.nodeType===1)pendingRoots.add(root);if(queued)return;queued=true;requestAnimationFrame(flush)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>schedule(document.body),{once:true});else schedule(document.body);
+ const appRoot=document.querySelector('main,.page,#app')||document.body;
+ new MutationObserver(records=>{for(const record of records){for(const n of record.addedNodes)if(n.nodeType===1)schedule(n)}}).observe(appRoot,{childList:true,subtree:true});
 })();
 </script>
 
@@ -16862,6 +16857,12 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 }
 </style>
 
+<style id="ff-v147-lite-mobile-css">
+@media(max-width:760px){
+ #ffCommentModal .comment-item{content-visibility:auto;contain-intrinsic-size:auto 80px}
+ .post-card:not(:has(:focus-within)){contain:layout style}
+}
+</style>
 </body>
 </html>
 
@@ -18387,14 +18388,15 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
    $('ffV142Share')?.addEventListener('click',()=>{ if(typeof sharePost==='function') sharePost(); });
    $('ffV142Save')?.addEventListener('click',()=>{ const k=saveKey(selected()); const on=localStorage.getItem(k)==='1'; localStorage.setItem(k, on?'0':'1'); updateSaveButton(); });
    $('ffV142Like')?.addEventListener('click', async ()=>{ const like=source.querySelector('.reaction-choice[title="Like"]'); if(like && typeof chooseReaction==='function'){ await chooseReaction({stopPropagation(){},preventDefault(){}}, like, 'like'); await refresh(); }});
-   await refresh();
+   const comments=$('ffV142Comments');if(comments)comments.textContent='Loading comments…';
+   requestAnimationFrame(()=>{requestAnimationFrame(()=>{if(selected()===Number(postId))void refresh();});});
  };
  window.sendModalComment = async function(){
    const input=$('ffModalCommentInput'), content=input?.value.trim(), postId=selected();
    if(!content || !postId || pending) return;
    if(!currentUser?.id) return alert('Sign in to comment.');
    pending=true; const btn=$('ffV142Send'); if(btn) btn.disabled=true;
-   try{ const r=await supabaseClient.from('comments').insert({post_id:postId,user_id:currentUser.id,content,parent_comment_id:null}); if(r.error) throw r.error; input.value=''; const slot=$('ffV142Selected'); if(slot) slot.textContent=''; const picker=$('ffV142MediaInput'); if(picker) picker.value=''; await refresh(); const pane=$('ffCommentBody'); if(pane) pane.scrollTop=pane.scrollHeight; }
+   try{ const r=await supabaseClient.from('comments').insert({post_id:postId,user_id:currentUser.id,content,parent_comment_id:null}); if(r.error) throw r.error; input.value=''; const slot=$('ffV142Selected'); if(slot) slot.textContent=''; const picker=$('ffV142MediaInput'); if(picker) picker.value=''; await refresh(); const pane=$('ffCommentBody'); if(pane) requestAnimationFrame(()=>{pane.scrollTop=pane.scrollHeight;}); }
    catch(e){ alert('Comment could not be sent: '+(e.message||e)); }
    finally{ pending=false; if(btn) btn.disabled=false; }
  };

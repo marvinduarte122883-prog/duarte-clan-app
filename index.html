@@ -11323,21 +11323,32 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
  function currentStory(){return currentIndex>=0?stories[currentIndex]:null}
  function clearTimer(){if(timer){clearTimeout(timer);timer=null}}
+ function runningFill(){return document.querySelector('#ffStoryProgress .ff-story-progress-fill.running')}
+ function advanceIfOpen(){
+   if(!$('ffStoryViewer')?.classList.contains('open'))return;
+   if(currentIndex<stories.length-1)next();else close();
+ }
  function scheduleAdvance(duration=DURATION){
-   // Manual Story navigation. Never automatically move away from a photo/video.
-   clearTimer();paused=true;remaining=duration;
-   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
-   if(fill){fill.classList.remove('running');fill.classList.add('manual');fill.style.animation='none';fill.style.width='100%'}
+   clearTimer();paused=false;remaining=duration;startedAt=performance.now();
+   const fill=runningFill();
+   if(fill){fill.classList.remove('manual');fill.style.animation='none';fill.style.width='0%';void fill.offsetWidth;fill.style.animation='ffStoryProgressV30B '+duration+'ms linear forwards';fill.style.animationPlayState='running'}
+   // For videos, the media element's ended event is the source of truth.
+   if(currentStory()?.video_url)return;
+   if(document.hidden){pause();return}
+   timer=setTimeout(advanceIfOpen,duration);
  }
-
  function pause(){
-   if(!paused&&timer)remaining=Math.max(0,remaining-(performance.now()-startedAt));
+   if(paused)return;
+   if(timer)remaining=Math.max(100,remaining-(performance.now()-startedAt));
    clearTimer();paused=true;
-   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
-   if(fill)fill.style.animationPlayState='paused';
+   const fill=runningFill();if(fill)fill.style.animationPlayState='paused';
  }
- function resume(){ /* No auto-advance in manual viewing mode. */ }
-
+ function resume(){
+   if(!paused||!$('ffStoryViewer')?.classList.contains('open')||document.hidden)return;
+   paused=false;startedAt=performance.now();
+   if(!currentStory()?.video_url)timer=setTimeout(advanceIfOpen,remaining);
+   const fill=runningFill();if(fill)fill.style.animationPlayState='running';
+ }
  function progress(){
    const host=$("ffStoryProgress");if(!host)return;
    host.innerHTML=stories.map((_,i)=>`<span class="ff-story-progress-track"><span class="ff-story-progress-fill ${i<currentIndex?"done":i===currentIndex?"running":""}"></span></span>`).join("");
@@ -11400,7 +11411,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    progress();recordView(s);refreshOwnerCount(s);
    scheduleAdvance(s.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION);
  }
- function next(){if(!stories.length)return;if(currentIndex>=stories.length-1){pause();return}show(currentIndex+1)}
+ function next(){if(!stories.length)return;if(currentIndex>=stories.length-1){close();return}show(currentIndex+1)}
  function prev(){if(!stories.length)return;show(Math.max(0,currentIndex-1))}
  function close(){window.ffV139StopStoryVideo?.();clearTimer();paused=false;$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
  function interceptOpen(e){
@@ -11411,7 +11422,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(stories[idx]?.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION)},0);
  }
  document.addEventListener("click",interceptOpen,true);
- // Music ending does not advance a Story; member chooses Next or Previous.
+ // Auto-advance is controlled by the single V30B timer and video ended event.
  document.addEventListener("DOMContentLoaded",()=>{
    loadViewState();
    $("ffStoryPrev")?.addEventListener("click",e=>{e.stopPropagation();prev()});
@@ -11426,6 +11437,17 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      if(!$("ffStoryViewer")?.classList.contains("open"))return;
      if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key==="Escape")close();
    });
+   const storyVideo=$('ffV139StoryVideo');
+   storyVideo?.addEventListener('ended',()=>{if(currentStory()?.video_url)advanceIfOpen()});
+   storyVideo?.addEventListener('loadedmetadata',()=>{
+     if(!currentStory()?.video_url)return;
+     const duration=Number(storyVideo.duration);
+     if(Number.isFinite(duration)&&duration>0){
+       const fill=runningFill();if(fill){fill.style.animation='none';fill.style.width='0%';void fill.offsetWidth;fill.style.animation='ffStoryProgressV30B '+Math.round(duration*1000)+'ms linear forwards'}
+     }
+   });
+   storyVideo?.addEventListener('pause',()=>{if(currentStory()?.video_url){const f=runningFill();if(f)f.style.animationPlayState='paused'}});
+   storyVideo?.addEventListener('playing',()=>{if(currentStory()?.video_url){const f=runningFill();if(f)f.style.animationPlayState='running'}});
    window.addEventListener("online",loadViewState);
  });
  window.ffDuarteStoriesV30B={reload:loadViewState,next,prev,pause,resume};
@@ -16338,7 +16360,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v155';
+ const VERSION='v157';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -17233,6 +17255,69 @@ html.ff-v154-profile-active #profileManager.show {
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
+
+
+<style id="duarte-v156-autogrow-post-style">
+/* Allow the Home composer to grow naturally on all screen sizes. */
+#createPostBox #postInput,
+#createPostBox.create-post:has(+ #ffStories) #postInput {
+  min-height:42px!important;
+  max-height:min(45dvh,360px)!important;
+  line-height:22px!important;
+  overflow-y:hidden!important;
+  resize:none!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  align-self:stretch!important;
+  box-sizing:border-box!important;
+}
+#createPostBox .post-top{align-items:start!important;min-width:0!important}
+@media(max-width:700px){
+ #createPostBox #postInput,
+ #createPostBox.create-post:has(+ #ffStories) #postInput {
+   min-height:40px!important;
+   max-height:min(40dvh,280px)!important;
+   line-height:20px!important;
+ }
+}
+</style>
+<script id="duarte-v156-autogrow-post-js">
+(()=>{'use strict';
+ const field=document.getElementById('postInput'); if(!field)return;
+ let queued=false;
+ function resize(){
+  queued=false;
+  const mobile=window.matchMedia('(max-width:700px)').matches;
+  const min=mobile?40:42;
+  const max=Math.max(min,Math.min(window.innerHeight*(mobile ? 0.40 : 0.45),mobile?280:360));
+  field.style.setProperty('height',min+'px','important');
+  const height=Math.min(max,Math.max(min,field.scrollHeight));
+  field.style.setProperty('height',height+'px','important');
+  field.style.setProperty('overflow-y',field.scrollHeight>max+1?'auto':'hidden','important');
+ }
+ function schedule(){if(queued)return; queued=true;requestAnimationFrame(resize)}
+ field.addEventListener('input',schedule,{passive:true});
+ field.addEventListener('change',schedule,{passive:true});
+ field.addEventListener('focus',schedule,{passive:true});
+ window.addEventListener('resize',schedule,{passive:true});
+ window.addEventListener('pageshow',schedule,{passive:true});
+ document.addEventListener('duarte:posts-changed',schedule);
+ schedule();
+})();
+</script>
+
+
+<style id="duarte-v157-story-slideshow-style">
+#ffStoryProgress .ff-story-progress-fill.running{width:0!important}
+#ffStoryProgress .ff-story-progress-fill.done{animation:none!important;width:100%!important}
+#ffStoryViewer .ff-story-view{background:#000!important}
+#ffStoryViewer #ffStoryViewImage,#ffStoryViewer #ffV139StoryVideo{object-fit:contain!important}
+#ffStoryViewer .ff-story-progress{z-index:300!important}
+#ffStoryViewer .ff-story-view-head{z-index:301!important}
+#ffStoryViewer .ff-story-nav{z-index:302!important}
+#ffStoryViewer #ffStorySocialV68{z-index:305!important}
+@media(max-width:700px){#ffStoryViewer .ff-story-view{width:100%!important;max-height:100dvh!important;height:100dvh!important;border-radius:0!important}}
+</style>
 
 </body>
 </html>

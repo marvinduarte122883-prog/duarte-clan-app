@@ -16838,6 +16838,30 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 })();
 </script>
 
+
+<style id="duarte-v145-close-multi-photo-layout">
+/* Two portrait photos sit next to each other rather than centering
+   independently inside oversized grid columns. No cropping. */
+#ffCommentModal .ff-v142-grid:has(> img:nth-child(2):last-child){
+ display:flex!important;flex-wrap:nowrap!important;justify-content:center!important;
+ align-items:flex-start!important;gap:4px!important;width:100%!important;
+ max-width:100%!important;margin:0 auto!important;padding:0!important;
+ overflow:hidden!important;background:#fff!important;
+}
+#ffCommentModal .ff-v142-grid:has(> img:nth-child(2):last-child)>img{
+ display:block!important;flex:0 1 auto!important;
+ width:auto!important;height:auto!important;max-height:55dvh!important;
+ max-width:calc(50% - 2px)!important;min-width:0!important;
+ object-fit:contain!important;object-position:center top!important;
+ margin:0!important;padding:0!important;background:#fff!important;
+}
+@media(max-width:760px){
+ #ffCommentModal .ff-v142-grid:has(> img:nth-child(2):last-child)>img{
+  max-height:42dvh!important;max-width:calc(50% - 2px)!important;
+ }
+}
+</style>
+
 </body>
 </html>
 

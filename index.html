@@ -17754,3 +17754,32 @@ if(typeof originalAlbumToggle==='function'){
  const observer=new MutationObserver(()=>{if(!root.classList.contains('open'))reset();});observer.observe(root,{attributes:true,attributeFilter:['class']});
 })();
 </script>
+
+<!-- V134: Reliable album-only previous/next photo controls, initialized after album view -->
+<style id="duarte-v134-album-nav-style">
+#ffV74PhotoViewer .ff-v74-pv-stage{position:relative!important}
+#ffV74PhotoViewer .ff128-nav,#ffV74PhotoViewer .ff128-counter{display:none!important}
+#ffV74PhotoViewer .ff134-nav{position:absolute!important;top:50%!important;transform:translateY(-50%)!important;z-index:40!important;width:46px!important;height:46px!important;display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;background:rgba(230,232,235,.82)!important;color:#222!important;font-size:32px!important;font-weight:400!important;line-height:1!important;cursor:pointer!important;touch-action:manipulation!important;user-select:none!important;padding:0!important;box-shadow:0 2px 8px #0005!important}
+#ffV74PhotoViewer .ff134-nav[hidden],#ffV74PhotoViewer .ff134-count[hidden]{display:none!important}
+#ffV74PhotoViewer .ff134-prev{left:8px!important}#ffV74PhotoViewer .ff134-next{right:8px!important}
+#ffV74PhotoViewer .ff134-count{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:30;padding:4px 10px;border-radius:16px;background:#111b;color:#fff;font-size:12px;pointer-events:none}
+@media(max-width:760px){#ffV74PhotoViewer .ff134-nav{width:38px!important;height:42px!important;font-size:27px!important}#ffV74PhotoViewer .ff134-prev{left:2px!important}#ffV74PhotoViewer .ff134-next{right:2px!important}}
+</style>
+<script id="duarte-v134-album-nav-script">
+(()=>{'use strict';
+ const modal=document.getElementById('ffV74PhotoViewer'),stage=document.getElementById('ffV74PvStage');
+ if(!modal||!stage||typeof window.ffV74OpenPhoto!=='function')return;
+ const img=document.getElementById('ffV74PvImage');let currentId=null,photoIds=[];
+ const buttons=[[-1,'prev','‹','Previous photo'],[1,'next','›','Next photo']].map(([dir,cls,label,alt])=>{const b=document.createElement('button');b.type='button';b.className='ff134-nav ff134-'+cls;b.textContent=label;b.setAttribute('aria-label',alt);b.hidden=true;b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();step(dir)});stage.appendChild(b);return b});
+ const count=document.createElement('span');count.className='ff134-count';count.hidden=true;stage.appendChild(count);
+ const list=()=>[...document.querySelectorAll('#ffAlbumPhotos img[data-v74-photo]')];
+ function update(){const images=list();photoIds=images.map(im=>String(im.dataset.v74Photo));const index=photoIds.indexOf(String(currentId));const multi=modal.classList.contains('open')&&images.length>1&&index>=0;buttons.forEach(b=>b.hidden=!multi);count.hidden=!multi;if(multi)count.textContent=(index+1)+' / '+images.length}
+ function step(dir){const images=list();const ids=images.map(im=>String(im.dataset.v74Photo));const index=ids.indexOf(String(currentId));if(!modal.classList.contains('open')||index<0||images.length<2)return;const next=images[(index+dir+images.length)%images.length];next?.click()}
+ const original=window.ffV74OpenPhoto;window.ffV74OpenPhoto=function(photo){currentId=photo?.id==null?null:String(photo.id);const out=original.apply(this,arguments);update();return out};
+ const oldClose=window.ffV74ClosePhoto;window.ffV74ClosePhoto=function(){currentId=null;const out=oldClose.apply(this,arguments);update();return out};
+ modal.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,[contenteditable]'))return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();e.stopImmediatePropagation();step(e.key==='ArrowLeft'?-1:1)}},true);
+ // Only one touch listener; swipe horizontally without affecting pinch-zoom or comments.
+ let start=null;stage.addEventListener('touchstart',e=>{start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null},{passive:true});stage.addEventListener('touchend',e=>{if(!start||e.changedTouches.length!==1)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;start=null;if(Math.abs(dx)>75&&Math.abs(dx)>Math.abs(dy)*1.6)step(dx<0?1:-1)},{passive:true});
+ update();
+})();
+</script>

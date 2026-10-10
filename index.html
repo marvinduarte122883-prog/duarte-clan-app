@@ -11157,7 +11157,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      const pub=client.storage.from("family-gallery").getPublicUrl(path);const photo=pub?.data?.publicUrl;
      if(!photo)throw new Error("Photo URL could not be created.");
      status.textContent="Sharing story…";
-     const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo,video_url:isVideo?photo:null}).select("id").single();
+     const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString(); const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo,video_url:isVideo?photo:null,expires_at:expiresAt}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
      if(onlineSong){
        const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:onlineSong.url,title:songTitle||onlineSong.title,start_seconds:startSeconds});
@@ -16751,6 +16751,92 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 
 
 
+
+
+<style id="duarte-story-facebook-lite-v144">
+#ffStoryViewer .ff-story-view{background:#000!important;border:0!important;box-shadow:0 18px 48px rgba(0,0,0,.42)!important}
+#ffStoryViewer .ff-story-view>img,#ffStoryViewer #ffV139StoryVideo{background:#000!important;object-fit:contain!important}
+#ffStoryViewer .ff-story-view-bg{background:linear-gradient(180deg,rgba(0,0,0,.58),rgba(0,0,0,.16) 26%,rgba(0,0,0,0) 56%,rgba(0,0,0,.48))!important}
+#ffStoryViewer .ff-story-progress{left:10px!important;right:10px!important;top:10px!important;height:4px!important;gap:4px!important;z-index:8!important}
+#ffStoryViewer .ff-story-progress-track{height:4px!important;background:rgba(255,255,255,.34)!important;border-radius:999px!important;overflow:hidden!important}
+#ffStoryViewer .ff-story-progress-fill{height:100%!important;background:#fff!important;border-radius:999px!important;box-shadow:0 0 0 1px rgba(255,255,255,.08) inset}
+#ffStoryViewer .ff-story-view-head{top:18px!important;left:12px!important;right:12px!important;z-index:9!important}
+#ffStoryViewer .ff-story-view-avatar{border-color:#1b74e4!important;background:#222!important}
+#ffStoryViewer .ff-story-view-close,#ffStoryViewer .ff-story-delete{background:rgba(32,33,36,.74)!important;backdrop-filter:blur(8px)!important}
+#ffStoryViewer .ff-story-nav{background:rgba(255,255,255,.22)!important;color:#fff!important;border-radius:999px!important;width:46px!important;height:46px!important;top:50%!important;transform:translateY(-50%)!important;font-size:36px!important;display:flex!important;align-items:center!important;justify-content:center!important;line-height:1!important;padding:0!important}
+#ffStoryViewer .ff-story-prev{left:12px!important;border-radius:999px!important}
+#ffStoryViewer .ff-story-next{right:12px!important;border-radius:999px!important}
+#ffStoryViewer .ff-story-caption{bottom:20px!important;z-index:8!important}
+#ffStoryViewer .ff-story-music-playback{bottom:76px!important;z-index:8!important;background:rgba(17,17,17,.62)!important;border:1px solid rgba(255,255,255,.12)!important;backdrop-filter:blur(8px)!important}
+@media(max-width:700px){
+  #ffStoryViewer .ff-story-nav{width:42px!important;height:42px!important;font-size:32px!important}
+  #ffStoryViewer .ff-story-prev{left:8px!important}
+  #ffStoryViewer .ff-story-next{right:8px!important}
+  #ffStoryViewer .ff-story-view-head{top:16px!important;left:10px!important;right:10px!important}
+  #ffStoryViewer .ff-story-progress{left:8px!important;right:8px!important;top:8px!important}
+}
+</style>
+<script id="duarte-story-facebook-lite-v144">
+(()=>{'use strict';
+ const $=id=>document.getElementById(id);
+ let patchTimer=null, patchPaused=false, patchRemaining=5000, patchStarted=0, currentDuration=5000, currentStoryId='';
+ function stop(){ if(patchTimer){ clearTimeout(patchTimer); patchTimer=null; } }
+ function progressFill(){ const rows=[...document.querySelectorAll('#ffStoryProgress .ff-story-progress-fill')]; return rows.find(x=>x.classList.contains('running')) || null; }
+ function pause(){ if(patchPaused) return; if(patchTimer){ patchRemaining=Math.max(120, patchRemaining-(performance.now()-patchStarted)); } stop(); patchPaused=true; const fill=progressFill(); if(fill) fill.style.animationPlayState='paused'; }
+ function resume(){ if(!patchPaused || !$('ffStoryViewer')?.classList.contains('open')) return; patchPaused=false; patchStarted=performance.now(); patchTimer=setTimeout(advance, patchRemaining); const fill=progressFill(); if(fill) fill.style.animationPlayState='running'; }
+ function schedule(ms){ stop(); patchPaused=false; currentDuration=ms; patchRemaining=ms; patchStarted=performance.now(); const fill=progressFill(); if(fill){ fill.style.animationDuration=ms+'ms'; fill.style.animationPlayState='running'; }
+   patchTimer=setTimeout(advance, ms);
+ }
+ function advance(){ stop(); if(!$('ffStoryViewer')?.classList.contains('open')) return; document.getElementById('ffStoryNext')?.click(); setTimeout(()=>{ const running=progressFill(); if(!running){ if($('ffStoryViewer')?.classList.contains('open')) document.getElementById('ffStoryClose')?.click(); } }, 180); }
+ function durationForCurrent(){
+   const vid=$('ffV139StoryVideo');
+   if(vid && !vid.hidden && Number.isFinite(vid.duration) && vid.duration>0) return Math.min(60000, Math.max(3000, Math.round(vid.duration*1000)));
+   const hasMusic=!!$('ffStoryMusicAudio')?.getAttribute('src');
+   return hasMusic ? 30000 : 5000;
+ }
+ function syncSchedule(force=false){
+   if(!$('ffStoryViewer')?.classList.contains('open')) return;
+   const visibleVid=$('ffV139StoryVideo');
+   const storyKey = (($('ffStoryViewImage')?.getAttribute('src')||'')+'|'+($('ffStoryViewName')?.textContent||'')+'|'+(visibleVid && !visibleVid.hidden ? visibleVid.currentSrc||visibleVid.getAttribute('src')||'video':''));
+   const ms=durationForCurrent();
+   if(!force && storyKey===currentStoryId && ms===currentDuration) return;
+   currentStoryId=storyKey; schedule(ms);
+ }
+ function markExpiredCards(){
+   const now=Date.now();
+   document.querySelectorAll('[data-story-expiry]').forEach(el=>{ const ts=Date.parse(el.getAttribute('data-story-expiry')||''); if(ts && ts<=now) el.remove(); });
+   if(!document.querySelector('#ffStoriesStrip [data-story]')){ const strip=document.getElementById('ffStoriesStrip'); if(strip && !strip.querySelector('.ff-story-empty')) strip.insertAdjacentHTML('beforeend','<div class="ff-story-empty">No active stories yet.</div>'); }
+ }
+ document.addEventListener('DOMContentLoaded',()=>{
+   markExpiredCards();
+   document.querySelectorAll('#ffStoriesStrip [data-story]').forEach(card=>{ if(!card.hasAttribute('data-story-expiry')){} });
+   $('ffStoryPrev')?.addEventListener('click',e=>{ e.stopPropagation(); setTimeout(()=>syncSchedule(true), 80); }, true);
+   $('ffStoryNext')?.addEventListener('click',e=>{ e.stopPropagation(); setTimeout(()=>syncSchedule(true), 80); }, true);
+   $('ffStoryClose')?.addEventListener('click',()=>{ stop(); patchPaused=false; currentStoryId=''; }, true);
+   document.addEventListener('visibilitychange',()=>{ if(document.hidden) pause(); else resume(); });
+   $('ffStoryViewer')?.addEventListener('pointerdown',e=>{ if(!e.target.closest('#ffStoryPrev,#ffStoryNext,#ffStoryClose,#ffStoryDelete')) pause(); }, true);
+   $('ffStoryViewer')?.addEventListener('pointerup',()=>{ resume(); }, true);
+   $('ffStoryViewer')?.addEventListener('pointercancel',()=>{ resume(); }, true);
+   $('ffV139StoryVideo')?.addEventListener('loadedmetadata',()=>syncSchedule(true));
+   $('ffV139StoryVideo')?.addEventListener('play',()=>syncSchedule(true));
+   document.addEventListener('duarte:story-music-finished',()=>{ if($('ffStoryViewer')?.classList.contains('open')) advance(); });
+   const obs=new MutationObserver(()=>{ if($('ffStoryViewer')?.classList.contains('open')) setTimeout(()=>syncSchedule(true), 50); });
+   const prog=$('ffStoryProgress'); if(prog) obs.observe(prog,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style']});
+   const viewer=$('ffStoryViewer'); if(viewer) obs.observe(viewer,{attributes:true,attributeFilter:['class','aria-hidden']});
+   // Stamp expiry metadata on cards whenever stories are rendered.
+   const strip=document.getElementById('ffStoriesStrip');
+   if(strip){ new MutationObserver(()=>{
+      const cards=[...strip.querySelectorAll('[data-story]')];
+      const rows=(window.__ffStoryRowsV30B||[]); const map=new Map(rows.map(x=>[String(x.id), x.expires_at||'']));
+      cards.forEach(card=>{ const exp=map.get(card.dataset.story)||''; if(exp) card.setAttribute('data-story-expiry', exp); });
+      markExpiredCards();
+   }).observe(strip,{childList:true,subtree:true}); }
+   setInterval(markExpiredCards, 60000);
+   // Initial kick if a story is already open.
+   setTimeout(()=>syncSchedule(true), 250);
+ });
+})();
+</script>
 
 </body>
 </html>

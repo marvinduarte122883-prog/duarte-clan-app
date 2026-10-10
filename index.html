@@ -10937,7 +10937,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 
 <div id="ffStoryViewer" class="ff-story-modal" aria-hidden="true">
   <div class="ff-story-view"><div id="ffStoryProgress" class="ff-story-progress"></div>
-    <img id="ffStoryViewImage" alt="Family story">
+    <img id="ffStoryViewImage" alt="Family story"><video id="ffV139StoryVideo" playsinline controls preload="metadata" hidden></video>
     <div class="ff-story-view-bg"></div>
     <div class="ff-story-view-head">
       <div id="ffStoryViewAvatar" class="ff-story-view-avatar">D</div>
@@ -10964,7 +10964,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
           <button type="button" id="ffV127MusicStart"><span>♫</span>Music</button>
           <button type="button" id="ffV127CameraStart"><span>▣</span>Camera</button>
         </div>
-        <button type="button" id="ffV127GalleryStart" class="ff-v127-gallery">▧ &nbsp; Choose photos from Gallery</button>
+        <button type="button" id="ffV127GalleryStart" class="ff-v127-gallery">▧ &nbsp; Choose photos from Gallery</button><button type="button" id="ffV139VideoStart" class="ff-v127-gallery">▶ &nbsp; Choose video from Gallery</button>
         <p>Choose a photo to open the Story editor. Your phone's gallery opens in its normal photo picker.</p>
         <input type="file" id="ffV127CameraInput" accept="image/*" capture="environment" hidden aria-label="Take a story photo">
       </div>
@@ -10973,8 +10973,8 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
         <button type="button" id="ffV127MusicTool" aria-label="Choose story music"><span>♫</span>Music</button>
         <button type="button" id="ffV127ChangePhoto" aria-label="Change story photo"><span>▣</span>Photo</button>
       </div>
-      <label class="ff-story-file ff-v126-photo-select" for="ffStoryFile"><span aria-hidden="true">📷</span><span>Choose a photo</span><input id="ffStoryFile" type="file" accept="image/*" aria-label="Choose a story photo"></label>
-      <div id="ffV124Canvas" class="ff-v124-canvas"><img id="ffStoryPreview" class="ff-story-preview" alt="Story preview"><div id="ffV124DragText" class="ff-v124-drag" role="slider" tabindex="0" aria-label="Drag story text to position it" aria-valuetext="Caption position"></div></div><small id="ffV124Hint" class="ff-v124-hint">Type a caption, then drag the text anywhere on your photo. You can also change the text size and font style.</small>
+      <label class="ff-story-file ff-v126-photo-select" for="ffStoryFile"><span aria-hidden="true">📷</span><span>Choose a photo</span><input id="ffStoryFile" type="file" accept="image/*,video/mp4,video/webm,video/quicktime" aria-label="Choose a story photo or video"></label>
+      <div id="ffV124Canvas" class="ff-v124-canvas"><video id="ffV139PreviewVideo" playsinline muted controls preload="metadata" hidden></video><img id="ffStoryPreview" class="ff-story-preview" alt="Story preview"><div id="ffV124DragText" class="ff-v124-drag" role="slider" tabindex="0" aria-label="Drag story text to position it" aria-valuetext="Caption position"></div></div><small id="ffV124Hint" class="ff-v124-hint">Type a caption, then drag the text anywhere on your photo. You can also change the text size and font style.</small>
       <textarea id="ffStoryCaptionInput" class="ff-story-caption-input" maxlength="500" placeholder="Add a short caption (optional)"></textarea>
       <div class="ff-story-music">
         <label>♫ Add music (optional)</label>
@@ -11094,7 +11094,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const client=sb(); if(!client){render([]);return;}
    try{
      const sess=await client.auth.getSession(); state.me=sess?.data?.session?.user||null;
-     const {data,error}=await client.from("family_stories").select("id,user_id,caption,photo_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(60);
+     const {data,error}=await client.from("family_stories").select("id,user_id,caption,photo_url,video_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(60);
      if(error)throw error;
      state.stories=data||[];
      await loadMusic(client,state.stories);
@@ -11112,7 +11112,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(!rows.length)h+=`<div class="ff-story-empty">${esc(msg||"No active stories yet.")}</div>`;
    for(const s of rows){
      const p=state.profiles.get(s.user_id)||{};
-     h+=`<button class="ff-story-card" type="button" data-story="${esc(s.id)}">${s.photo_url?`<img class="ff-story-bg" loading="lazy" decoding="async" src="${esc(s.photo_url)}" alt="">`:""}<div class="ff-story-shade"></div><div class="ff-story-avatar">${avatarHTML(p)}</div><div class="ff-story-name">${esc(nameOf(p))}</div></button>`;
+     h+=`<button class="ff-story-card" type="button" data-story="${esc(s.id)}">${s.photo_url&&!s.video_url?`<img class="ff-story-bg" loading="lazy" decoding="async" src="${esc(s.photo_url)}" alt="">`:""}<div class="ff-story-shade"></div><div class="ff-story-avatar">${avatarHTML(p)}</div><div class="ff-story-name">${esc(nameOf(p))}</div></button>`;
    }
    strip.innerHTML=h;
    $("ffCreateStory")?.addEventListener("click",openComposer);
@@ -11121,7 +11121,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  function openStory(id){
    const s=state.stories.find(x=>x.id===id);if(!s)return;state.current=s;
    const p=state.profiles.get(s.user_id)||{};
-   $("ffStoryViewImage").src=s.photo_url||"";
+   $("ffStoryViewImage").src=s.video_url?"":(s.photo_url||"");window.ffV139SetStoryMedia?.(s);
    $("ffStoryViewName").textContent=nameOf(p);$("ffStoryViewTime").textContent=ago(s.created_at);
    $("ffStoryViewAvatar").innerHTML=avatarHTML(p);window.ffV124PositionCaption?.(s.caption||"");
    $("ffStoryDelete").style.display=state.me?.id===s.user_id?"inline-block":"none";
@@ -11130,9 +11130,9 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(state.music.get(s.id)?.music_url) void toggleMusic();
    $("ffStoryViewer").classList.add("open");$("ffStoryViewer").setAttribute("aria-hidden","false");
  }
- function closeStory(){stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
+ function closeStory(){window.ffV139StopStoryVideo?.();stopMusic();$("ffStoryMusicPlayback")?.classList.remove('visible');$("ffStoryViewer").classList.remove("open");$("ffStoryViewer").setAttribute("aria-hidden","true");state.current=null;}
  function openComposer(){document.body.classList.add("ff-story-composing-mobile");$("ffStoryComposer").classList.add("open");$("ffStoryComposer").setAttribute("aria-hidden","false");$("ffStoryStatus").textContent="";}
- function closeComposer(){document.body.classList.remove("ff-story-composing-mobile");$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";window.ffV124Reset?.();$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
+ function closeComposer(){const v=$("ffV139PreviewVideo");if(v){v.pause();v.removeAttribute("src");v.hidden=true}if(window.ffV139PreviewURL){URL.revokeObjectURL(window.ffV139PreviewURL);window.ffV139PreviewURL=null}document.body.classList.remove("ff-story-composing-mobile");$("ffStoryComposer").classList.remove("open");$("ffStoryComposer").setAttribute("aria-hidden","true");$("ffStoryFile").value="";$("ffStoryCaptionInput").value="";window.ffV124Reset?.();$("ffStoryPreview").removeAttribute("src");$("ffStoryPreview").style.display="none";$("ffStoryStatus").textContent="";clearPreviewMusic();}
  async function compress(file){
    if(typeof window.ffStorageSaverImage==="function")try{return await window.ffStorageSaverImage(file,"feed");}catch(_){}
    return file;
@@ -11141,20 +11141,23 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const client=sb(),file=$("ffStoryFile").files?.[0],caption=$("ffStoryCaptionInput").value.trim(),status=$("ffStoryStatus"),btn=$("ffStoryPublish");
    const song=$("ffStoryMusicFile").files?.[0],onlineSong=selectedAudius,songTitle=$("ffStoryMusicTitle").value.trim(),startSeconds=Math.max(0,Math.floor(Number($("ffStoryMusicStart").value)||0));
    if(!client){status.textContent="Supabase is not ready.";return}
-   if(!navigator.onLine){status.textContent="Stories require internet for photo upload.";return}
-   if(!file){status.textContent="Choose a photo first.";return}
+   if(!navigator.onLine){status.textContent="Stories require internet to upload.";return}
+   if(!file){status.textContent="Choose a photo or video first.";return}
+   const isVideo=file.type.startsWith("video/");
+   if(isVideo && !["video/mp4","video/webm","video/quicktime"].includes(file.type)){status.textContent="Use an MP4, WebM or MOV video.";return}
+   if(isVideo && file.size>35*1024*1024){status.textContent="Video must be 35 MB or smaller.";return}
    if(song && (!song.type.startsWith('audio/') || song.size>MUSIC_MAX)){status.textContent='Choose an audio file under 8 MB.';return}
-   btn.disabled=true;status.textContent="Preparing photo…";
+   btn.disabled=true;status.textContent=isVideo?"Preparing video…":"Preparing photo…";
    try{
      const sess=await client.auth.getSession(),user=sess?.data?.session?.user;if(!user)throw new Error("Please sign in again.");
-     const blob=await compress(file),ext=(blob.type?.split("/")[1]||"webp").replace("jpeg","jpg"),path=`stories/${user.id}/${crypto.randomUUID()}.${ext}`;
+     const blob=isVideo?file:await compress(file),ext=isVideo?({"video/mp4":"mp4","video/webm":"webm","video/quicktime":"mov"}[file.type]):(blob.type?.split("/")[1]||"webp").replace("jpeg","jpg"),path=`stories/${user.id}/${crypto.randomUUID()}.${ext}`;
      status.textContent="Uploading…";
      const up=await client.storage.from("family-gallery").upload(path,blob,{upsert:false,contentType:blob.type||file.type});
      if(up.error)throw up.error;
      const pub=client.storage.from("family-gallery").getPublicUrl(path);const photo=pub?.data?.publicUrl;
      if(!photo)throw new Error("Photo URL could not be created.");
      status.textContent="Sharing story…";
-     const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo}).select("id").single();
+     const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo,video_url:isVideo?photo:null}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
      if(onlineSong){
        const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:onlineSong.url,title:songTitle||onlineSong.title,start_seconds:startSeconds});
@@ -11358,7 +11361,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    try{
      const sess=await sb.auth.getSession();me=sess?.data?.session?.user||null;
      const base=(window.ffLoadFamilyStoriesV29B && Array.isArray(window.__ffStoryRowsV30B))?window.__ffStoryRowsV30B:null;
-     const {data:ss}=await sb.from("family_stories").select("id,user_id,caption,photo_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:true}).limit(60);
+     const {data:ss}=await sb.from("family_stories").select("id,user_id,caption,photo_url,video_url,created_at,expires_at").gt("expires_at",new Date().toISOString()).order("created_at",{ascending:true}).limit(60);
      stories=ss||base||[];
      if(me&&stories.length){
        const ids=stories.map(s=>s.id);
@@ -11399,21 +11402,21 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  function show(i){
    if(!stories.length)return;
-   clearTimer();currentIndex=(i+stories.length)%stories.length;
+   window.ffV139StopStoryVideo?.();clearTimer();currentIndex=(i+stories.length)%stories.length;
    const s=currentStory(); if(!s)return;
    const card=document.querySelector(`[data-story="${CSS.escape(s.id)}"]`);
    if(card){card.click()}else{
      // Fallback when original card list has refreshed differently.
      const viewer=$("ffStoryViewer");if(viewer){viewer.classList.add("open");viewer.setAttribute("aria-hidden","false")}
-     if($("ffStoryViewImage"))$("ffStoryViewImage").src=s.photo_url||"";
+     if($("ffStoryViewImage"))$("ffStoryViewImage").src=s.video_url?"":(s.photo_url||"");window.ffV139SetStoryMedia?.(s);
      if($("ffStoryViewCaption"))window.ffV124PositionCaption?.(s.caption||"");
    }
    progress();recordView(s);refreshOwnerCount(s);
-   scheduleAdvance(DURATION);
+   scheduleAdvance(s.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION);
  }
  function next(){if(!stories.length)return;if(currentIndex>=stories.length-1){pause();return}show(currentIndex+1)}
  function prev(){if(!stories.length)return;show(Math.max(0,currentIndex-1))}
- function close(){clearTimer();paused=false;$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
+ function close(){window.ffV139StopStoryVideo?.();clearTimer();paused=false;$("ffStoryViewer")?.classList.remove("open");$("ffStoryViewer")?.setAttribute("aria-hidden","true")}
  function interceptOpen(e){
    const card=e.target.closest?.("[data-story]");if(!card)return;
    const idx=stories.findIndex(s=>s.id===card.dataset.story);
@@ -16860,6 +16863,35 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 })();
 </script>
 
+<style id="ff-v139-video-stories-css">
+#ffV139VideoStart{margin-top:0!important;border-color:#546780!important}
+#ffV139PreviewVideo{width:100%;height:100%;max-height:100%;object-fit:contain;background:#000}
+#ffV139PreviewVideo[hidden],#ffV139StoryVideo[hidden]{display:none!important}
+#ffV124Canvas:has(#ffV139PreviewVideo:not([hidden])) #ffStoryPreview{display:none!important}
+#ffStoryViewer:has(#ffV139StoryVideo:not([hidden])) #ffStoryViewImage{display:none!important}
+#ffStoryComposer .ff-story-compose.ff-v127-editing #ffV139PreviewVideo:not([hidden]){display:block!important}
+#ffStoryViewer #ffV139StoryVideo{position:absolute;top:118px;bottom:175px;height:calc(100% - 293px);width:100%;object-fit:contain;background:#000;z-index:2}
+@media(max-width:700px){#ffStoryViewer #ffV139StoryVideo{top:112px;bottom:244px;height:calc(100% - 356px)}#ffV139VideoStart{min-height:48px!important}}
+</style>
+<script id="ff-v139-video-stories-js">
+(()=>{
+ const $=id=>document.getElementById(id);
+ const file=$('ffStoryFile'),button=$('ffV139VideoStart');
+ if(!file)return;
+ // Dedicated picker accepts videos, while existing photo buttons continue to accept photos.
+ button?.addEventListener('click',()=>{file.accept='video/mp4,video/webm,video/quicktime';file.click()});
+ ['ffV127GalleryStart','ffV127TextStart','ffV127MusicStart','ffV127ChangePhoto'].forEach(id=>$(id)?.addEventListener('click',()=>{file.accept='image/*'},true));
+ window.ffV139StopStoryVideo=()=>{const v=$('ffV139StoryVideo');if(v){v.pause();v.removeAttribute('src');v.load();v.hidden=true}const im=$('ffStoryViewImage');if(im)im.style.display='';};
+ window.ffV139SetStoryMedia=s=>{const v=$('ffV139StoryVideo'),im=$('ffStoryViewImage');if(!v||!im)return;
+   if(!s?.video_url){window.ffV139StopStoryVideo();return}
+   v.pause();v.src=s.video_url;v.hidden=false;im.style.display='none';v.onloadedmetadata=()=>{window.ffV139StoryDuration=Number.isFinite(v.duration)?v.duration:20};
+   v.play().catch(()=>{});
+ };
+ const root=$('ffStoryViewer');
+ root?.addEventListener('click',e=>{if(e.target.closest('#ffStoryClose,#ffStoryNext,#ffStoryPrev'))window.ffV139StopStoryVideo()},true);
+})();
+</script>
+
 </body>
 </html>
 
@@ -18129,5 +18161,7 @@ if(typeof originalAlbumToggle==='function'){
  update();
 })();
 </script>
+
+
 
 

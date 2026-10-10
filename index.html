@@ -10049,7 +10049,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v46.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v47.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -16031,8 +16031,10 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
        }
      }
    }catch(e){console.debug('App update check:',e)}
-   // Preserve the current login session. A fresh navigation retrieves the latest app shell when online.
-   location.reload();
+   // Refresh safely: never reload while a member is writing, creating a story, or in a call.
+   button.disabled=false;button.textContent='↻ Refresh';
+   if(typeof window.duarteSafeUpdateCheck==='function') window.duarteSafeUpdateCheck(true);
+   else location.reload();
  });
 })();
 </script>
@@ -16276,6 +16278,60 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
  .post-card,.ff-story-card{transition:none!important;animation:none!important;}
 }
 </style>
+
+<!-- V132: lightweight WebView update checker; no auth storage or caches cleared -->
+<style id="duarte-v132-update-style">
+#duarteV132Update{position:fixed;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:100800;display:none;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;background:#22252b;border:1px solid #555;border-radius:12px;color:#fff;font:13px system-ui,sans-serif;box-shadow:0 4px 18px #0008}
+#duarteV132Update.show{display:flex}#duarteV132Update button{border:0;border-radius:8px;background:#d9b636;color:#191919;padding:8px 10px;font-weight:800;white-space:nowrap}
+</style>
+<div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
+<script id="duarte-v132-update-script">
+(()=>{
+ const VERSION='v132';
+ const endpoint='./duarte-version.json';
+ let pending=false,checking=false,lastCheck=0;
+ const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
+ const active=()=>{
+   const selectors=['#ffStoryComposer.open','#ffStoryViewer.open','.ff-call-modal.open','#ffMsgModal.open','#duarteV63Composer.open','#postModal.open','.modal.open'];
+   if(document.querySelector(selectors.join(',')))return true;
+   const post=document.getElementById('postInput');
+   if(post?.value?.trim())return true;
+   const fields=['#ffStoryCaptionInput','#ffMsgComposer textarea','#ffMsgComposer input'];
+   return fields.some(sel=>{const el=document.querySelector(sel);return !!el?.value?.trim()});
+ };
+ function show(text){message.textContent=text;box.classList.add('show')}
+ async function check(force=false){
+   if(checking || !navigator.onLine || document.hidden)return;
+   if(!force && Date.now()-lastCheck<5*60*1000)return;
+   checking=true;lastCheck=Date.now();
+   try{
+     const ctrl=new AbortController();
+     const timeout=setTimeout(()=>ctrl.abort(),5000);
+     let resp;
+     try{resp=await fetch(endpoint+'?t='+Date.now(),{cache:'no-store',signal:ctrl.signal})}finally{clearTimeout(timeout)}
+     if(!resp.ok)throw Error('Update check failed');
+     const remote=await resp.json();
+     if(remote?.version && remote.version!==VERSION){pending=true;show(active()?'Update ready — finish your current activity first.':'A new Duarte Clan version is available.');}
+     else if(force){show('You have the latest Duarte Clan version.');setTimeout(()=>{if(!pending)box.classList.remove('show')},2500)}
+   }catch(e){if(force){show('Could not check updates. Check your internet connection.');setTimeout(()=>box.classList.remove('show'),3500)}}
+   finally{checking=false}
+ }
+ async function apply(){
+   if(active()){show('Finish your call, message, or post before updating.');return}
+   if(!navigator.onLine){show('Connect to the internet to update.');return}
+   if(!pending){await check(true);return}
+   try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update();if(reg?.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'})}catch(_){}
+   location.reload();
+ }
+ window.duarteSafeUpdateCheck=check;
+ document.getElementById('duarteV132UpdateApply').addEventListener('click',apply);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+ window.addEventListener('online',()=>check(),{passive:true});
+ document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>check(),1700),{once:true});
+ // Low-frequency check, only while the app is foregrounded.
+ setInterval(()=>{if(!document.hidden)check()},30*60*1000);
+})();
+</script>
 </body>
 </html>
 

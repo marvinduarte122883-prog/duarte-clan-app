@@ -11107,7 +11107,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    if(!rows.length)h+=`<div class="ff-story-empty">${esc(msg||"No active stories yet.")}</div>`;
    for(const s of rows){
      const p=state.profiles.get(s.user_id)||{};
-     h+=`<button class="ff-story-card" type="button" data-story="${esc(s.id)}">${s.photo_url&&!s.video_url?`<img class="ff-story-bg" loading="lazy" decoding="async" src="${esc(s.photo_url)}" alt="">`:s.video_url?`<img class="ff-story-bg ff153-video-cover" loading="lazy" decoding="async" data-video-src="${esc(s.video_url)}" src="${esc(s.photo_url && s.photo_url!==s.video_url ? s.photo_url : '')}" alt="Video story cover"><span class="ff153-play">▶</span>`:""}<div class="ff-story-shade"></div><div class="ff-story-avatar">${avatarHTML(p)}</div><div class="ff-story-name">${esc(nameOf(p))}</div></button>`;
+     h+=`<button class="ff-story-card" type="button" data-story="${esc(s.id)}">${s.video_url?`<video class="ff-story-bg ff-v153-video-thumb" muted playsinline preload="none" data-src="${esc(s.video_url)}" aria-hidden="true"></video><span class="ff-v153-video-mark" aria-hidden="true">▶</span>`:(s.photo_url?`<img class="ff-story-bg" loading="lazy" decoding="async" src="${esc(s.photo_url)}" alt="">`:"")}<div class="ff-story-shade"></div><div class="ff-story-avatar">${avatarHTML(p)}</div><div class="ff-story-name">${esc(nameOf(p))}</div></button>`;
    }
    strip.innerHTML=h;
    $("ffCreateStory")?.addEventListener("click",openComposer);
@@ -11152,15 +11152,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      const pub=client.storage.from("family-gallery").getPublicUrl(path);const photo=pub?.data?.publicUrl;
      if(!photo)throw new Error("Photo URL could not be created.");
      status.textContent="Sharing story…";
-     let previewPhoto=photo;
-     if(isVideo){try{
-       const thumb=await window.ff153CaptureStoryCover(file);
-       if(thumb){const coverPath=`stories/${user.id}/${crypto.randomUUID()}.jpg`;
-         const put=await client.storage.from("family-gallery").upload(coverPath,thumb,{upsert:false,contentType:"image/jpeg"});
-         if(!put.error)previewPhoto=client.storage.from("family-gallery").getPublicUrl(coverPath)?.data?.publicUrl||photo;
-       }
-     }catch(e){console.debug('Story cover not available',e)}}
-     const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString(); const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:previewPhoto,video_url:isVideo?photo:null,expires_at:expiresAt}).select("id").single();
+     const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString(); const ins=await client.from("family_stories").insert({user_id:user.id,caption:window.ffV124Pack?.(caption)||caption||null,photo_url:photo,video_url:isVideo?photo:null,expires_at:expiresAt}).select("id").single();
      if(ins.error){await client.storage.from("family-gallery").remove([path]).catch(()=>{});throw ins.error}
      if(onlineSong){
        const musicSave=await client.from('duarte_story_music').insert({story_id:ins.data.id,user_id:user.id,music_url:onlineSong.url,title:songTitle||onlineSong.title,start_seconds:startSeconds});
@@ -11332,32 +11324,23 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  function currentStory(){return currentIndex>=0?stories[currentIndex]:null}
  function clearTimer(){if(timer){clearTimeout(timer);timer=null}}
  function scheduleAdvance(duration=DURATION){
-   // Song stories use the actual selected 30-second clip window.
-   const music=document.getElementById('ffStoryMusicAudio');
-   if(music?.getAttribute('src')) duration=30000;
-   clearTimer();paused=false;remaining=duration;startedAt=performance.now();
-   if(document.hidden)return pause();
-   // Manual stories: do not schedule automatic navigation.
+   // Manual Story navigation. Never automatically move away from a photo/video.
+   clearTimer();paused=true;remaining=duration;
    const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
-   if(fill){fill.classList.remove('running');fill.style.animation='none';fill.style.width='100%'}
+   if(fill){fill.classList.remove('running');fill.classList.add('manual');fill.style.animation='none';fill.style.width='100%'}
  }
+
  function pause(){
    if(!paused&&timer)remaining=Math.max(0,remaining-(performance.now()-startedAt));
    clearTimer();paused=true;
    const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
    if(fill)fill.style.animationPlayState='paused';
  }
- function resume(){
-   if(!paused||!$('ffStoryViewer')?.classList.contains('open'))return;
-   if(remaining<100)remaining=100;
-   paused=false;startedAt=performance.now();
-   // Manual stories remain open until Previous, Next, or Close.
-   const fill=document.querySelector('.ff-story-progress-track:nth-child('+(currentIndex+1)+') .ff-story-progress-fill');
-   if(fill)fill.style.animationPlayState='running';
- }
+ function resume(){ /* No auto-advance in manual viewing mode. */ }
+
  function progress(){
    const host=$("ffStoryProgress");if(!host)return;
-   host.innerHTML=stories.map((_,i)=>`<span class="ff-story-progress-track"><span class="ff-story-progress-fill ${i<currentIndex?"done":i===currentIndex?"done":""}"></span></span>`).join("");
+   host.innerHTML=stories.map((_,i)=>`<span class="ff-story-progress-track"><span class="ff-story-progress-fill ${i<currentIndex?"done":i===currentIndex?"running":""}"></span></span>`).join("");
  }
  async function loadViewState(){
    const sb=client();if(!sb)return;
@@ -11428,7 +11411,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    setTimeout(()=>{if(currentIndex!==idx)return;progress();recordView(stories[idx]);refreshOwnerCount(stories[idx]);scheduleAdvance(stories[idx]?.video_url?Math.min(60000,Math.max(3000,(window.ffV139StoryDuration||20)*1000)):DURATION)},0);
  }
  document.addEventListener("click",interceptOpen,true);
- // Music ending never advances a manually navigated story.
+ // Music ending does not advance a Story; member chooses Next or Previous.
  document.addEventListener("DOMContentLoaded",()=>{
    loadViewState();
    $("ffStoryPrev")?.addEventListener("click",e=>{e.stopPropagation();prev()});
@@ -16355,7 +16338,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v150';
+ const VERSION='v155';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -17112,44 +17095,145 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 </script>
 
 
-<style id="ff153-story-covers">
-#ffStories .ff-story-card[data-story]{position:relative}
-#ffStories .ff-story-card:has(.ff153-video-cover){background:linear-gradient(145deg,#333e50,#15171d)!important}
-#ffStories .ff153-video-cover{object-fit:cover;width:100%;height:100%;display:block}
-#ffStories .ff153-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;pointer-events:none;font-size:18px;z-index:1}
-#ffStories .ff153-video-cover:not([src]),#ffStories .ff153-video-cover[src=""]{visibility:hidden}
+<style id="duarte-v153-story-video-card-style">
+#ffStories .ff-story-card .ff-v153-video-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#292d35;pointer-events:none}
+#ffStories .ff-story-card .ff-v153-video-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;background:#0009;border:1px solid #fff7;border-radius:50%;height:42px;width:42px;display:grid;place-items:center;font-size:20px;pointer-events:none;z-index:1}
+#ffStories .ff-story-card:has(.ff-v153-video-thumb) .ff-story-name{z-index:3}
+#ffStoryProgress .ff-story-progress-fill.manual{animation:none!important;width:100%!important;background:#fff!important}
 </style>
-<script id="ff153-story-covers-script">
+<script id="duarte-v153-story-video-card-js">
 (()=>{'use strict';
- // Capture a small JPEG poster without downloading the entire video.
- function snapshot(video){try{const c=document.createElement('canvas');const ratio=Math.min(1,260/(video.videoWidth||260));c.width=Math.max(1,Math.round(video.videoWidth*ratio));c.height=Math.max(1,Math.round(video.videoHeight*ratio));c.getContext('2d',{alpha:false}).drawImage(video,0,0,c.width,c.height);return new Promise(resolve=>c.toBlob(resolve,'image/jpeg',0.72))}catch{return Promise.resolve(null)}}
- function capture(src,isFile){return new Promise(resolve=>{
-   const video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='metadata';
-   let url=isFile?URL.createObjectURL(src):src,done=false;
-   if(!isFile)video.crossOrigin='anonymous';
-   const timeout=setTimeout(()=>finish(null),6000);
-   function finish(blob){if(done)return;done=true;clearTimeout(timeout);video.pause();video.removeAttribute('src');video.load();if(isFile)URL.revokeObjectURL(url);resolve(blob)}
-   video.addEventListener('loadedmetadata',()=>{try{video.currentTime=Math.min(.35,Math.max(0,(video.duration||1)-.1))}catch{finish(null)}},{once:true});
-   video.addEventListener('seeked',async()=>finish(await snapshot(video)),{once:true});
-   video.addEventListener('error',()=>finish(null),{once:true});
-   video.src=url;
- });}
- window.ff153CaptureStoryCover=file=>capture(file,true);
- const seen=new Set();let busy=false;
- async function paint(){if(busy)return;const cards=[...document.querySelectorAll('#ffStoriesStrip .ff153-video-cover')].filter(img=>img.dataset.videoSrc && (!img.getAttribute('src')||img.getAttribute('src')===img.dataset.videoSrc) && !seen.has(img.dataset.videoSrc));if(!cards.length)return;
-   const img=cards[0];const source=img.dataset.videoSrc;seen.add(source);busy=true;
-   const blob=await capture(source,false);
-   if(blob && img.isConnected){const obj=URL.createObjectURL(blob);img.src=obj;img.addEventListener('load',()=>URL.revokeObjectURL(obj),{once:true});}
-   else if(img.isConnected){img.removeAttribute('src');}
-   busy=false;if(cards.length>1)setTimeout(paint,300);
+ const host=document.getElementById('ffStoriesStrip');if(!host)return;
+ // Video frames are requested only for story cards currently near the viewport.
+ const pending=new WeakSet();
+ const observer=('IntersectionObserver' in window)?new IntersectionObserver(entries=>{
+   entries.forEach(entry=>{if(entry.isIntersecting){observer.unobserve(entry.target);prepare(entry.target)}});
+ },{root:host,rootMargin:'130px'}):null;
+ function prepare(v){
+   if(pending.has(v))return;pending.add(v);
+   const url=v.dataset.src;if(!url)return;
+   v.addEventListener('loadedmetadata',()=>{try{v.currentTime=Math.min(.25,Math.max(0,(v.duration||1)/10))}catch(_){}},{once:true});
+   v.addEventListener('seeked',()=>{v.pause();v.style.opacity='1'},{once:true});
+   v.addEventListener('error',()=>{v.style.opacity='0';v.parentElement?.querySelector('.ff-v153-video-mark')?.classList.add('fallback')},{once:true});
+   v.src=url;v.preload='metadata';v.load();
  }
- function attach(){const strip=document.getElementById('ffStoriesStrip');if(!strip)return;
-   new MutationObserver(()=>{if(!busy)setTimeout(paint,200)}).observe(strip,{childList:true});
-   setTimeout(paint,250);
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});else attach();
+ function scan(){host.querySelectorAll('.ff-v153-video-thumb:not([data-v153-scanned])').forEach(v=>{v.dataset.v153Scanned='1';if(observer)observer.observe(v);else prepare(v)});}
+ new MutationObserver(scan).observe(host,{childList:true});scan();
 })();
 </script>
+
+
+<style id="duarte-v154-strict-profile-isolation">
+/* My Profile is its own page, not part of Home, Gallery, Members or Events. */
+html:not(.ff-v154-profile-active) #profileManager,
+html:not(.ff-v154-profile-active) #profileManager.show,
+html:not(.ff-v154-profile-active) #profileManager.active {
+ display:none!important;visibility:hidden!important;pointer-events:none!important;
+ position:fixed!important;left:-200vw!important;top:-200vh!important;
+}
+html.ff-v154-profile-active #profileManager.show {
+ display:block!important;visibility:visible!important;pointer-events:auto!important;
+ position:relative!important;left:auto!important;top:auto!important;
+}
+/* Member details only when explicitly opened; never a stacked section. */
+#ffFullProfile:not(.open),#ffMemberProfileModal:not(.open) {display:none!important;visibility:hidden!important;pointer-events:none!important}
+#ffFullProfile.open,#ffMemberProfileModal.open{position:fixed!important;inset:0!important;z-index:3500!important;overflow-y:auto!important;max-height:100dvh!important}
+</style>
+<script id="duarte-v154-strict-profile-isolation-js">
+(()=>{'use strict';
+ const root=document.documentElement;
+ function activate(section){
+   const active=section==='profile';
+   root.classList.toggle('ff-v154-profile-active',active);
+   root.dataset.v140Section=active?'profile':section||'home';
+   if(!active)document.getElementById('profileManager')?.classList.remove('show');
+ }
+ const original=window.showSection;
+ if(typeof original==='function' && !original.__v154Profile){
+   const replacement=function(section){activate(section);return original.apply(this,arguments)};
+   replacement.__v154Profile=true;window.showSection=replacement;
+ }
+ // The default screen is Home. This is applied before DOM interaction.
+ activate('home');
+ document.addEventListener('DOMContentLoaded',()=>activate('home'),{once:true});
+ // Fix older mobile navigation implementations that change classes directly.
+ document.addEventListener('click',e=>{
+  const item=e.target.closest?.('[data-v29c-nav],[data-v50-go],[data-v31o-go],[data-go],[onclick]');
+  if(!item)return;
+  const explicit=item.dataset.v29cNav||item.dataset.v50Go||item.dataset.v31oGo||item.dataset.go||'';
+  const handler=item.getAttribute('onclick')||'';
+  if(explicit==='profile'||/showSection\s*\(\s*['"]profile['"]/.test(handler)){activate('profile');return}
+  if(['home','members','gallery','events','notifications','messenger','more','menu'].includes(explicit)||/showSection\s*\(\s*['"](?:home|members|gallery|events)['"]/.test(handler))activate(explicit||'home');
+ },true);
+ window.addEventListener('pageshow',()=>{if(!document.getElementById('profileManager')?.classList.contains('show'))activate('home')},{passive:true});
+})();
+</script>
+
+
+<style id="duarte-v155-story-card-motion-style">
+#ffStoriesStrip .ff-story-card[data-story]:has(.ff153-video-cover){isolation:isolate}
+#ffStoriesStrip .ff-v155-motion{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#202226;pointer-events:none;z-index:0}
+#ffStoriesStrip .ff-story-card.ff-v155-playing .ff153-video-cover{visibility:hidden!important}
+#ffStoriesStrip .ff-story-card.ff-v155-playing .ff153-play{display:none!important}
+#ffStoriesStrip .ff-story-card.ff-v155-playing .ff-story-shade{z-index:1;pointer-events:none}
+#ffStoriesStrip .ff-story-card.ff-v155-playing .ff-story-avatar,#ffStoriesStrip .ff-story-card.ff-v155-playing .ff-story-name{z-index:2;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#ffStoriesStrip .ff-v155-motion{display:none!important}}
+</style>
+<script id="duarte-v155-story-card-motion-js">
+(()=>{'use strict';
+ const strip=document.getElementById('ffStoriesStrip');if(!strip)return;
+ let current=null, currentCard=null, generation=0;
+ let io=null, mo=null, scheduled=false;
+ const motionAllowed=()=>!document.hidden&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.getElementById('ffStoryViewer')?.classList.contains('open');
+ function stop(){
+   generation++;
+   if(current){current.pause();current.removeAttribute('src');current.load();current.remove();current=null;}
+   if(currentCard){currentCard.classList.remove('ff-v155-playing');currentCard=null;}
+ }
+ async function start(card){
+   const cover=card.querySelector('.ff153-video-cover');const url=cover?.dataset.videoSrc;
+   if(!url||!motionAllowed())return;
+   if(currentCard===card)return;
+   stop();const token=generation;
+   const v=document.createElement('video');v.className='ff-v155-motion';v.muted=true;v.defaultMuted=true;v.autoplay=true;v.loop=true;v.playsInline=true;
+   v.setAttribute('muted','');v.setAttribute('playsinline','');v.preload='metadata';v.disablePictureInPicture=true;
+   v.addEventListener('playing',()=>{if(generation===token && current===v)card.classList.add('ff-v155-playing')},{once:true});
+   v.addEventListener('error',()=>{if(current===v)stop()},{once:true});
+   cover.insertAdjacentElement('afterend',v);current=v;currentCard=card;v.src=url;
+   try{await v.play()}catch(_){if(current===v)stop()}
+ }
+ function choose(){
+   scheduled=false;
+   if(!motionAllowed()){stop();return}
+   const viewport=strip.getBoundingClientRect();
+   if(viewport.width<1||viewport.height<1){stop();return}
+   let best=null,score=0;
+   for(const card of strip.querySelectorAll('.ff-story-card[data-story]:has(.ff153-video-cover)')){
+     const r=card.getBoundingClientRect();
+     const visibleW=Math.max(0,Math.min(r.right,viewport.right,innerWidth)-Math.max(r.left,viewport.left,0));
+     const visibleH=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));
+     const area=(visibleW*visibleH)/(Math.max(1,r.width*r.height));
+     if(area>score){score=area;best=card}
+   }
+   if(best && score>=.65){if(best!==currentCard)void start(best)}else stop();
+ }
+ function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(choose)}
+ function boot(){
+   if('IntersectionObserver'in window){io=new IntersectionObserver(schedule,{root:null,threshold:[0,.5,.75,1]});}
+   const observeCards=()=>{stop();io?.disconnect();strip.querySelectorAll('.ff-story-card[data-story]:has(.ff153-video-cover)').forEach(card=>io?.observe(card));schedule()};
+   mo=new MutationObserver(records=>{
+     if(records.some(record=>[...record.addedNodes,...record.removedNodes].some(node=>node.nodeType===1&&(node.matches?.('.ff-story-card[data-story]')||node.querySelector?.('.ff-story-card[data-story]')))))observeCards();
+   });
+   mo.observe(strip,{childList:true});observeCards();
+   strip.addEventListener('scroll',schedule,{passive:true});addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true});
+   document.addEventListener('visibilitychange',schedule);document.getElementById('ffStoryViewer')?.addEventListener('click',()=>setTimeout(schedule,60),{passive:true});
+   document.getElementById('ffStoryClose')?.addEventListener('click',()=>setTimeout(schedule,60));
+   document.addEventListener('click',event=>{if(event.target.closest?.('#ffStoriesStrip .ff-story-card[data-story]'))stop()},true);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
 </body>
 </html>
 

@@ -11688,7 +11688,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    const el=e.target.closest?.("button,a");
    if(!el)return;
    const t=(el.textContent||"").trim().toLowerCase();
-   if(t==="update" && (document.body.textContent||"").includes("New Duarte Clan version")){
+   if(t==="update" && !el.closest("#duarteV132Update") && (document.body.textContent||"").includes("New Duarte Clan version")){
      e.preventDefault();e.stopImmediatePropagation();updateNow();
    }
  },true);
@@ -16352,7 +16352,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v138';
+ const VERSION='v146';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -16376,7 +16376,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
      try{resp=await fetch(endpoint+'?t='+Date.now(),{cache:'no-store',signal:ctrl.signal})}finally{clearTimeout(timeout)}
      if(!resp.ok)throw Error('Update check failed');
      const remote=await resp.json();
-     if(remote?.version && remote.version!==VERSION){if(sessionStorage.getItem('duarte_update_attempt')===remote.version && Date.now()-Number(sessionStorage.getItem('duarte_update_attempt_at')||0)<120000){box.classList.remove('show');return;}pending=true;show(active()?'Update ready — finish your current activity first.':'A new Duarte Clan version is available.');}
+     if(remote?.version && /^v\d+$/.test(remote.version) && Number(remote.version.slice(1))>Number(VERSION.slice(1))){if(sessionStorage.getItem('duarte_update_attempt')===remote.version && Date.now()-Number(sessionStorage.getItem('duarte_update_attempt_at')||0)<15*60*1000){box.classList.remove('show');return;}pending=true;show(active()?'Update ready — finish your current activity first.':'A new Duarte Clan version is available.');}
      else {pending=false;box.classList.remove('show');if(force){show('You have the latest Duarte Clan version.');setTimeout(()=>{if(!pending)box.classList.remove('show')},2500)}}
    }catch(e){if(force){show('Could not check updates. Check your internet connection.');setTimeout(()=>box.classList.remove('show'),3500)}}
    finally{checking=false}
@@ -16385,7 +16385,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
    if(active()){show('Finish your call, message, or post before updating.');return}
    if(!navigator.onLine){show('Connect to the internet to update.');return}
    if(!pending){await check(true);return}
-   try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update();if(reg?.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'})}catch(_){}
+   box.classList.remove('show'); pending=false;try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update();if(reg?.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'})}catch(_){}
    try{sessionStorage.setItem('duarte_update_attempt',(await (await fetch(endpoint+'?v='+Date.now(),{cache:'no-store'})).json()).version||VERSION);sessionStorage.setItem('duarte_update_attempt_at',String(Date.now()));}catch(_){}
    const next=new URL(location.href);next.searchParams.set('duarte_refresh',String(Date.now()));location.replace(next.href);
  }

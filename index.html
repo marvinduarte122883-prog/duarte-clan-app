@@ -6744,7 +6744,7 @@ window.openMemberProfileById=openClanProfile;
 
   function findFullProfileCover(){
     return document.querySelector(
-      ".ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]"
+      "#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]"
     );
   }
 
@@ -6937,7 +6937,7 @@ window.openMemberProfileById=openClanProfile;
     const observer=new MutationObserver(()=>{
       const id=myId();
       if(!id) return;
-      const cover=document.querySelector(".ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
+      const cover=document.querySelector("#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
       if(!cover) return;
       const root=cover.closest(".ff-full-profile,.ff-profile-page,.ff-profile-modal,.ff-fb-profile") || cover.parentElement?.parentElement;
       if(!root || root.querySelector(".ff-own-edit-profile-btn")) return;
@@ -6993,7 +6993,7 @@ window.openMemberProfileById=openClanProfile;
  const BUCKET="family-gallery";
  function uid(){return window.currentUser?.id||null}
  function coverEl(){
-   return document.querySelector(".ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
+   return document.querySelector("#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
  }
  function displayedId(){
    return window.ffActiveProfileUserId||window.activeProfileUserId||window.currentProfileUserId||uid();
@@ -7048,7 +7048,7 @@ window.openMemberProfileById=openClanProfile;
 
 
 <style id="duarte-facebook-cover-upload-ui">
-.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{
+#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{
  position:relative!important;background-size:cover!important;background-position:center!important;
  background-repeat:no-repeat!important;cursor:default
 }
@@ -7074,14 +7074,14 @@ window.openMemberProfileById=openClanProfile;
 }
 </style>
 <style id="duarte-v163-cover-editor-css">
-.ff-cover-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px}.ff-cover-dialog{background:#fff;color:#171717;width:min(96vw,780px);max-height:95dvh;overflow:auto;border-radius:14px;padding:18px;box-shadow:0 12px 50px #0008}.ff-cover-dialog h3{margin:0 0 12px}.ff-cover-preview{width:100%;aspect-ratio:2.6/1;background:#222;overflow:hidden;position:relative;touch-action:none;cursor:grab;border-radius:8px}.ff-cover-preview img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none;user-select:none}.ff-cover-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.ff-cover-tools input[type=range]{flex:1;min-width:130px}.ff-cover-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.ff-cover-actions button,.ff-cover-tools button{border:1px solid #aaa;background:#eee;color:#111;border-radius:8px;padding:10px 14px;font-weight:600}.ff-cover-actions .primary{background:#0879ef;color:white;border-color:#0879ef}.ff-cover-actions button:disabled{opacity:.5}.ff-cover-photo-action{z-index:3!important}@media(max-width:700px){.ff-cover-dialog{padding:12px}.ff-cover-modal{padding:7px}.ff-cover-actions button{flex:1}}
+.ff-cover-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px}.ff-cover-dialog{background:#fff;color:#171717;width:min(96vw,780px);max-height:95dvh;overflow:auto;border-radius:14px;padding:18px;box-shadow:0 12px 50px #0008}.ff-cover-dialog h3{margin:0 0 12px}.ff-cover-preview{width:100%;aspect-ratio:2.6/1;background:#222;overflow:hidden;position:relative;touch-action:none;cursor:grab;border-radius:8px}.ff-cover-preview img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none;user-select:none}.ff-cover-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.ff-cover-tools input[type=range]{flex:1;min-width:130px}.ff-cover-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.ff-cover-actions button,.ff-cover-tools button{border:1px solid #aaa;background:#eee;color:#111;border-radius:8px;padding:10px 14px;font-weight:600}.ff-cover-actions .primary{background:#0879ef;color:white;border-color:#0879ef}.ff-cover-actions button:disabled{opacity:.5}.ff-cover-photo-action{position:absolute!important;z-index:100!important;pointer-events:auto!important}@media(max-width:700px){.ff-cover-dialog{padding:12px}.ff-cover-modal{padding:7px}.ff-cover-actions button{flex:1}}
 </style>
 <script id="duarte-v163-cover-editor-js">
 (function(){
  'use strict';
  const BUCKET='family-gallery';let activeProfileId=null;
  const me=()=>window.currentUser?.id||null;
- const getCover=()=>document.querySelector('.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]');
+ const getCover=()=>document.querySelector('#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]');
  function displayedId(){return document.querySelector('#ffFullProfile')?.dataset?.ffV129MemberId||window.ffActiveProfileUserId||window.activeProfileUserId||window.currentProfileUserId||activeProfileId||null}
  function isMine(){const mine=me(),other=displayedId();return !!mine&&(!other||String(other)===String(mine))}
  async function persist(file,cover,btn){
@@ -7123,13 +7123,13 @@ window.openMemberProfileById=openClanProfile;
    }catch(err){console.error('[V163 cover editor]',err);status.textContent='Unable to save: '+(err?.message||err);save.disabled=false;modal.querySelector('[data-cancel]').disabled=false}
   };
  }
- function install(){const cover=getCover();if(!cover)return;
+ function install(){const cover=getCover();if(!cover)return;cover.style.position='relative';
   cover.querySelectorAll('.ff-cover-edit-btn,.ff-duarte-cover-edit,.ff-cover-upload-input,.ff-duarte-cover-input,.ff-cover-photo-action:not(.ff-v163-cover-button),.ff-cover-photo-file').forEach(n=>n.remove());
   if(!isMine())return;
   // Avoid stacking the old cover click listeners. The new button handles editing.
   if(cover.querySelector('.ff-v163-cover-button'))return;
   const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.hidden=true;input.className='ff-v163-cover-input';
-  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.stopPropagation();input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
+  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
  }
  function hook(name){const old=window[name];if(typeof old!=='function'||old.__v163CoverHook)return;const fn=async function(...args){const arg=args[0];activeProfileId=(arg&&typeof arg==='object')?(arg.id||arg.user_id):arg;const result=await old.apply(this,args);setTimeout(install,80);return result};fn.__v163CoverHook=true;window[name]=fn}
  function boot(){['openClanProfile','openMemberProfile','openMemberProfileById','openFullClanProfile','ffViewMyProfile'].forEach(hook);install()}
@@ -7141,7 +7141,7 @@ window.openMemberProfileById=openClanProfile;
 <style id="duarte-facebook-profile-complete-style">
 /* Facebook-inspired Duarte profile: view first, edit only on explicit action */
 .ff-fb-profile-shell{max-width:1008px!important;margin:0 auto!important}
-.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{
+#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{
  min-height:310px!important;border-radius:0 0 12px 12px!important;background-size:cover!important;background-position:center!important
 }
 .ff-fb-profile-head{padding:0 34px 18px!important}
@@ -7159,7 +7159,7 @@ window.openMemberProfileById=openClanProfile;
 .ff-fb-profile-action-btn.secondary{background:#303236!important;color:#fff!important}
 .ff-fb-profile-avatar{cursor:pointer}
 @media(max-width:700px){
- .ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{min-height:220px!important}
+ #ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]{min-height:220px!important}
  .ff-fb-profile-head{padding:0 14px 14px!important}
  .ff-fb-profile-main{display:block!important;padding:12px!important}
  .ff-fb-intro-card{margin-bottom:12px!important}
@@ -7212,7 +7212,7 @@ window.openMemberProfileById=openClanProfile;
 
  function enhanceOwnProfile(){
    const id=me();if(!id)return;
-   const cover=document.querySelector(".ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
+   const cover=document.querySelector("#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
    if(!cover)return;
    const root=cover.closest(".ff-full-profile,.ff-profile-page,.ff-profile-modal,.ff-fb-profile")||cover.parentElement?.parentElement;
    if(!root)return;

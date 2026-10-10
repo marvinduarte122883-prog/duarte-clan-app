@@ -11194,7 +11194,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    $("ffStoryComposeClose")?.addEventListener("click",closeComposer);
    $("ffStoryCancel")?.addEventListener("click",closeComposer);
    $("ffStoryPublish")?.addEventListener("click",publish);
-   $("ffStoryFile")?.addEventListener("change",e=>{const f=e.target.files?.[0],im=$("ffStoryPreview");if(!f){im.style.display="none";return}im.src=URL.createObjectURL(f);im.style.display="block";});
+   $("ffStoryFile")?.addEventListener("change",e=>{const f=e.target.files?.[0],im=$("ffStoryPreview");if(!im)return;if(!f||f.type.startsWith("video/")){im.removeAttribute("src");im.style.display="none";return}im.src=URL.createObjectURL(f);im.style.display="block";});
    window.addEventListener("online",load);
  });
  window.ffLoadFamilyStoriesV29B=load;
@@ -16983,6 +16983,38 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
    ['ffStoryViewer','ffStoryProgress','ffStoryViewName','ffStoryViewTime','ffStoryMusicName'].forEach(id=>{ const el=$(id); if(el) obs.observe(el,{attributes:true,childList:true,subtree:true,characterData:true}); });
    setTimeout(()=>{ refreshTopLine(); schedule(true); }, 250);
  });
+})();
+</script>
+
+
+<style id="duarte-v149-story-video-preview-fix">
+#ffStoryComposer #ffV124Canvas.ff-ready{display:block!important;position:relative!important}
+#ffStoryComposer #ffV139PreviewVideo:not([hidden]){display:block!important;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain!important;background:#080808!important;position:absolute!important;inset:0!important;z-index:7!important;opacity:1!important;visibility:visible!important}
+#ffStoryComposer #ffV139PreviewVideo[hidden]{display:none!important}
+#ffStoryComposer #ffV124Canvas:has(#ffV139PreviewVideo:not([hidden])) #ffStoryPreview{display:none!important}
+#ffStoryComposer #ffV124Canvas:has(#ffV139PreviewVideo:not([hidden])) #ffV124DragText{pointer-events:none!important}
+</style>
+<script id="duarte-v149-story-video-preview-fix">
+(()=>{'use strict';
+ const file=document.getElementById('ffStoryFile'),video=document.getElementById('ffV139PreviewVideo'),photo=document.getElementById('ffStoryPreview'),canvas=document.getElementById('ffV124Canvas'),status=document.getElementById('ffStoryStatus');
+ if(!file||!video||!canvas)return;
+ let objectURL=null, token=0;
+ function reset(){token++;try{video.pause()}catch(_){};video.removeAttribute('src');video.hidden=true;video.load();if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null}}
+ function preview(){
+   reset();const f=file.files?.[0];if(!f){canvas.classList.remove('ff-ready');return}
+   canvas.classList.add('ff-ready');
+   if(!f.type.startsWith('video/'))return;
+   if(photo){photo.removeAttribute('src');photo.style.display='none'}
+   const thisToken=token;
+   objectURL=URL.createObjectURL(f);video.hidden=false;video.controls=true;video.muted=true;video.playsInline=true;video.preload='metadata';video.src=objectURL;
+   video.onloadeddata=()=>{if(token!==thisToken)return;if(status)status.textContent='Video preview ready';};
+   video.onerror=()=>{if(token!==thisToken)return;if(status)status.textContent='This video format cannot be previewed on your phone. Try MP4 (H.264).';};
+   video.load();video.play().catch(()=>{});
+ }
+ file.addEventListener('change',preview);
+ ['ffStoryCancel','ffStoryComposeClose','ffStoryPublish'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>{if(id==='ffStoryPublish')return;reset()}));
+ const root=document.getElementById('ffStoryComposer');
+ if(root){new MutationObserver(()=>{if(!root.classList.contains('open'))reset()}).observe(root,{attributes:true,attributeFilter:['class']})}
 })();
 </script>
 

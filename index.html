@@ -4041,7 +4041,7 @@ function renderPostCard(post, profile) {
 }
 
 
-const FF_FEED_PAGE_SIZE = 10;
+const FF_FEED_PAGE_SIZE = 6;
 let ffFeedPage = 0;
 let ffFeedLoading = false;
 let ffFeedHasMore = true;
@@ -8237,7 +8237,7 @@ window.openMemberProfileById=openClanProfile;
      const col=document.createElement("div");col.className="ff-v42-collage";col.dataset.count=Math.min(arr.length,4);
      arr.slice(0,4).forEach((p,i)=>{
        const d=document.createElement("div");d.className="ff-v42-photo";
-       const im=document.createElement("img");im.src=p.image_url;im.alt="Post photo";im.loading="lazy";
+       const im=document.createElement("img");im.src=p.image_url;im.alt="Post photo";im.loading="lazy";im.decoding="async";
        d.appendChild(im);d.onclick=()=>{if(typeof window.openPhotoViewer==="function")openPhotoViewer(p.image_url);else window.open(p.image_url,"_blank")};
        col.appendChild(d);
      });
@@ -8252,7 +8252,24 @@ window.openMemberProfileById=openClanProfile;
    return rows;
  };
  window.ffV42RefreshPostPhotos=loadForCards;
- document.addEventListener("DOMContentLoaded",()=>{loadForCards();new MutationObserver(()=>{clearTimeout(window.__ffv42t);window.__ffv42t=setTimeout(loadForCards,120)}).observe(document.getElementById("posts")||document.querySelector(".feed"),{childList:true,subtree:true})});
+ document.addEventListener("DOMContentLoaded",()=>{
+   const root=document.getElementById("postsContainer");
+   if(!root)return;
+   let signature="",inFlight=false,rerun=false;
+   const refresh=async()=>{
+     const next=[...root.querySelectorAll(":scope > .post-card[data-post-id]")].map(el=>el.dataset.postId).join(",");
+     if(next===signature)return;
+     if(inFlight){rerun=true;return}
+     signature=next;inFlight=true;
+     try{if(next)await loadForCards()}finally{inFlight=false;if(rerun){rerun=false;refresh()}}
+   };
+   let idle=0;
+   const schedule=()=>{clearTimeout(idle);idle=setTimeout(refresh,240)};
+   new MutationObserver(records=>{
+     if(records.some(r=>[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&n.matches?.('.post-card[data-post-id]'))))schedule();
+   }).observe(root,{childList:true});
+   refresh();
+ });
 })();
 </script>
 
@@ -10085,7 +10102,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v47.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v48.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -16332,7 +16349,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v137';
+ const VERSION='v138';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -16366,7 +16383,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
    if(!navigator.onLine){show('Connect to the internet to update.');return}
    if(!pending){await check(true);return}
    try{const reg=await navigator.serviceWorker?.getRegistration();await reg?.update();if(reg?.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'})}catch(_){}
-   try{sessionStorage.setItem('duarte_update_attempt',VERSION);sessionStorage.setItem('duarte_update_attempt_at',String(Date.now()));}catch(_){}
+   try{sessionStorage.setItem('duarte_update_attempt',(await (await fetch(endpoint+'?v='+Date.now(),{cache:'no-store'})).json()).version||VERSION);sessionStorage.setItem('duarte_update_attempt_at',String(Date.now()));}catch(_){}
    const next=new URL(location.href);next.searchParams.set('duarte_refresh',String(Date.now()));location.replace(next.href);
  }
  window.duarteSafeUpdateCheck=check;

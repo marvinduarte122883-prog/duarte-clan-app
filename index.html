@@ -7060,127 +7060,67 @@ window.openMemberProfileById=openClanProfile;
  .ff-cover-photo-action{right:10px!important;bottom:10px!important;padding:8px 10px!important}
 }
 </style>
-<script id="duarte-facebook-cover-upload-js">
+<style id="duarte-v163-cover-editor-css">
+.ff-cover-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:14px}.ff-cover-dialog{background:#fff;color:#171717;width:min(96vw,780px);max-height:95dvh;overflow:auto;border-radius:14px;padding:18px;box-shadow:0 12px 50px #0008}.ff-cover-dialog h3{margin:0 0 12px}.ff-cover-preview{width:100%;aspect-ratio:2.6/1;background:#222;overflow:hidden;position:relative;touch-action:none;cursor:grab;border-radius:8px}.ff-cover-preview img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none;user-select:none}.ff-cover-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.ff-cover-tools input[type=range]{flex:1;min-width:130px}.ff-cover-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.ff-cover-actions button,.ff-cover-tools button{border:1px solid #aaa;background:#eee;color:#111;border-radius:8px;padding:10px 14px;font-weight:600}.ff-cover-actions .primary{background:#0879ef;color:white;border-color:#0879ef}.ff-cover-actions button:disabled{opacity:.5}.ff-cover-photo-action{z-index:3!important}@media(max-width:700px){.ff-cover-dialog{padding:12px}.ff-cover-modal{padding:7px}.ff-cover-actions button{flex:1}}
+</style>
+<script id="duarte-v163-cover-editor-js">
 (function(){
- const BUCKET="family-gallery";
- let activeProfileId=null;
-
- function me(){return window.currentUser?.id||null}
- function getCover(){
-   return document.querySelector(".ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
+ 'use strict';
+ const BUCKET='family-gallery';let activeProfileId=null;
+ const me=()=>window.currentUser?.id||null;
+ const getCover=()=>document.querySelector('.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]');
+ function displayedId(){return document.querySelector('#ffFullProfile')?.dataset?.ffV129MemberId||window.ffActiveProfileUserId||window.activeProfileUserId||window.currentProfileUserId||activeProfileId||null}
+ function isMine(){const mine=me(),other=displayedId();return !!mine&&(!other||String(other)===String(mine))}
+ async function persist(file,cover,btn){
+  if(!me()||!window.supabaseClient)throw new Error('Please sign in again.');
+  btn.disabled=true;
+  try{
+   if(typeof window.ffStorageSaverImage==='function')file=await window.ffStorageSaverImage(file,'cover');
+   const ext=(file.name.split('.').pop()||'jpg').replace(/[^a-z0-9]/gi,'').toLowerCase()||'jpg';
+   const path=`${me()}/cover-${Date.now()}.${ext}`;
+   const {error:upErr}=await supabaseClient.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type});if(upErr)throw upErr;
+   const {data:pub}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);const url=pub?.publicUrl;
+   if(!url)throw new Error('Cover URL was not created.');
+   const {error:saveErr}=await supabaseClient.rpc('update_my_duarte_cover',{p_cover_url:url});if(saveErr)throw saveErr;
+   cover.style.backgroundImage=`linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${url.replace(/"/g,'%22')}")`;
+   cover.style.backgroundPosition='center center';cover.style.backgroundSize='cover';
+  }finally{btn.disabled=false}
  }
- function knownDisplayedId(){
-   return window.ffActiveProfileUserId||window.activeProfileUserId||window.currentProfileUserId||activeProfileId||null;
+ function editCover(file,cover){
+  if(!file||!/^image\/(jpeg|png|webp)$/.test(file.type)){alert('Choose a JPG, PNG, or WebP picture.');return}
+  if(file.size>10*1024*1024){alert('Choose a photo smaller than 10 MB.');return}
+  const objectUrl=URL.createObjectURL(file), modal=document.createElement('div');modal.className='ff-cover-modal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Edit cover photo');
+  modal.innerHTML='<div class="ff-cover-dialog"><h3>Edit cover photo</h3><p style="margin:0 0 10px;font-size:13px">Drag the picture to reposition. Use zoom to adjust before saving.</p><div class="ff-cover-preview"><img alt="Cover photo preview"></div><div class="ff-cover-tools"><label for="ffCoverZoom">Zoom</label><input id="ffCoverZoom" type="range" min="100" max="250" value="100"><span id="ffCoverZoomValue">100%</span><button type="button" data-reset>Reset</button></div><div class="ff-cover-actions"><button type="button" data-cancel>Cancel</button><button type="button" class="primary" data-save>Save cover</button></div><p class="ff-cover-status" aria-live="polite" style="font-size:13px;margin:8px 0 0"></p></div>';
+  document.body.appendChild(modal);modal.tabIndex=-1;modal.focus();const img=modal.querySelector('img'),preview=modal.querySelector('.ff-cover-preview'),range=modal.querySelector('input'),value=modal.querySelector('#ffCoverZoomValue'),save=modal.querySelector('[data-save]'),status=modal.querySelector('.ff-cover-status');
+  const state={scale:1,dx:0,dy:0,base:1,iw:1,ih:1,pw:1,ph:1}, previousFocus=document.activeElement;let disposed=false,drag=null;
+  function close(){if(disposed)return;disposed=true;URL.revokeObjectURL(objectUrl);modal.remove();previousFocus?.focus?.()}
+  function render(){const w=preview.clientWidth,h=preview.clientHeight;if(!w||!h)return;state.pw=w;state.ph=h;state.base=Math.max(w/state.iw,h/state.ih);const scaled=state.base*state.scale;const maxX=Math.max(0,(state.iw*scaled-w)/2),maxY=Math.max(0,(state.ih*scaled-h)/2);state.dx=Math.min(maxX,Math.max(-maxX,state.dx));state.dy=Math.min(maxY,Math.max(-maxY,state.dy));img.style.objectFit='fill';img.style.width=state.iw*scaled+'px';img.style.height=state.ih*scaled+'px';img.style.position='absolute';img.style.maxWidth='none';img.style.left=((w-state.iw*scaled)/2+state.dx)+'px';img.style.top=((h-state.ih*scaled)/2+state.dy)+'px';value.textContent=Math.round(state.scale*100)+'%'}
+  img.onload=()=>{state.iw=img.naturalWidth;state.ih=img.naturalHeight;render()};img.src=objectUrl;
+  range.oninput=()=>{state.scale=Number(range.value)/100;render()};modal.querySelector('[data-reset]').onclick=()=>{state.scale=1;state.dx=state.dy=0;range.value='100';render()};
+  preview.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};preview.setPointerCapture(e.pointerId)});preview.addEventListener('pointermove',e=>{if(!drag)return;state.dx+=e.clientX-drag.x;state.dy+=e.clientY-drag.y;drag={x:e.clientX,y:e.clientY};render()});preview.addEventListener('pointerup',()=>drag=null);preview.addEventListener('pointercancel',()=>drag=null);
+  modal.querySelector('[data-cancel]').onclick=close;
+  modal.addEventListener('click',e=>{if(e.target===modal)close()});
+  modal.addEventListener('keydown',e=>{if(e.key==='Escape'&&!save.disabled)close()});
+  save.onclick=async()=>{save.disabled=true;modal.querySelector('[data-cancel]').disabled=true;status.textContent='Saving cover photo…';try{
+    // Store the crop itself, so its positioning remains consistent across browsers without new SQL fields.
+    const cw=1300,ch=500,canvas=document.createElement('canvas');canvas.width=cw;canvas.height=ch;const ctx=canvas.getContext('2d');const ratio=cw/state.pw;
+    ctx.drawImage(img,(state.pw-state.iw*state.base*state.scale)/2*ratio+state.dx*ratio,(state.ph-state.ih*state.base*state.scale)/2*(ch/state.ph)+state.dy*(ch/state.ph),state.iw*state.base*state.scale*ratio,state.ih*state.base*state.scale*(ch/state.ph));
+    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Could not prepare the cover picture.')),'image/jpeg',.85));
+    await persist(new File([blob],'cover.jpg',{type:'image/jpeg'}),cover,save);close();
+   }catch(err){console.error('[V163 cover editor]',err);status.textContent='Unable to save: '+(err?.message||err);save.disabled=false;modal.querySelector('[data-cancel]').disabled=false}
+  };
  }
- function isMine(){
-   const id=knownDisplayedId(), mine=me();
-   return !!mine && (!id || String(id)===String(mine));
+ function install(){const cover=getCover();if(!cover)return;
+  cover.querySelectorAll('.ff-cover-edit-btn,.ff-duarte-cover-edit,.ff-cover-upload-input,.ff-duarte-cover-input,.ff-cover-photo-action:not(.ff-v163-cover-button),.ff-cover-photo-file').forEach(n=>n.remove());
+  if(!isMine())return;
+  // Avoid stacking the old cover click listeners. The new button handles editing.
+  if(cover.querySelector('.ff-v163-cover-button'))return;
+  const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.hidden=true;input.className='ff-v163-cover-input';
+  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.stopPropagation();input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
  }
-
- async function uploadCover(file,cover,button){
-   if(!file||!cover||!me()||!window.supabaseClient)return;
-   if(!/^image\/(jpeg|png|webp)$/.test(file.type)){
-     alert("Please choose a JPG, PNG, or WebP photo."); return;
-   }
-   if(file.size>10*1024*1024){
-     alert("Cover photo must be 10 MB or smaller."); return;
-   }
-   const old=button.textContent;
-   button.classList.add("ff-cover-uploading"); button.textContent="Uploading…";
-   try{
-     file=await window.ffStorageSaverImage(file,"cover");
-     const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
-     const path=`${me()}/cover-${Date.now()}.${ext}`;
-     const {error:upErr}=await supabaseClient.storage.from(BUCKET).upload(path,file,{
-       upsert:false,contentType:file.type
-     });
-     if(upErr)throw upErr;
-
-     const {data:pub}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
-     const url=pub?.publicUrl;
-     if(!url)throw new Error("Cover photo URL was not created.");
-
-     const {error:saveErr}=await supabaseClient.rpc("update_my_duarte_cover",{p_cover_url:url});
-     if(saveErr)throw saveErr;
-
-     cover.style.backgroundImage=`url("${url.replace(/"/g,"%22")}")`;
-     cover.style.backgroundSize="cover";
-     cover.style.backgroundPosition="center";
-     cover.style.backgroundRepeat="no-repeat";
-   }catch(err){
-     console.error("[Duarte Cover Upload]",err);
-     alert("Cover photo could not be saved: "+(err?.message||err));
-   }finally{
-     button.classList.remove("ff-cover-uploading"); button.textContent=old;
-   }
- }
-
- function install(){
-   const cover=getCover();
-   if(!cover)return;
-
-   // remove older duplicate controls added by previous V2.1 patches
-   cover.querySelectorAll(".ff-cover-edit-btn,.ff-duarte-cover-edit,.ff-cover-upload-input,.ff-duarte-cover-input")
-        .forEach(n=>n.remove());
-
-   if(!isMine()){
-     cover.classList.remove("ff-cover-click-upload");
-     cover.querySelectorAll(".ff-cover-photo-action,.ff-cover-photo-file").forEach(n=>n.remove());
-     return;
-   }
-
-   cover.classList.add("ff-cover-click-upload");
-   if(cover.querySelector(".ff-cover-photo-action"))return;
-
-   const input=document.createElement("input");
-   input.type="file"; input.accept="image/jpeg,image/png,image/webp";
-   input.className="ff-cover-photo-file";
-
-   const btn=document.createElement("button");
-   btn.type="button"; btn.className="ff-cover-photo-action";
-   btn.textContent="📷 Edit Cover Photo";
-
-   const choose=(e)=>{e?.preventDefault?.();e?.stopPropagation?.();input.click()};
-   btn.addEventListener("click",choose);
-   cover.addEventListener("click",function(e){
-     if(e.target.closest?.("button,input,a"))return;
-     choose(e);
-   });
-   input.addEventListener("change",async()=>{
-     const file=input.files?.[0];
-     if(file)await uploadCover(file,cover,btn);
-     input.value="";
-   });
-   cover.append(input,btn);
- }
-
- function hookOpen(name){
-   const fn=window[name];
-   if(typeof fn!=="function"||fn.__fbCoverUploadHook)return;
-   const wrapped=async function(...args){
-     const a=args[0];
-     activeProfileId=(a&&typeof a==="object")?(a.id||a.user_id):a;
-     const result=await fn.apply(this,args);
-     setTimeout(install,60);
-     return result;
-   };
-   wrapped.__fbCoverUploadHook=true;
-   window[name]=wrapped;
- }
-
- function boot(){
-   ["openClanProfile","openMemberProfile","openMemberProfileById","openFullClanProfile","ffViewMyProfile"]
-     .forEach(hookOpen);
-   install();
- }
- document.addEventListener("DOMContentLoaded",()=>{
-   boot();
-   const mo=new MutationObserver(()=>install());
-   mo.observe(document.getElementById("ffFullProfile"),{childList:true,subtree:true});
-   setTimeout(boot,1000);
- });
- window.addEventListener("load",()=>setTimeout(boot,300));
- window.ffInstallFacebookCoverUpload=install;
+ function hook(name){const old=window[name];if(typeof old!=='function'||old.__v163CoverHook)return;const fn=async function(...args){const arg=args[0];activeProfileId=(arg&&typeof arg==='object')?(arg.id||arg.user_id):arg;const result=await old.apply(this,args);setTimeout(install,80);return result};fn.__v163CoverHook=true;window[name]=fn}
+ function boot(){['openClanProfile','openMemberProfile','openMemberProfileById','openFullClanProfile','ffViewMyProfile'].forEach(hook);install()}
+ document.addEventListener('DOMContentLoaded',()=>{boot();const target=document.getElementById('ffFullProfile');if(target)new MutationObserver(()=>{const cover=getCover();if(cover&&!cover.querySelector('.ff-v163-cover-button')&&isMine())install()}).observe(target,{childList:true,subtree:true});});window.addEventListener('load',()=>setTimeout(boot,300));window.ffInstallFacebookCoverUpload=install;
 })();
 </script>
 
@@ -10112,7 +10052,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v50.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v51.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();

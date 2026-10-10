@@ -2479,6 +2479,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
                     <button id="ffV129PhotoButton" class="ff-v129-photo-button" type="button" onclick="choosePhoto()" title="Upload photo" aria-label="Upload photo to post">
                       <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 16-5-5L5 21"/></svg>
                     </button>
+                    <button id="ff135VideoButton" class="ff-v129-photo-button" type="button" onclick="window.ff135ChooseVideo()" title="Upload video" aria-label="Upload video to post">🎬</button>
                 </div>
 
                 <div id="ffV130PhotoComposerMeta" class="ff-v130-photo-meta" aria-hidden="true">
@@ -2495,7 +2496,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
                 </div>
 
                 <div id="ffV130PhotoActions" class="ff-v130-photo-actions" aria-hidden="true">
-                    <button type="button" class="ff-v130-action" onclick="choosePhoto()"><span>🖼️</span><strong>Photos/videos</strong></button>
+                    <button type="button" class="ff-v130-action" onclick="choosePhoto()"><span>🖼️</span><strong>Photos</strong></button>
                     <button type="button" class="ff-v130-action" onclick="window.ffV130ToggleDetails?.(0)"><span>👥</span><strong>Tag people</strong></button>
                     <button type="button" class="ff-v130-action" onclick="window.ffV130ToggleDetails?.(2)"><span>📍</span><strong>Add location</strong></button>
                     <button type="button" class="ff-v130-action" onclick="window.ffV130ToggleDetails?.(1)"><span>😊</span><strong>Feeling/activity</strong></button>
@@ -2550,6 +2551,8 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
                     <button type="button" onclick="clearSelectedPostPhoto()"
                             style="position:absolute;top:8px;right:8px;border:0;border-radius:50%;width:30px;height:30px;cursor:pointer;">✕</button>
                 </div>
+                <input type="file" id="ff135VideoInput" accept="video/mp4,video/webm,video/quicktime" hidden>
+                <div id="ff135VideoPreviewWrap" hidden><video id="ff135VideoPreview" controls playsinline preload="metadata"></video><button type="button" onclick="window.ff135ClearVideo()" aria-label="Remove selected video">✕ Remove video</button><small id="ff135VideoInfo"></small></div>
 
             </div>
 
@@ -3862,7 +3865,8 @@ async function publishPost() {
     const rawText = input.value.trim();
     const text = window.ff114Details?.combine(rawText,"home") || rawText;
     const multiFiles = window.ffRichComposerV41?.getFiles?.() || [];
-    const hasPhoto = !!selectedPostPhotoFile || multiFiles.length > 0;
+    const videoFile = window.ff135GetVideoFile?.() || null;
+    const hasPhoto = !!selectedPostPhotoFile || multiFiles.length > 0 || !!videoFile;
 
     if (!text && !hasPhoto) {
         alert("Write something or select a photo before posting.");
@@ -3876,6 +3880,7 @@ async function publishPost() {
     }
 
     if (!navigator.onLine) {
+        if (videoFile) { alert("Video posts require internet. Reconnect and try again."); return; }
         try {
             const offlineFiles = multiFiles.length ? multiFiles : (selectedPostPhotoFile ? [selectedPostPhotoFile] : []);
             if (offlineFiles.length > 1) {
@@ -3938,6 +3943,7 @@ async function publishPost() {
         input.value = "";
         window.ff114Details?.reset("home");
         clearSelectedPostPhoto();
+        window.ff135ClearVideo?.();
         window.ffV130SyncComposer?.();
         window.ffRichComposerV41?.clear?.();
         await loadPosts();
@@ -4003,6 +4009,7 @@ function renderPostCard(post, profile) {
                      style="width:100%;max-height:520px;object-fit:contain;border-radius:12px;margin-bottom:15px;background:#101010;">
             ` : ""}
 
+            ${post.video_url ? `<video class="ff135-feed-video" controls preload="none" playsinline src="${escapeHTML(post.video_url)}"></video>` : ""}
             <div class="post-stats">
                 <span class="reaction-count">0 reactions</span>
                 <span class="comment-count" style="cursor:pointer" onclick="openFacebookComments(Number(this.closest('.post-card').dataset.postId))">0 comments</span>
@@ -4063,12 +4070,18 @@ async function ffLoadPostBatch(reset = false) {
     try {
         const { data: posts, error: postsError } = await supabaseClient
             .from("posts")
-            .select("id, user_id, content, image_url, created_at")
+            .select("id, user_id, content, image_url, video_url, created_at")
             .order("created_at", { ascending: false })
             .range(from, to);
-        if (postsError) throw postsError;
+        let feedPosts = posts;
+        if (postsError) {
+            // Old databases still load photo posts until video migration is applied.
+            const fallback = await supabaseClient.from('posts').select('id, user_id, content, image_url, created_at').order('created_at',{ascending:false}).range(from,to);
+            if(fallback.error) throw fallback.error;
+            feedPosts = fallback.data;
+        }
 
-        const batch = posts || [];
+        const batch = feedPosts || [];
         if (reset && batch.length === 0) {
             container.innerHTML = `<div style="background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:28px;color:var(--muted);text-align:center;">No clan posts yet.<br><span style="color:var(--gold)">Be the first to share a Duarte Clan update.</span></div>`;
             ffFeedHasMore = false;
@@ -11060,7 +11073,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  async function load(){
    ensureHost(); const strip=$("ffStoriesStrip"); if(!strip)return;
-   strip.innerHTML=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff-story-plus">+</div><span>Create Story</span></button><div class="ff-story-empty">Loading stories…</div>`;
+   strip.innerHTML=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff135-create-avatar"><img class="ff135-create-img" alt="Your profile photo" loading="eager" decoding="async"><span class="ff-story-plus">+</span></div><span>Create Story</span></button><div class="ff-story-empty">Loading stories…</div>`;
    $("ffCreateStory")?.addEventListener("click",openComposer);
    const client=sb(); if(!client){render([]);return;}
    try{
@@ -11079,7 +11092,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
  }
  function render(rows,msg){
    const strip=$("ffStoriesStrip");if(!strip)return;
-   let h=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff-story-plus">+</div><span>Create Story</span></button>`;
+   let h=`<button class="ff-story-card ff-story-create" id="ffCreateStory" type="button"><div class="ff135-create-avatar"><img class="ff135-create-img" alt="Your profile photo" loading="eager" decoding="async"><span class="ff-story-plus">+</span></div><span>Create Story</span></button>`;
    if(!rows.length)h+=`<div class="ff-story-empty">${esc(msg||"No active stories yet.")}</div>`;
    for(const s of rows){
      const p=state.profiles.get(s.user_id)||{};
@@ -16512,6 +16525,52 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
  modal.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();window.ffV74ClosePhoto()}});
  // Focus the close control for keyboard access without auto-opening the on-screen keyboard.
  modal.setAttribute('tabindex','-1');
+})();
+</script>
+
+<style id="duarte-v135-lite-media-style">
+#ffStories .ff-story-create{padding:0!important;justify-content:flex-end!important;background:#fff!important;color:#151515!important}
+#ffStories .ff135-create-avatar{height:75%;width:100%;position:absolute;top:0;left:0;background:#292929;overflow:visible}
+#ffStories .ff135-create-img{width:100%;height:100%;object-fit:cover;display:block}
+#ffStories .ff-story-create .ff-story-plus{position:absolute!important;bottom:-17px;left:50%;transform:translateX(-50%);margin:0!important;z-index:2}
+#ffStories .ff-story-create>span{position:absolute!important;bottom:9px;left:0;width:100%;text-align:center;color:#161616!important;font-size:11px!important;line-height:1.2;padding-top:5px}
+#createPostBox .post-top{min-width:0!important}#createPostBox #postInput{min-width:0!important;flex:1 1 auto}
+#createPostBox #ff135VideoButton{flex:0 0 42px;min-width:42px;max-width:42px;min-height:42px;font-size:22px;cursor:pointer}
+#ff135VideoPreviewWrap:not([hidden]){display:flex;flex-direction:column;gap:8px;margin:10px 0}
+#ff135VideoPreview{width:100%;max-height:min(50dvh,420px);background:#111;border-radius:12px;object-fit:contain}
+#ff135VideoPreviewWrap>button{align-self:flex-end;min-height:38px;border:0;border-radius:9px;padding:6px 14px}
+.ff135-feed-video{display:block;width:100%;max-height:65dvh;background:#000;border-radius:12px;margin:8px 0 14px;object-fit:contain}
+@media(max-width:700px){#createPostBox{max-width:100vw!important;box-sizing:border-box!important}#createPostBox .post-top{display:flex!important;align-items:center!important;gap:5px!important}#createPostBox #postInput{width:0!important;font-size:16px!important}#createPostBox #ffV129PhotoButton,#createPostBox #ff135VideoButton{flex:0 0 40px!important;width:40px!important;padding:5px!important}#ffStories .ff-story-create>span{font-size:10px!important}}
+@media(prefers-reduced-motion:reduce){#ffStories .ff-story-card,.ff135-feed-video{animation:none!important;transition:none!important}}
+</style>
+<script id="duarte-v135-lite-media-script">
+(()=>{'use strict';
+let videoFile=null,previewUrl=null;
+const input=document.getElementById('ff135VideoInput'),view=document.getElementById('ff135VideoPreview'),wrap=document.getElementById('ff135VideoPreviewWrap');
+window.ff135GetVideoFile=()=>videoFile;
+window.ff135ChooseVideo=()=>input?.click();
+window.ff135ClearVideo=()=>{videoFile=null;if(input)input.value='';if(view){view.pause();view.removeAttribute('src');view.load()}if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null}if(wrap)wrap.hidden=true};
+if(input)input.addEventListener('change',()=>{
+ const f=input.files?.[0];if(!f)return;
+ if(!['video/mp4','video/webm','video/quicktime'].includes(f.type)){alert('Choose MP4, WebM or MOV video.');input.value='';return}
+ if(f.size>40*1024*1024){alert('For low-memory phones, keep videos below 40 MB. Compress the file before uploading.');input.value='';return}
+ window.ffRichComposerV41?.clear?.();if(typeof clearSelectedPostPhoto==='function')clearSelectedPostPhoto();
+ window.ff135ClearVideo(); videoFile=f;previewUrl=URL.createObjectURL(f);view.src=previewUrl;view.preload='metadata';wrap.hidden=false;
+ document.getElementById('ff135VideoInfo').textContent='Video selected: '+(f.size/1048576).toFixed(1)+' MB. Upload requires internet.';
+});
+function syncAvatar(){
+ const strip=document.getElementById('ffStoriesStrip');if(!strip)return;
+ const img=strip.querySelector('.ff135-create-img');if(!img)return;
+ const profile=document.getElementById('createPostProfileAvatar');
+ const src=profile?.querySelector('img')?.getAttribute('src') || (typeof currentProfile!=='undefined' && currentProfile?.avatar_url) || '';
+ if(src && img.getAttribute('src')!==src)img.setAttribute('src',src);
+ else if(!src)img.removeAttribute('src');
+ img.style.visibility=src?'visible':'hidden';
+}
+const host=document.getElementById('ffStoriesStrip');
+if(host){const ob=new MutationObserver(syncAvatar);ob.observe(host,{childList:true});syncAvatar()}
+const photo=document.getElementById('createPostProfileAvatar');if(photo)new MutationObserver(syncAvatar).observe(photo,{childList:true,subtree:true,attributes:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar()});
 })();
 </script>
 </body>

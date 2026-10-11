@@ -1769,6 +1769,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   #ffFullProfile .ff-cover-photo-action,
   #ffFullProfile .ff-cover-edit-btn{right:10px!important;bottom:10px!important;padding:8px 10px!important;font-size:11px!important}
 }
+#ffFullProfile .ff-full-cover > .ff-v163-cover-button{visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:absolute!important;display:inline-flex!important}
 </style>
 
 <style id="duarte-v21-cover-photo">
@@ -7168,7 +7169,31 @@ window.openMemberProfileById=openClanProfile;
  }
  function hook(name){const old=window[name];if(typeof old!=='function'||old.__v163CoverHook)return;const fn=async function(...args){const arg=args[0];activeProfileId=(arg&&typeof arg==='object')?(arg.id||arg.user_id):arg;const result=await old.apply(this,args);setTimeout(install,80);return result};fn.__v163CoverHook=true;window[name]=fn}
  function boot(){['openClanProfile','openMemberProfile','openMemberProfileById','openFullClanProfile','ffViewMyProfile'].forEach(hook);install()}
- document.addEventListener('DOMContentLoaded',()=>{boot();const target=document.getElementById('ffFullProfile');if(target)new MutationObserver(()=>{const cover=getCover();if(cover&&!cover.querySelector('.ff-v163-cover-button')&&isMine())install()}).observe(target,{childList:true,subtree:true});});window.addEventListener('load',()=>setTimeout(boot,300));window.ffInstallFacebookCoverUpload=install;
+ document.addEventListener('DOMContentLoaded',()=>{
+  boot();
+  const target=document.getElementById('ffFullProfile');
+  if(target){
+    let queued=false;
+    const sync=()=>{
+      if(queued)return;
+      queued=true;
+      queueMicrotask(()=>{queued=false;
+        const cover=getCover();
+        if(!cover)return;
+        const shouldShow=isMine();
+        const button=cover.querySelector('.ff-v163-cover-button');
+        if((shouldShow&&!button)||(!shouldShow&&button))install();
+      });
+    };
+    // Opening a profile modifies class and data-ff-v129-member-id, not just child nodes.
+    // Watching these is necessary to install the cover control after profile navigation.
+    new MutationObserver(sync).observe(target,{attributes:true,attributeFilter:['class','data-ff-v129-member-id'],childList:true,subtree:false});
+    const cover=getCover();
+    if(cover)new MutationObserver(sync).observe(cover,{childList:true});
+    sync();
+  }
+});
+window.addEventListener('load',()=>setTimeout(boot,300));window.ffInstallFacebookCoverUpload=install;
 })();
 </script>
 

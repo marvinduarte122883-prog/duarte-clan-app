@@ -4693,6 +4693,8 @@ let ffActiveConversationId=null,ffActiveChatName="",ffActiveChatUserId=null,ffMe
 let ffChatOpenGeneration=0;
 // Stage 45: ignore superseded inbox refresh responses.
 let ffInboxLoadGeneration=0;
+// Stage 47: newer chat refreshes supersede older async message loads.
+let ffMessageLoadGeneration=0;
 // Stage 43: volatile, conversation-scoped drafts. Never persist private text to disk.
 const ffMessengerDrafts=new Map();
 function ffSaveActiveChatDraft(){
@@ -4716,6 +4718,7 @@ function openMessenger(){
  subscribeMessengerRealtime();
 }
 function closeMessenger(){
+ ++ffMessageLoadGeneration;
  ++ffInboxLoadGeneration;
  ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
@@ -4725,6 +4728,7 @@ function closeMessenger(){
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
 }
 function messengerBack(){
+ ++ffMessageLoadGeneration;
  ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
  ffV4CancelReply();
@@ -4820,6 +4824,7 @@ async function openConversation(id,name,userId=null){
 
 async function loadPrivateMessages(){
  if(!ffActiveConversationId)return;
+ const messageGeneration=++ffMessageLoadGeneration;
  const requestedConversationId=ffActiveConversationId;
  const box=document.getElementById("ffChatMessages");if(!box)return;
  try{
@@ -4835,7 +4840,7 @@ async function loadPrivateMessages(){
    const rr=await supabaseClient.from("message_reactions").select("message_id,user_id,reaction").in("message_id",ids);
    if(!rr.error)(rr.data||[]).forEach(x=>(react[x.message_id]??=[]).push(x));
   }
-  if(ffActiveConversationId!==requestedConversationId)return;
+  if(messageGeneration!==ffMessageLoadGeneration||ffActiveConversationId!==requestedConversationId||!document.getElementById("ffMsgModal")?.classList.contains("open"))return;
   box.innerHTML=a.length?a.map((x,idx)=>{
    const mine=x.sender_id===currentUser.id, replied=x.reply_to_id?byId[x.reply_to_id]:null;
    let seen="";
@@ -4850,12 +4855,12 @@ async function loadPrivateMessages(){
   }).join(""):'<div class="ff-chat-empty">No messages yet. Say hello 👋</div>';
   box.scrollTop=box.scrollHeight;
   const unread=a.filter(x=>x.sender_id!==currentUser.id&&!x.is_read).map(x=>x.id);
-  if(unread.length && ffActiveConversationId===requestedConversationId){
+  if(unread.length && messageGeneration===ffMessageLoadGeneration && ffActiveConversationId===requestedConversationId){
    const u=await supabaseClient.from("messages").update({is_read:true}).in("id",unread);
    if(u.error)console.error("Seen update:",u.error);
   }
-  refreshMessengerUnread();
- }catch(e){if(ffActiveConversationId!==requestedConversationId)return;box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
+  if(messageGeneration===ffMessageLoadGeneration)refreshMessengerUnread();
+ }catch(e){if(messageGeneration!==ffMessageLoadGeneration||ffActiveConversationId!==requestedConversationId||!document.getElementById("ffMsgModal")?.classList.contains("open"))return;box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
 }
 
 let ffV4ReplyToId=null,ffV4ReplyConversationId=null;

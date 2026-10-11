@@ -4542,7 +4542,8 @@ async function openEventAttendees(eventId,eventTitle) {
             const p=await supabaseClient.from("profiles")
                 .select("id,full_name,avatar_url,clan_role,birthday").in("id",ids);
             if(p.error)throw p.error;
-            (p.data||[]).forEach(x=>profiles[x.id]=x);
+            if(inboxGeneration!==ffInboxLoadGeneration)return;
+   (p.data||[]).forEach(x=>profiles[x.id]=x);
         }
 
         const groups=[
@@ -4690,6 +4691,8 @@ async function closeFacebookComments(){
 let ffActiveConversationId=null,ffActiveChatName="",ffActiveChatUserId=null,ffMessageTimer=null,ffMessengerChannel=null;
 // Stage 44: reject stale async private-chat open requests.
 let ffChatOpenGeneration=0;
+// Stage 45: ignore superseded inbox refresh responses.
+let ffInboxLoadGeneration=0;
 // Stage 43: volatile, conversation-scoped drafts. Never persist private text to disk.
 const ffMessengerDrafts=new Map();
 function ffSaveActiveChatDraft(){
@@ -4713,6 +4716,7 @@ function openMessenger(){
  subscribeMessengerRealtime();
 }
 function closeMessenger(){
+ ++ffInboxLoadGeneration;
  ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
  ffV4CancelReply();
@@ -4747,14 +4751,17 @@ async function startPrivateChat(uid,name){
 }
 
 async function loadConversations(){
+ const inboxGeneration=++ffInboxLoadGeneration;
  if(!currentUser)return;
  const box=document.getElementById("ffConversationList");if(!box)return;
  try{
   const mine=await supabaseClient.from("conversation_members").select("conversation_id").eq("user_id",currentUser.id);if(mine.error)throw mine.error;
+  if(inboxGeneration!==ffInboxLoadGeneration)return;
   const ids=[...new Set((mine.data||[]).map(x=>x.conversation_id))];
   if(!ids.length){box.innerHTML='<div class="ff-chat-empty" style="padding:25px">No conversations yet.<br>Choose a member and press 💬 Message.</div>';updateMessengerBadge(0);return}
 
   const cm=await supabaseClient.from("conversation_members").select("conversation_id,user_id").in("conversation_id",ids);if(cm.error)throw cm.error;
+  if(inboxGeneration!==ffInboxLoadGeneration)return;
   const others=(cm.data||[]).filter(x=>x.user_id!==currentUser.id),uids=[...new Set(others.map(x=>x.user_id))],profiles={};
   if(uids.length){
    const p=await supabaseClient.from("profiles").select("id,full_name,avatar_url,clan_role,birthday").in("id",uids);if(p.error)throw p.error;
@@ -4767,6 +4774,7 @@ async function loadConversations(){
    .order("created_at",{ascending:false})
    .limit(Math.max(80,Math.min(400,ids.length*25)));
   if(mr.error)throw mr.error;
+  if(inboxGeneration!==ffInboxLoadGeneration)return;
   const latest={},unread={};
   (mr.data||[]).forEach(x=>{
    if(!latest[x.conversation_id])latest[x.conversation_id]=x;
@@ -4787,7 +4795,7 @@ async function loadConversations(){
   }).join("");
   box.innerHTML=rows;
   filterMessengerConversations(document.getElementById("ffConversationSearch")?.value||"");
- }catch(e){box.innerHTML='<div class="ff-chat-empty" style="padding:25px">Conversations could not be loaded.</div>';console.error(e)}
+ }catch(e){if(inboxGeneration!==ffInboxLoadGeneration)return;box.innerHTML='<div class="ff-chat-empty" style="padding:25px">Conversations could not be loaded.</div>';console.error(e)}
 }
 
 function filterMessengerConversations(value){

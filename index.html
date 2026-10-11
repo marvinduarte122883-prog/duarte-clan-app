@@ -4926,16 +4926,23 @@ async function sendPrivateMessage(){
 
 window.ffV4Reply=ffV4Reply;window.ffV4CancelReply=ffV4CancelReply;window.ffV4React=ffV4React;
 
+// Stage 48: only the latest unread-count request may update the badge.
+let ffUnreadRefreshGeneration=0;
 async function refreshMessengerUnread(){
- if(!currentUser)return;
+ const requestGeneration=++ffUnreadRefreshGeneration;
+ const memberId=currentUser?.id;
+ if(!memberId)return;
+ const isCurrent=()=>requestGeneration===ffUnreadRefreshGeneration && currentUser?.id===memberId;
  try{
-  const c=await supabaseClient.from("conversation_members").select("conversation_id").eq("user_id",currentUser.id);if(c.error)throw c.error;
+  const c=await supabaseClient.from("conversation_members").select("conversation_id").eq("user_id",memberId);if(c.error)throw c.error;
+  if(!isCurrent())return;
   const ids=[...new Set((c.data||[]).map(x=>x.conversation_id))];
   if(!ids.length){updateMessengerBadge(0);return}
-  const m=await supabaseClient.from("messages").select("id").in("conversation_id",ids).neq("sender_id",currentUser.id).eq("is_read",false);
+  const m=await supabaseClient.from("messages").select("id").in("conversation_id",ids).neq("sender_id",memberId).eq("is_read",false);
   if(m.error)throw m.error;
+  if(!isCurrent())return;
   updateMessengerBadge((m.data||[]).length)
- }catch(e){console.error(e)}
+ }catch(e){if(isCurrent())console.error(e)}
 }
 function updateMessengerBadge(n){
  const b=document.getElementById("ffMsgBadge");

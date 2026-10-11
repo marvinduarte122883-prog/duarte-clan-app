@@ -17550,7 +17550,16 @@ html.ff-v154-profile-active #profileManager.show {
     previewError.textContent=message;
     previewError.style.display='block';
     previewShare.disabled=true;
-    if(media.tagName==='VIDEO')media.pause();
+    // Stage 37: immediately release stalled/failed media decoders and blob URLs.
+    // Keep the error message visible and Share disabled until a fresh preview.
+    if(media.tagName==='VIDEO'){
+      media.pause();
+      media.removeAttribute('src');
+      try{media.load()}catch(_){}
+    }else{
+      media.removeAttribute('src');
+    }
+    if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
   };
   media.addEventListener(media.tagName==='VIDEO'?'loadedmetadata':'load',previewReady,{once:true});
   media.addEventListener('error',()=>failPreview('This photo or video could not be previewed. Keep editing and choose another file.'),{once:true});

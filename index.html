@@ -4854,6 +4854,14 @@ async function loadPrivateMessages(){
   const distanceFromBottom=box.scrollHeight-box.scrollTop-box.clientHeight;
   const keepReadingPosition=sameRenderedConversation&&distanceFromBottom>120;
   const previousScrollTop=box.scrollTop;
+  // Stage 53: anchor the reader to the first visible message rather than a raw pixel offset.
+  // This prevents shifts when the latest 60-message window changes on refresh.
+  let readingAnchorId=null,readingAnchorOffset=0;
+  if(keepReadingPosition){
+   const boxTop=box.getBoundingClientRect().top;
+   const visible=[...box.querySelectorAll('.ff-bubble-row[data-message-id]')].find(row=>row.getBoundingClientRect().bottom>boxTop);
+   if(visible){readingAnchorId=visible.dataset.messageId;readingAnchorOffset=visible.getBoundingClientRect().top-boxTop;}
+  }
   box.innerHTML=a.length?a.map((x,idx)=>{
    const mine=x.sender_id===currentUser.id, replied=x.reply_to_id?byId[x.reply_to_id]:null;
    let seen="";
@@ -4867,7 +4875,11 @@ async function loadPrivateMessages(){
    return `<div class="ff-bubble-row ${mine?"mine":""}" data-message-id="${x.id}" data-ff-message-search="${escapeHTML(((x.content||"")+" "+(replied?.content||"")).toLowerCase())}"><div class="ff-bubble">${reply}${x.content?escapeHTML(x.content):""}${photo}<div class="ff-bubble-time">${new Date(x.created_at).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</div>${reactions?`<div class="ff-v4-msg-reactions">${escapeHTML(reactions)}</div>`:""}${seen}<div class="ff-v4-msg-tools"><button onclick="ffV4Reply(${x.id},${JSON.stringify((x.content||"Photo").slice(0,120)).replace(/"/g,"&quot;")})">↩</button>${["👍","❤️","😂","😮"].map(e=>`<button onclick="ffV4React(${x.id},'${e}')">${e}</button>`).join("")}${mine?`<button class="ff-v42-msg-delete" title="Delete my message" onclick="ffV42DeleteOwnMessage(${x.id},${JSON.stringify(x.attachment_url||"").replace(/"/g,"&quot;")})">🗑</button>`:""}</div></div></div>`
   }).join(""):'<div class="ff-chat-empty">No messages yet. Say hello 👋</div>';
   box.dataset.ffRenderedConversation=String(requestedConversationId);
-  box.scrollTop=keepReadingPosition?previousScrollTop:box.scrollHeight;
+  if(keepReadingPosition){
+   const anchor=readingAnchorId?[...box.querySelectorAll('.ff-bubble-row[data-message-id]')].find(row=>row.dataset.messageId===readingAnchorId):null;
+   box.scrollTop=previousScrollTop;
+   if(anchor){box.scrollTop+=anchor.getBoundingClientRect().top-box.getBoundingClientRect().top-readingAnchorOffset;}
+  }else{box.scrollTop=box.scrollHeight;}
   const unread=a.filter(x=>x.sender_id!==currentUser.id&&!x.is_read).map(x=>x.id);
   if(unread.length && messageGeneration===ffMessageLoadGeneration && ffActiveConversationId===requestedConversationId){
    const u=await supabaseClient.from("messages").update({is_read:true}).in("id",unread);

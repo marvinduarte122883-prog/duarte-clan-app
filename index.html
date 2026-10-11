@@ -17566,9 +17566,16 @@ html.ff-v154-profile-active #profileManager.show {
   e.preventDefault();e.stopImmediatePropagation();const generation=++publishGeneration;state.composing=true;publish.disabled=true;
   const status=document.getElementById('ffStoryStatus');status.textContent='Preparing edited photo…';
   try{const u=URL.createObjectURL(src),img=new Image();try{await new Promise((ok,fail)=>{img.onload=ok;img.onerror=()=>fail(new Error('Unable to open photo'));img.src=u})}finally{URL.revokeObjectURL(u)}
+   // Stage 30: cancellation check before canvas allocation, not after expensive export.
+   // If the creator was closed or another file was chosen during image decode, stop now.
+   if(generation!==publishGeneration || !root.classList.contains('open') || file.files?.[0]!==src){
+     state.composing=false;publish.disabled=false;return;
+   }
    const w=720,h=1280,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#16181c';ctx.fillRect(0,0,w,h);
    const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight)*state.zoom,iw=img.naturalWidth*scale,ih=img.naturalHeight*scale;ctx.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);
    if(state.emoji){ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='80px system-ui, sans-serif';ctx.fillText(state.emoji,w*state.x/100,h*state.y/100)}
+   // A Cancel or media change during canvas drawing must not initiate export.
+   if(generation!==publishGeneration || !root.classList.contains('open') || file.files?.[0]!==src){state.composing=false;publish.disabled=false;return;}
    const blob=await new Promise((resolve,reject)=>c.toBlob(x=>x?resolve(x):reject(new Error('Cannot export photo')),'image/jpeg',.85));
    if(generation!==publishGeneration||!root.classList.contains('open')||file.files?.[0]!==src){state.composing=false;publish.disabled=false;return;}
    const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-story-edited.jpg',{type:'image/jpeg'}));file.files=dt.files;

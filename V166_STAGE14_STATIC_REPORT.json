@@ -1,0 +1,29 @@
+{
+  "baseline": "Stage 13",
+  "changed_files": [
+    "index.html",
+    "duarte-version.json",
+    "duarte-sw-v56.js (new)",
+    "V166_STAGE14_RELEASE_NOTES.txt (new)"
+  ],
+  "js_syntax_results": [
+    {
+      "file": "index.html",
+      "passed": 178,
+      "errors": []
+    },
+    {
+      "file": "login.html",
+      "passed": 3,
+      "errors": []
+    },
+    {
+      "file": "admin.html",
+      "passed": 4,
+      "errors": []
+    }
+  ],
+  "service_worker": "syntax passed",
+  "supabase_changes": "none",
+  "verification": "static only"
+}

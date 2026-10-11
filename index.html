@@ -17536,31 +17536,30 @@ html.ff-v154-profile-active #profileManager.show {
   frame.appendChild(previewError);
   const previewShare=overlay.querySelector('[data-share]');
   previewShare.disabled=true;
-  // Stage 34: do not allow a media Story to publish until its preview decoded.
-  // Check this exact media element, because a newer preview may already exist.
+  // Stage 36: a failed or timed-out preview cannot become shareable from a late load event.
+  let previewFailed=false;
   const previewReady=()=>{
+    if(previewFailed || !overlay.classList.contains('ff20-open') || !media.isConnected || media.src!==previewUrl)return;
     if(previewLoadTimeout!==null){clearTimeout(previewLoadTimeout);previewLoadTimeout=null;}
-    if(overlay.classList.contains('ff20-open') && media.isConnected && media.src===previewUrl){
-      previewShare.disabled=false;
-    }
+    previewShare.disabled=false;
   };
-  media.addEventListener(media.tagName==='VIDEO'?'loadedmetadata':'load',previewReady,{once:true});
-  media.addEventListener('error',()=>{
+  const failPreview=(message)=>{
+    if(previewFailed || !overlay.classList.contains('ff20-open') || !media.isConnected || media.src!==previewUrl)return;
+    previewFailed=true;
     if(previewLoadTimeout!==null){clearTimeout(previewLoadTimeout);previewLoadTimeout=null;}
-    if(!overlay.classList.contains('ff20-open') || !media.isConnected)return;
-    previewError.style.display='block';
-    previewShare.disabled=true;
-  },{once:true});
-  media.src=previewUrl;
-  if(media.tagName==='VIDEO')media.load();
-  // Stage 35: a stalled decoder must not leave the member in a blank, unshareable preview forever.
-  previewLoadTimeout=setTimeout(()=>{
-    previewLoadTimeout=null;
-    if(!overlay.classList.contains('ff20-open') || !media.isConnected || media.src!==previewUrl || !previewShare.disabled)return;
-    previewError.textContent='Preview is taking too long. Keep editing and try another file.';
+    previewError.textContent=message;
     previewError.style.display='block';
     previewShare.disabled=true;
     if(media.tagName==='VIDEO')media.pause();
+  };
+  media.addEventListener(media.tagName==='VIDEO'?'loadedmetadata':'load',previewReady,{once:true});
+  media.addEventListener('error',()=>failPreview('This photo or video could not be previewed. Keep editing and choose another file.'),{once:true});
+  media.src=previewUrl;
+  if(media.tagName==='VIDEO')media.load();
+  previewLoadTimeout=setTimeout(()=>{
+    previewLoadTimeout=null;
+    if(!previewShare.disabled)return;
+    failPreview('Preview is taking too long. Keep editing and try another file.');
   },15000);
   if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
  // Stage 25: any changes to story appearance invalidate an existing preview.

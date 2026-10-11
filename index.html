@@ -17474,6 +17474,7 @@ html.ff-v154-profile-active #profileManager.show {
  const sticker=document.createElement('span');sticker.className='ff20-sticker';sticker.setAttribute('aria-label','Drag sticker');canvas.appendChild(sticker);
  const state={emoji:'',x:50,y:42,zoom:1,bg:'#333f72',textOnly:false,composing:false,original:null};
  let backgroundRequest=0;
+ let publishGeneration=0; // Cancel outdated asynchronous photo preparation.
  const colors=['#333f72','#b42066','#1d7577','#8d4a21','#222222','#633ea3','#1478ae'];
  function viewPanel(html){panel.innerHTML=html;panel.classList.add('ff20-on')}
  function textStory(color){const request=++backgroundRequest;state.textOnly=true;state.emoji='';sticker.classList.remove('ff20-show');state.zoom=1;state.bg=color||state.bg;shell.classList.add('ff-v127-editing','ff-v127-text');document.getElementById('ffV127EditorTools')?.removeAttribute('hidden');photo.style.display='block';const c=document.createElement('canvas');c.width=720;c.height=1280;const ctx=c.getContext('2d');ctx.fillStyle=state.bg;ctx.fillRect(0,0,720,1280);c.toBlob(blob=>{if(!blob||request!==backgroundRequest||!root.classList.contains('open'))return;const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-text-story.png',{type:'image/png'}));file.files=dt.files;file.dispatchEvent(new Event('change',{bubbles:true,detail:request}));photo.style.objectFit='cover';viewPanel('<label>Background</label><div class="ff20-palette">'+colors.map((v,i)=>'<button type="button" data-ff20-color="'+i+'" style="background:'+v+'" aria-label="Background '+(i+1)+'">●</button>').join('')+'</div>');caption.focus({preventScroll:true})},'image/png')}
@@ -17492,23 +17493,26 @@ html.ff-v154-profile-active #profileManager.show {
  let previewUrl=null;function clearPreview(){overlay.classList.remove('ff20-open');overlay.querySelector('video')?.pause();if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;overlay.querySelector('.ff20-preview-frame').replaceChildren()}
  async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open')}
  overlay.querySelector('[data-close]').addEventListener('click',clearPreview);overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();clearPreview()}});overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
- file.addEventListener('change',e=>{if(e.isTrusted){++backgroundRequest;state.textOnly=false;}if(!state.composing){state.zoom=1;photo.style.transform='';if(!state.textOnly)state.emoji='';sticker.classList.toggle('ff20-show',!!state.emoji)} });
- function reset(){++backgroundRequest;clearPreview();state.emoji='';state.zoom=1;state.textOnly=false;state.composing=false;sticker.classList.remove('ff20-show');photo.style.transform='';panel.classList.remove('ff20-on')}
+ file.addEventListener('change',e=>{if(e.isTrusted){++backgroundRequest;++publishGeneration;state.textOnly=false;}if(!state.composing){state.zoom=1;photo.style.transform='';if(!state.textOnly)state.emoji='';sticker.classList.toggle('ff20-show',!!state.emoji)} });
+ function reset(){++backgroundRequest;++publishGeneration;clearPreview();state.emoji='';state.zoom=1;state.textOnly=false;state.composing=false;sticker.classList.remove('ff20-show');photo.style.transform='';panel.classList.remove('ff20-on')}
  ['ffStoryCancel','ffStoryComposeClose'].forEach(id=>document.getElementById(id)?.addEventListener('click',reset));
  // Bake sticker/zoom into photo via client canvas before letting original Supabase publisher execute.
  publish.addEventListener('click',async e=>{
   if(state.composing||publish.disabled)return;
   const src=file.files?.[0];if(!src||src.type.startsWith('video/')||(!state.emoji&&state.zoom===1))return;
-  e.preventDefault();e.stopImmediatePropagation();state.composing=true;publish.disabled=true;
+  e.preventDefault();e.stopImmediatePropagation();const generation=++publishGeneration;state.composing=true;publish.disabled=true;
   const status=document.getElementById('ffStoryStatus');status.textContent='Preparing edited photo…';
   try{const u=URL.createObjectURL(src),img=new Image();try{await new Promise((ok,fail)=>{img.onload=ok;img.onerror=()=>fail(new Error('Unable to open photo'));img.src=u})}finally{URL.revokeObjectURL(u)}
    const w=720,h=1280,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#16181c';ctx.fillRect(0,0,w,h);
    const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight)*state.zoom,iw=img.naturalWidth*scale,ih=img.naturalHeight*scale;ctx.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);
    if(state.emoji){ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='80px system-ui, sans-serif';ctx.fillText(state.emoji,w*state.x/100,h*state.y/100)}
-   const blob=await new Promise((resolve,reject)=>c.toBlob(x=>x?resolve(x):reject(new Error('Cannot export photo')),'image/jpeg',.85));const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-story-edited.jpg',{type:'image/jpeg'}));file.files=dt.files;
+   const blob=await new Promise((resolve,reject)=>c.toBlob(x=>x?resolve(x):reject(new Error('Cannot export photo')),'image/jpeg',.85));
+   if(generation!==publishGeneration||!root.classList.contains('open')||file.files?.[0]!==src){state.composing=false;publish.disabled=false;return;}
+   const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-story-edited.jpg',{type:'image/jpeg'}));file.files=dt.files;
    state.emoji='';state.zoom=1;sticker.classList.remove('ff20-show');photo.style.transform='';status.textContent='Edited photo ready to share.';
   }catch(err){status.textContent='Could not prepare edits: '+(err?.message||err);state.composing=false;publish.disabled=false;return}
-  state.composing=false;publish.disabled=false;publish.click();
+  state.composing=false;publish.disabled=false;
+  if(generation===publishGeneration&&root.classList.contains('open'))publish.click();
  },true);
 })();
 </script>

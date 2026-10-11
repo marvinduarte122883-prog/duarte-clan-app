@@ -17534,10 +17534,18 @@ html.ff-v154-profile-active #profileManager.show {
  overlay.querySelector('[data-close]').addEventListener('click',clearPreview);
  // Stage 26: close a preview if the editor is dismissed through Back or another navigation path.
  // Watch only the editor's own class attribute, not its subtree or the entire document.
+ // Stage 31: invalidate asynchronous editor work on EVERY close transition.
+ // A quick close/reopen must not allow an old text background or photo job
+ // to update the next Story, even when Preview was never opened.
+ let editorWasOpen=root.classList.contains('open');
  const previewLifecycleObserver=new MutationObserver(()=>{
-   if(!root.classList.contains('open') && (overlay.classList.contains('ff20-open')||previewUrl)){
-     ++backgroundRequest;++publishGeneration;clearPreview();
+   const editorIsOpen=root.classList.contains('open');
+   if(editorWasOpen && !editorIsOpen){
+     ++backgroundRequest; ++publishGeneration;
+     state.composing=false;
+     clearPreview();
    }
+   editorWasOpen=editorIsOpen;
  });
  previewLifecycleObserver.observe(root,{attributes:true,attributeFilter:['class']});
  overlay.addEventListener('keydown',e=>{

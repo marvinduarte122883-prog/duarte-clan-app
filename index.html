@@ -2192,6 +2192,15 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 @media(max-width:760px){#membersGrid .member-name{font-size:15px!important}#membersGrid .clan-member-card{min-height:109px!important}}
 @media(max-width:380px){#membersGrid .member-name{font-size:14px!important}#membersGrid .clan-member-card{padding:10px!important}}
 </style>
+<style id="duarte-v166-stage3-perf">
+/* V166 Stage 3: keep offscreen album and feed cards cheap to lay out on supported browsers. */
+@supports (content-visibility: auto) {
+  .gallery-photo-card, .ff-album-card, .ff-v3-photo-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 260px;
+  }
+}
+</style>
 </head>
 
 
@@ -5116,7 +5125,7 @@ async function loadGallery() {
             });
             return `
                 <div class="gallery-card">
-                    <img class="gallery-image"
+                    <img loading="lazy" decoding="async" class="gallery-image"
                          src="${escapeHTML(photo.image_url)}"
                          alt="${escapeHTML(photo.caption || "Duarte family photo")}"
                          data-v112-gallery-photo="${Number(photo.id)}">
@@ -5476,7 +5485,7 @@ function renderMembersDirectory(members) {
                  tabindex="0"
                  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openClanProfile('${member.id}')}">
                 <div class="member-avatar">${member.avatar_url
-                    ? `<img src="${escapeHTML(member.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                    ? `<img loading="lazy" decoding="async" src="${escapeHTML(member.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
                     : escapeHTML(initials)}</div>
                 <div style="min-width:0;flex:1;">
                     <h3 class="member-name ff-profile-link">${escapeHTML(member.full_name || "Duarte Clan Member")}</h3>
@@ -5529,7 +5538,7 @@ function renderSidebarMembers(members) {
         <div class="member-row ff-profile-link" data-user-id="${member.id}" onclick="openClanProfile('${member.id}')" role="button" tabindex="0">
             <div class="member-avatar">
                 ${member.avatar_url
-                    ? `<img src="${escapeHTML(member.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                    ? `<img loading="lazy" decoding="async" src="${escapeHTML(member.avatar_url)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
                     : escapeHTML(getInitials(member.full_name))}
             </div>
             <div>
@@ -5902,7 +5911,7 @@ function renderFamilyHistory(){
   const dates=x.entry_type==="memorial"?[x.birth_date?new Date(x.birth_date+"T00:00:00").getFullYear():"",x.death_date?new Date(x.death_date+"T00:00:00").getFullYear():""].filter(Boolean).join(" – "):"";
   const canEdit=ffHistoryAdmin()||x.created_by===currentUser?.id;
   return `<article class="ff-history-card">
-   <div class="ff-history-photo">${x.photo_url?`<img src="${ffHistoryEsc(x.photo_url)}" alt="">`:(x.entry_type==="memorial"?"🕯️":"📖")}</div>
+   <div class="ff-history-photo">${x.photo_url?`<img loading="lazy" decoding="async" src="${ffHistoryEsc(x.photo_url)}" alt="">`:(x.entry_type==="memorial"?"🕯️":"📖")}</div>
    <div class="ff-history-copy"><h3>${x.is_featured?"★ ":""}${ffHistoryEsc(x.title)}</h3>
    ${dates?`<div class="ff-history-dates">${ffHistoryEsc(dates)}</div>`:""}
    <div class="ff-history-text">${ffHistoryEsc(x.content)}</div>
@@ -6083,7 +6092,7 @@ async function loadFamilyAlbums(){
  if(albumIds.length){const {data:photos}=await supabaseClient.from("family_album_photos").select("album_id").in("album_id",albumIds);(photos||[]).forEach(p=>countMap[p.album_id]=(countMap[p.album_id]||0)+1);}
  ffAlbums=albums.map(a=>({...a,profiles:creatorMap[a.created_by]||null,_photo_count:countMap[a.id]||0}));
  document.getElementById("ffAlbumsCount").textContent=ffAlbums.length+" album"+(ffAlbums.length===1?"":"s");
- box.innerHTML=ffAlbums.length?ffAlbums.map(a=>{const can=ffAlbAdmin()||a.created_by===currentUser?.id,cnt=a._photo_count||0;return `<article class="ff-album-card" onclick="openAlbum(${Number(a.id)})"><div class="ff-album-cover">${a.cover_url?`<img src="${ffAlbEsc(a.cover_url)}" alt="">`:"📸"}</div><div class="ff-album-card-copy"><strong>${ffAlbEsc(a.title)}</strong><span>${cnt} photo${cnt==1?"":"s"} · ${ffAlbEsc(a.profiles?.full_name||"Duarte Clan Member")}</span>${can?`<div class="ff-album-card-actions"><button onclick="event.stopPropagation();editAlbum(${Number(a.id)})">Edit</button><button onclick="event.stopPropagation();deleteAlbum(${Number(a.id)})">Delete</button></div>`:""}</div></article>`}).join(""):'<div class="ff-albums-empty">No family albums yet. Create the first one.</div>';
+ box.innerHTML=ffAlbums.length?ffAlbums.map(a=>{const can=ffAlbAdmin()||a.created_by===currentUser?.id,cnt=a._photo_count||0;return `<article class="ff-album-card" onclick="openAlbum(${Number(a.id)})"><div class="ff-album-cover">${a.cover_url?`<img loading="lazy" decoding="async" src="${ffAlbEsc(a.cover_url)}" alt="">`:"📸"}</div><div class="ff-album-card-copy"><strong>${ffAlbEsc(a.title)}</strong><span>${cnt} photo${cnt==1?"":"s"} · ${ffAlbEsc(a.profiles?.full_name||"Duarte Clan Member")}</span>${can?`<div class="ff-album-card-actions"><button onclick="event.stopPropagation();editAlbum(${Number(a.id)})">Edit</button><button onclick="event.stopPropagation();deleteAlbum(${Number(a.id)})">Delete</button></div>`:""}</div></article>`}).join(""):'<div class="ff-albums-empty">No family albums yet. Create the first one.</div>';
 }
 function openAlbumEditor(){ffEditingAlbumId=null;["ffAlbumTitle","ffAlbumDescription","ffAlbumDate","ffAlbumCover"].forEach(id=>document.getElementById(id).value="");const f=document.getElementById("ffAlbumCreateFiles");if(f)f.value="";document.getElementById("ffAlbumEditorTitle").textContent="Create Album";document.getElementById("ffAlbumStatus").textContent="";document.getElementById("ffAlbumEditor")?.classList.add("open");}
 function closeAlbumEditor(){document.getElementById("ffAlbumEditor")?.classList.remove("open");}
@@ -6116,7 +6125,7 @@ async function saveAlbum(){const st=document.getElementById("ffAlbumStatus"),tit
 async function deleteAlbum(id){if(!await window.duarteConfirm("Delete this album and all photos inside it?"))return;const {error}=await supabaseClient.from("family_albums").delete().eq("id",id);if(error)return alert(error.message);await loadFamilyAlbums();}
 async function openAlbum(id){ffCurrentAlbum=ffAlbums.find(x=>Number(x.id)===Number(id));if(!ffCurrentAlbum)return;document.getElementById("ffAlbumViewTitle").textContent=ffCurrentAlbum.title;document.getElementById("ffAlbumViewMeta").textContent=[ffCurrentAlbum.album_date,ffCurrentAlbum.profiles?.full_name].filter(Boolean).join(" · ");document.getElementById("ffAlbumViewDescription").textContent=ffCurrentAlbum.description||"";document.getElementById("ffAlbumView")?.classList.add("open");await loadAlbumPhotos();}
 function closeAlbumView(){document.getElementById("ffAlbumView")?.classList.remove("open");ffCurrentAlbum=null;}
-async function loadAlbumPhotos(){if(!ffCurrentAlbum)return;const box=document.getElementById("ffAlbumPhotos");box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';const {data,error}=await supabaseClient.from("family_album_photos").select("id,image_url,caption,uploaded_by,created_at").eq("album_id",ffCurrentAlbum.id).order("created_at",{ascending:false});if(error){box.innerHTML='<div class="ff-albums-empty">'+ffAlbEsc(error.message)+'</div>';return;}const canAlbum=ffAlbAdmin()||ffCurrentAlbum.created_by===currentUser?.id;box.innerHTML=(data||[]).length?(data||[]).map(p=>`<div class="ff-album-photo"><img src="${ffAlbEsc(p.image_url)}" alt="" onclick="openPhotoViewer(${chr(39)}${ffAlbEsc(p.image_url)}${chr(39)})" style="cursor:pointer"><div class="ff-album-photo-copy">${ffAlbEsc(p.caption||"")}${(canAlbum||p.uploaded_by===currentUser?.id)?`<br><button onclick="deleteAlbumPhoto(${Number(p.id)})">Delete photo</button>`:""}</div></div>`).join(""):'<div class="ff-albums-empty">No photos in this album yet.</div>';}
+async function loadAlbumPhotos(){if(!ffCurrentAlbum)return;const box=document.getElementById("ffAlbumPhotos");box.innerHTML='<div class="ff-albums-empty">Loading photos...</div>';const {data,error}=await supabaseClient.from("family_album_photos").select("id,image_url,caption,uploaded_by,created_at").eq("album_id",ffCurrentAlbum.id).order("created_at",{ascending:false});if(error){box.innerHTML='<div class="ff-albums-empty">'+ffAlbEsc(error.message)+'</div>';return;}const canAlbum=ffAlbAdmin()||ffCurrentAlbum.created_by===currentUser?.id;box.innerHTML=(data||[]).length?(data||[]).map(p=>`<div class="ff-album-photo"><img loading="lazy" decoding="async" src="${ffAlbEsc(p.image_url)}" alt="" onclick="openPhotoViewer(${chr(39)}${ffAlbEsc(p.image_url)}${chr(39)})" style="cursor:pointer"><div class="ff-album-photo-copy">${ffAlbEsc(p.caption||"")}${(canAlbum||p.uploaded_by===currentUser?.id)?`<br><button onclick="deleteAlbumPhoto(${Number(p.id)})">Delete photo</button>`:""}</div></div>`).join(""):'<div class="ff-albums-empty">No photos in this album yet.</div>';}
 function openAlbumPhotoEditor(){if(!ffCurrentAlbum)return;const f=document.getElementById("ffAlbumPhotoFiles");if(f)f.value="";document.getElementById("ffAlbumPhotoUrl").value="";document.getElementById("ffAlbumPhotoCaption").value="";document.getElementById("ffAlbumPhotoStatus").textContent="";document.getElementById("ffAlbumPhotoEditor")?.classList.add("open");}
 function closeAlbumPhotoEditor(){document.getElementById("ffAlbumPhotoEditor")?.classList.remove("open");}
 async function saveAlbumPhoto(){if(!ffCurrentAlbum)return;const st=document.getElementById("ffAlbumPhotoStatus"),url=document.getElementById("ffAlbumPhotoUrl").value.trim(),caption=window.ff114Details?.combine(document.getElementById("ffAlbumPhotoCaption").value.trim(),"albumphoto")||document.getElementById("ffAlbumPhotoCaption").value.trim(),files=[...(document.getElementById("ffAlbumPhotoFiles")?.files||[])];if(!url&&!files.length){st.textContent="Choose at least one photo.";return;}st.textContent=files.length?`Uploading ${files.length} photo${files.length===1?"":"s"}...`:"Adding...";try{if(files.length)await ffAlbumInsertFiles(ffCurrentAlbum.id,files,caption,st);if(url){const r=await supabaseClient.from("family_album_photos").insert({album_id:ffCurrentAlbum.id,image_url:url,caption:caption||null,uploaded_by:currentUser.id});if(r.error)throw r.error;}closeAlbumPhotoEditor();await loadAlbumPhotos();await loadFamilyAlbums();}catch(e){st.textContent=e?.message||"Photo upload failed.";}}
@@ -6175,7 +6184,7 @@ function renderFamilyDirectory(){
  const rows=ffDirectoryMembers.filter(m=>{const d=m.directory_profiles?.[0]||{};return !q||[m.full_name,d.city,d.occupation,d.family_branch].some(v=>String(v||"").toLowerCase().includes(q));});
  box.innerHTML=rows.length?rows.map(m=>{const d=m.directory_profiles?.[0]||{},self=m.id===currentUser?.id;
  const phone=(self||d.show_phone)&&d.phone?`<div>📱 ${ffDirEsc(d.phone)}</div>`:"",email=(self||d.show_email)&&d.email?`<div>✉️ ${ffDirEsc(d.email)}</div>`:"",city=(self||d.show_location)&&d.city?`<div>📍 ${ffDirEsc(d.city)}</div>`:"",occ=(self||d.show_occupation)&&d.occupation?`<div>💼 ${ffDirEsc(d.occupation)}</div>`:"";
- return `<article class="ff-directory-card"><div class="ff-directory-top"><div class="ff-directory-avatar">${m.avatar_url?`<img src="${ffDirEsc(m.avatar_url)}" alt="">`:ffDirInitials(m.full_name)}</div><div class="ff-directory-name"><strong>${ffDirEsc(m.full_name)}</strong><span>${ffDirEsc(m.clan_role||"Member")}</span></div></div><div class="ff-directory-details">${d.family_branch?`<div>🌳 ${ffDirEsc(d.family_branch)}</div>`:""}${city}${occ}${phone}${email}${m.birthday?`<div>🎂 ${ffDirEsc(m.birthday)}</div>`:""}</div><div class="ff-directory-buttons"><button onclick="ffDirectoryViewProfile('${ffDirEsc(m.id)}')">View Profile</button>${self?"":`<button onclick="ffDirectoryMessage('${ffDirEsc(m.id)}')">Message</button>`}</div></article>`}).join(""):'<div class="ff-directory-empty">No matching family members.</div>';
+ return `<article class="ff-directory-card"><div class="ff-directory-top"><div class="ff-directory-avatar">${m.avatar_url?`<img loading="lazy" decoding="async" src="${ffDirEsc(m.avatar_url)}" alt="">`:ffDirInitials(m.full_name)}</div><div class="ff-directory-name"><strong>${ffDirEsc(m.full_name)}</strong><span>${ffDirEsc(m.clan_role||"Member")}</span></div></div><div class="ff-directory-details">${d.family_branch?`<div>🌳 ${ffDirEsc(d.family_branch)}</div>`:""}${city}${occ}${phone}${email}${m.birthday?`<div>🎂 ${ffDirEsc(m.birthday)}</div>`:""}</div><div class="ff-directory-buttons"><button onclick="ffDirectoryViewProfile('${ffDirEsc(m.id)}')">View Profile</button>${self?"":`<button onclick="ffDirectoryMessage('${ffDirEsc(m.id)}')">Message</button>`}</div></article>`}).join(""):'<div class="ff-directory-empty">No matching family members.</div>';
 }
 function ffDirectoryViewProfile(id){closeFamilyDirectory();if(typeof openMemberProfile==="function")openMemberProfile(id);else if(typeof openMemberProfileById==="function")openMemberProfileById(id);}
 async function ffDirectoryMessage(id){closeFamilyDirectory();if(typeof startPrivateChat==="function")await startPrivateChat(id);else if(typeof startDuartePrivateChat==="function")await startDuartePrivateChat(id);}
@@ -6585,7 +6594,7 @@ function ffV21ProfileAvatar(profile){
   const name=(profile?.full_name||'Duarte Clan Member').trim();
   const initials=name.split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'D';
   return profile?.avatar_url
-    ? `<img src="${escapeHTML(profile.avatar_url)}" alt="${escapeHTML(name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+    ? `<img loading="lazy" decoding="async" src="${escapeHTML(profile.avatar_url)}" alt="${escapeHTML(name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
     : escapeHTML(initials);
 }
 let ffV128ProfileRequest=0;
@@ -7763,7 +7772,7 @@ window.openMemberProfileById=openClanProfile;
      const q=await supabaseClient.from("family_album_photos").select("album_id").in("album_id",rows.map(x=>x.id));
      (q.data||[]).forEach(x=>counts[x.album_id]=(counts[x.album_id]||0)+1);
    }
-   body.innerHTML=rows.length?`<div class="ff-pa3-albums">${rows.map(x=>`<div class="ff-pa3-album" data-album="${x.id}"><div class="ff-pa3-album-cover">${x.cover_url?`<img src="${esc(x.cover_url)}" alt="">`:"📷"}</div><div class="ff-pa3-album-info"><div class="ff-pa3-album-title">${esc(x.title)}</div><div class="ff-pa3-album-count">${counts[x.id]||0} photos</div></div></div>`).join("")}</div>`:'<div class="ff-pa3-empty">No family albums yet.</div>';
+   body.innerHTML=rows.length?`<div class="ff-pa3-albums">${rows.map(x=>`<div class="ff-pa3-album" data-album="${x.id}"><div class="ff-pa3-album-cover">${x.cover_url?`<img loading="lazy" decoding="async" src="${esc(x.cover_url)}" alt="">`:"📷"}</div><div class="ff-pa3-album-info"><div class="ff-pa3-album-title">${esc(x.title)}</div><div class="ff-pa3-album-count">${counts[x.id]||0} photos</div></div></div>`).join("")}</div>`:'<div class="ff-pa3-empty">No family albums yet.</div>';
  }
  async function render(){tab==="albums"?await albums():await photos()}
  function open(){document.getElementById("ffPhotosAlbumsV3")?.classList.add("open");document.body.style.overflow="hidden";render()}
@@ -8429,7 +8438,7 @@ button:disabled{cursor:not-allowed!important;opacity:.62!important}
    const list=host.querySelector(".ff-v42-profile-comment-list");if(!list)return;
    list.innerHTML=rows.slice(-8).map(x=>{
      const p=profiles[x.user_id]||{},name=p.full_name||"Clan Member",av=p.avatar_url||"";
-     return `<div class="ff-v42-profile-comment"><img src="${esc(av)}" alt=""><div class="ff-v42-profile-comment-body"><div class="ff-v42-profile-comment-name" onclick="openClanProfile('${esc(x.user_id)}')">${esc(name)}</div><div class="ff-v42-profile-comment-text">${esc(x.content)}</div></div></div>`;
+     return `<div class="ff-v42-profile-comment"><img loading="lazy" decoding="async" src="${esc(av)}" alt=""><div class="ff-v42-profile-comment-body"><div class="ff-v42-profile-comment-name" onclick="openClanProfile('${esc(x.user_id)}')">${esc(name)}</div><div class="ff-v42-profile-comment-text">${esc(x.content)}</div></div></div>`;
    }).join("") || '<div style="font-size:10px;color:#888">No comments yet.</div>';
  }
  async function send(pid,btn){
@@ -8774,7 +8783,7 @@ window.ffV42DeleteOwnMessage=ffV42DeleteOwnMessage;
      if(p.error)throw p.error;(p.data||[]).forEach(x=>profiles[x.id]=x);
    }
    const modal=document.createElement("div");modal.className="ff-v42-react-modal";
-   modal.innerHTML=`<div class="ff-v42-react-box"><div class="ff-v42-react-head"><strong>${esc(title)} · ${rows.length}</strong><button type="button">×</button></div><div>${rows.length?rows.map(x=>{const p=profiles[x.user_id]||{};return `<div class="ff-v42-react-person"><img src="${esc(p.avatar_url||"")}" alt=""><div class="ff-v42-react-name" data-uid="${esc(x.user_id)}">${esc(p.full_name||"Clan Member")}</div><div class="ff-v42-react-emoji">${esc(({like:"👍",love:"❤️",haha:"😂",wow:"😮",sad:"😢",angry:"😡",care:"🥰"})[String(x.reaction||"").toLowerCase()]||x.reaction||"👍")}</div></div>`}).join(""):'<div style="padding:20px;text-align:center;color:#888">No reactions yet.</div>'}</div></div>`;
+   modal.innerHTML=`<div class="ff-v42-react-box"><div class="ff-v42-react-head"><strong>${esc(title)} · ${rows.length}</strong><button type="button">×</button></div><div>${rows.length?rows.map(x=>{const p=profiles[x.user_id]||{};return `<div class="ff-v42-react-person"><img loading="lazy" decoding="async" src="${esc(p.avatar_url||"")}" alt=""><div class="ff-v42-react-name" data-uid="${esc(x.user_id)}">${esc(p.full_name||"Clan Member")}</div><div class="ff-v42-react-emoji">${esc(({like:"👍",love:"❤️",haha:"😂",wow:"😮",sad:"😢",angry:"😡",care:"🥰"})[String(x.reaction||"").toLowerCase()]||x.reaction||"👍")}</div></div>`}).join(""):'<div style="padding:20px;text-align:center;color:#888">No reactions yet.</div>'}</div></div>`;
    modal.querySelector(".ff-v42-react-head button").onclick=close;
    modal.onclick=e=>{if(e.target===modal)close()};
    modal.querySelectorAll("[data-uid]").forEach(n=>n.onclick=()=>{const id=n.dataset.uid;close();(window.openClanProfile||window.openMemberProfile)?.(id)});

@@ -4874,7 +4874,15 @@ async function loadPrivateMessages(){
    if(u.error)console.error("Seen update:",u.error);
   }
   if(messageGeneration===ffMessageLoadGeneration)refreshMessengerUnread();
- }catch(e){if(messageGeneration!==ffMessageLoadGeneration||ffActiveConversationId!==requestedConversationId||!document.getElementById("ffMsgModal")?.classList.contains("open"))return;box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
+ }catch(e){
+  if(messageGeneration!==ffMessageLoadGeneration||ffActiveConversationId!==requestedConversationId||!document.getElementById("ffMsgModal")?.classList.contains("open"))return;
+  // Stage 51: a failed background refresh must not erase already-rendered chat history.
+  // On the first load of a different chat there is no safe content to retain.
+  if(box.dataset.ffRenderedConversation!==String(requestedConversationId)){
+   box.innerHTML='<div class="ff-chat-empty" role="alert">Messages could not be loaded. Please try again.</div>';
+  }
+  console.error("Messenger message refresh failed:",e);
+ }
 }
 
 let ffV4ReplyToId=null,ffV4ReplyConversationId=null;
@@ -5802,7 +5810,7 @@ protectPrivateClan();
 
 <button class="ff-msg-fab" onclick="openMessenger()">💬 Messenger <span class="ff-msg-badge" id="ffMsgBadge">0</span></button>
 <div class="ff-msg-modal" id="ffMsgModal" onclick="if(event.target===this)closeMessenger()"><div class="ff-msg-shell" id="ffMsgShell">
-<div class="ff-msg-list"><div class="ff-msg-title"><span>💬 Messages</span><button class="ff-msg-close" onclick="closeMessenger()">×</button></div><div class="ff-v101-call-shortcuts" aria-label="Group call options"><button type="button" data-gc-kind="audio">📞 <span>Voice call</span></button><button type="button" data-gc-kind="video">📹 <span>Video call</span></button><button type="button" data-gc-kind="group">👥 <span>Group call</span></button></div><div class="ff-msg-search"><input id="ffConversationSearch" placeholder="Search conversations..." oninput="filterMessengerConversations(this.value)"></div><div id="ffConversationList"><div class="ff-chat-empty" style="padding:25px">No conversations yet.</div></div></div>
+<div class="ff-msg-list"><div class="ff-msg-title"><span>💬 Duarte Messenger</span><button class="ff-msg-close" onclick="closeMessenger()">×</button></div><div class="ff-v101-call-shortcuts" aria-label="Group call options"><button type="button" data-gc-kind="audio">📞 <span>Voice call</span></button><button type="button" data-gc-kind="video">📹 <span>Video call</span></button><button type="button" data-gc-kind="group">👥 <span>Group call</span></button></div><div class="ff-msg-search"><input id="ffConversationSearch" placeholder="Search conversations..." oninput="filterMessengerConversations(this.value)"></div><div id="ffConversationList"><div class="ff-chat-empty" style="padding:25px">No conversations yet.</div></div></div>
 <div class="ff-chat"><div class="ff-chat-head"><button class="ff-chat-back" onclick="messengerBack()">‹</button><span id="ffChatName">Select a conversation</span><span class="ff-call-head-actions"><button type="button" id="ffAudioCallBtn" class="ff-call-head-btn" title="Audio call" aria-label="Audio call">📞</button><button type="button" id="ffVideoCallBtn" class="ff-call-head-btn" title="Video call" aria-label="Video call">📹</button><button type="button" id="ffGroupCallBtn" class="ff-call-head-btn" title="Group call" aria-label="Group call">👥</button></span></div><div class="ff-chat-messages" id="ffChatMessages"><div class="ff-chat-empty">Choose a clan member to start chatting.</div></div><div class="ff-v4-reply-preview" id="ffV4ReplyPreview" hidden></div><div class="ff-chat-compose" id="ffUnifiedComposer"><input id="ffV4MsgPhoto" type="file" accept="image/jpeg,image/png,image/webp"><button type="button" id="ffMessengerPhotoButton" class="ff-v4-attach" title="Attach photo" aria-label="Attach photo">📷</button><div id="ffMessengerPhotoName" hidden></div><input id="ffChatInput" maxlength="2000" placeholder="Write a message..." autocomplete="off"><button type="button" id="ffMessengerSendButton">Send</button></div></div>
 </div></div>
 
@@ -19433,4 +19441,58 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
 }
 @media(max-width:360px){#ffMsgModal .ff-call-head-btn{min-width:32px!important;width:32px!important;}#ffMsgModal .ff-chat-head{gap:4px!important;}#ffMsgModal #ffMessengerSendButton{padding:8px 10px!important;}}
 </style>
+
+<style id="duarte-stage52-messenger-refinement">
+/* Stage 52: presentation-only, CSS scoped to existing Messenger; no external resources. */
+#ffMsgModal{--dm-blue:#0866ff;--dm-ink:#111827;--dm-muted:#687385;--dm-line:#e8ebf0;--dm-soft:#f0f2f5;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;}
+#ffMsgModal .ff-msg-shell{background:#fff!important;grid-template-columns:clamp(300px,28vw,410px) minmax(0,1fr)!important;}
+#ffMsgModal .ff-msg-list{background:#fff!important;border-right:1px solid var(--dm-line)!important;}
+#ffMsgModal .ff-msg-title{height:66px!important;min-height:66px!important;padding:0 20px!important;letter-spacing:-.035em!important;font-size:20px!important;font-weight:750!important;color:var(--dm-ink)!important;border:0!important;}
+#ffMsgModal .ff-msg-close{width:36px!important;height:36px!important;min-width:36px!important;border:0!important;border-radius:50%!important;background:var(--dm-soft)!important;color:#364152!important;font-size:24px!important;}
+#ffMsgModal .ff-v101-call-shortcuts{background:#fff!important;border:0!important;padding:4px 14px 9px!important;gap:6px!important;}
+#ffMsgModal .ff-v101-call-shortcuts button{border-radius:16px!important;background:#f1f5ff!important;color:#1464db!important;border:0!important;font-weight:600!important;min-width:0!important;}
+#ffMsgModal .ff-msg-search{padding:5px 14px 12px!important;border-bottom:1px solid var(--dm-line)!important;}
+#ffMsgModal #ffConversationSearch{background:var(--dm-soft)!important;border:1px solid transparent!important;border-radius:22px!important;min-height:42px!important;font-size:14px!important;}
+#ffMsgModal #ffConversationSearch:focus{border-color:#95b9fc!important;outline:0!important;}
+#ffMsgModal #ffConversationList{padding:6px 5px 16px!important;}
+#ffMsgModal .ff-conversation{min-height:70px!important;margin:1px 5px!important;padding:9px 10px!important;border:0!important;border-radius:13px!important;align-items:center!important;}
+#ffMsgModal .ff-conversation:hover{background:#f2f5f9!important;}
+#ffMsgModal .ff-conversation.active{background:#eaf2ff!important;}
+#ffMsgModal .ff-conversation-avatar{width:48px!important;height:48px!important;min-width:48px!important;}
+#ffMsgModal .ff-conversation-name{font-size:14px!important;font-weight:650!important;color:var(--dm-ink)!important;}
+#ffMsgModal .ff-conversation-preview{font-size:12px!important;color:var(--dm-muted)!important;}
+#ffMsgModal .ff-chat-head{height:66px!important;min-height:66px!important;flex-basis:66px!important;padding:0 18px!important;box-shadow:0 1px 3px #1018280d!important;border-bottom:1px solid var(--dm-line)!important;}
+#ffMsgModal #ffChatName{font-size:16px!important;font-weight:700!important;color:var(--dm-ink)!important;flex:1 1 auto!important;min-width:0!important;}
+#ffMsgModal .ff-call-head-actions{flex:0 0 auto!important;gap:6px!important;}
+#ffMsgModal .ff-call-head-btn{background:transparent!important;color:var(--dm-blue)!important;border:0!important;border-radius:50%!important;width:40px!important;height:40px!important;min-width:40px!important;}
+#ffMsgModal .ff-call-head-btn:hover{background:#edf3ff!important;}
+#ffMsgModal #ffChatMessages{background:#fff!important;padding:20px clamp(14px,3vw,52px)!important;scrollbar-width:thin!important;}
+#ffMsgModal .ff-bubble-row>.ff-bubble{max-width:min(72%,580px)!important;padding:9px 13px!important;font-size:14px!important;line-height:1.45!important;box-shadow:none!important;overflow-wrap:anywhere!important;}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble{background:var(--dm-blue)!important;color:#fff!important;border-radius:18px 18px 5px 18px!important;}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{background:var(--dm-soft)!important;color:#1c1e21!important;border-radius:18px 18px 18px 5px!important;}
+#ffMsgModal .ff-chat-compose{background:#fff!important;border-top:1px solid var(--dm-line)!important;padding:11px 16px max(11px,env(safe-area-inset-bottom))!important;min-height:66px!important;gap:10px!important;}
+#ffMsgModal #ffChatInput{flex:1 1 auto!important;width:0!important;min-width:0!important;background:var(--dm-soft)!important;border:1px solid transparent!important;border-radius:22px!important;height:42px!important;min-height:42px!important;padding:10px 15px!important;font-size:14px!important;}
+#ffMsgModal #ffChatInput:focus{outline:0!important;border-color:#a2bef8!important;}
+#ffMsgModal #ffMessengerSendButton{background:var(--dm-blue)!important;border:0!important;border-radius:22px!important;min-height:40px!important;font-weight:650!important;padding:9px 17px!important;}
+#ffMsgModal #ffMessengerPhotoButton{background:#ecf3ff!important;border:0!important;color:var(--dm-blue)!important;width:40px!important;height:40px!important;min-width:40px!important;}
+#ffMsgModal .ff-chat-empty{color:var(--dm-muted)!important;}
+#ffMsgModal #ffConversationList::-webkit-scrollbar,#ffMsgModal #ffChatMessages::-webkit-scrollbar{width:4px!important;}
+#ffMsgModal #ffConversationList::-webkit-scrollbar-thumb,#ffMsgModal #ffChatMessages::-webkit-scrollbar-thumb{background:#dbe0e7!important;border-radius:9px!important;}
+@media(max-width:760px){
+ #ffMsgModal .ff-msg-shell{grid-template-columns:minmax(0,1fr)!important;max-width:100%!important;}
+ #ffMsgModal .ff-msg-title{height:57px!important;min-height:57px!important;padding:0 14px!important;font-size:19px!important;}
+ #ffMsgModal .ff-conversation{min-height:66px!important;}
+ #ffMsgModal .ff-conversation-avatar{width:46px!important;height:46px!important;min-width:46px!important;}
+ #ffMsgModal .ff-chat-head{height:57px!important;min-height:57px!important;flex-basis:57px!important;padding:0 8px!important;gap:5px!important;}
+ #ffMsgModal .ff-call-head-btn{width:34px!important;height:34px!important;min-width:34px!important;}
+ #ffMsgModal #ffChatMessages{padding:14px 11px!important;}
+ #ffMsgModal .ff-bubble-row>.ff-bubble{max-width:85%!important;}
+ #ffMsgModal .ff-chat-compose{min-height:58px!important;padding:7px 8px max(8px,env(safe-area-inset-bottom))!important;gap:6px!important;}
+ #ffMsgModal #ffChatInput{font-size:16px!important;height:40px!important;min-height:40px!important;}
+ #ffMsgModal #ffMessengerSendButton{padding:8px 11px!important;}
+}
+@media(max-width:360px){#ffMsgModal .ff-call-head-actions{gap:1px!important;}#ffMsgModal .ff-chat-head #ffChatName{font-size:14px!important;}}
+@media(prefers-reduced-motion:reduce){#ffMsgModal *{scroll-behavior:auto!important;transition:none!important;}}
+</style>
+
 

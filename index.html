@@ -4688,6 +4688,21 @@ async function closeFacebookComments(){
 
 
 let ffActiveConversationId=null,ffActiveChatName="",ffActiveChatUserId=null,ffMessageTimer=null,ffMessengerChannel=null;
+// Stage 43: volatile, conversation-scoped drafts. Never persist private text to disk.
+const ffMessengerDrafts=new Map();
+function ffSaveActiveChatDraft(){
+ const id=ffActiveConversationId,input=document.getElementById('ffChatInput');
+ if(!id||!input)return;
+ const v=input.value||'';if(v)ffMessengerDrafts.set(String(id),v);else ffMessengerDrafts.delete(String(id));
+}
+function ffRestoreActiveChatDraft(){
+ const input=document.getElementById('ffChatInput');if(!input)return;
+ input.value=ffActiveConversationId?(ffMessengerDrafts.get(String(ffActiveConversationId))||''):'';
+}
+document.addEventListener('input',e=>{
+ if(e.target?.id==='ffChatInput'&&ffActiveConversationId)ffSaveActiveChatDraft();
+});
+
 
 function openMessenger(){
  document.getElementById("ffMsgModal")?.classList.add("open");
@@ -4696,12 +4711,14 @@ function openMessenger(){
  subscribeMessengerRealtime();
 }
 function closeMessenger(){
+ ffSaveActiveChatDraft();
  ffV4CancelReply();
  document.getElementById("ffMsgModal")?.classList.remove("open");
  document.body.style.overflow="";
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
 }
 function messengerBack(){
+ ffSaveActiveChatDraft();
  ffV4CancelReply();
  ffActiveConversationId=null;ffActiveChatUserId=null;window.ffActiveConversationId=null;window.ffActiveChatUserId=null;
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
@@ -4711,9 +4728,11 @@ async function startPrivateChat(uid,name){
  try{
   const r=await supabaseClient.rpc("start_duarte_private_chat",{p_other_user:uid});
   if(r.error)throw r.error;
+  ffSaveActiveChatDraft();
   if(ffActiveConversationId!==Number(r.data))ffV4CancelReply();
   ffActiveConversationId=Number(r.data);ffActiveChatName=name;ffActiveChatUserId=uid;
   window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
+  ffRestoreActiveChatDraft();
   openMessenger();
   document.getElementById("ffMsgShell").classList.add("chat-open");
   const hn=document.getElementById("ffChatName");if(hn){hn.textContent=name;hn.onclick=()=>openClanProfile(uid);hn.style.cursor="pointer"}
@@ -4773,9 +4792,11 @@ function filterMessengerConversations(value){
 }
 
 async function openConversation(id,name,userId=null){
+ ffSaveActiveChatDraft();
  if(ffActiveConversationId!==Number(id))ffV4CancelReply();
  ffActiveConversationId=Number(id);ffActiveChatName=name;ffActiveChatUserId=userId;
  window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
+ ffRestoreActiveChatDraft();
  document.getElementById("ffMsgShell").classList.add("chat-open");
  const hn=document.getElementById("ffChatName");
  if(hn){hn.textContent=name;hn.style.cursor=userId?"pointer":"";hn.onclick=userId?()=>openClanProfile(userId):null}
@@ -4866,7 +4887,7 @@ async function sendPrivateMessage(){
     photo={blob:compressed,name:compressed.name||file.name||"offline-message.webp",type:compressed.type||"image/webp"};
    }
    await window.ffOfflineQueue.enqueueMessage(targetConversation,c,replyId,photo);
-   if(sameDraft()){i.value="";if(fi)fi.value="";ffV4CancelReply()}
+   if(sameDraft()){i.value="";ffMessengerDrafts.delete(String(targetConversation));if(fi)fi.value="";ffV4CancelReply()}
    window.ffShowOfflinePending?.("message",c||"Photo");
    return;
   }
@@ -4876,7 +4897,7 @@ async function sendPrivateMessage(){
    reply_to_id:replyId,attachment_url
   });
   if(r.error)throw r.error;
-  if(sameDraft()){i.value="";if(fi)fi.value="";ffV4CancelReply()}
+  if(sameDraft()){i.value="";ffMessengerDrafts.delete(String(targetConversation));if(fi)fi.value="";ffV4CancelReply()}
   if(ffActiveConversationId===targetConversation)await loadPrivateMessages();
   loadConversations();
  }catch(e){alert("Message could not be sent: "+(e.message||e))}

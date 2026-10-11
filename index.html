@@ -11266,7 +11266,27 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
    $("ffStoryComposeClose")?.addEventListener("click",closeComposer);
    $("ffStoryCancel")?.addEventListener("click",closeComposer);
    $("ffStoryPublish")?.addEventListener("click",publish);
-   $("ffStoryFile")?.addEventListener("change",e=>{const f=e.target.files?.[0],im=$("ffStoryPreview");if(!im)return;if(!f||f.type.startsWith("video/")){im.removeAttribute("src");im.style.display="none";return}im.src=URL.createObjectURL(f);im.style.display="block";});
+   // Stage 28: release the previous photo preview blob on each replacement.
+   let storyPhotoObjectUrl=null;
+   const clearStoryPhotoObjectUrl=()=>{
+     if(storyPhotoObjectUrl){URL.revokeObjectURL(storyPhotoObjectUrl);storyPhotoObjectUrl=null;}
+   };
+   $("ffStoryFile")?.addEventListener("change",e=>{
+     const f=e.target.files?.[0],im=$("ffStoryPreview");
+     clearStoryPhotoObjectUrl();
+     if(!im)return;
+     if(!f||!f.type.startsWith("image/")){im.removeAttribute("src");im.style.display="none";return;}
+     storyPhotoObjectUrl=URL.createObjectURL(f);
+     im.src=storyPhotoObjectUrl;im.style.display="block";
+   });
+   // A close from Cancel, navigation, or Android Back may all hide the composer.
+   const composer=$("ffStoryComposer");
+   if(composer){
+     const cleanupObserver=new MutationObserver(()=>{
+       if(!composer.classList.contains("open")){clearStoryPhotoObjectUrl();}
+     });
+     cleanupObserver.observe(composer,{attributes:true,attributeFilter:["class"]});
+   }
    window.addEventListener("online",load);
  });
  window.ffLoadFamilyStoriesV29B=load;
@@ -17493,13 +17513,18 @@ html.ff-v154-profile-active #profileManager.show {
  let previewUrl=null;let previewReturnFocus=null;
  function clearPreview(){
   const wasOpen=overlay.classList.contains('ff20-open');
-  overlay.classList.remove('ff20-open');overlay.querySelector('video')?.pause();
+  overlay.classList.remove('ff20-open');
+  // Stage 29: stop decoder activity and release the preview media source.
+  const previewVideo=overlay.querySelector('video');
+  if(previewVideo){previewVideo.pause();previewVideo.removeAttribute('src');previewVideo.load();}
+  const previewImage=overlay.querySelector('img');
+  if(previewImage)previewImage.removeAttribute('src');
   if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;
   overlay.querySelector('.ff20-preview-frame').replaceChildren();
   if(wasOpen && previewReturnFocus?.isConnected){try{previewReturnFocus.focus({preventScroll:true})}catch(_){}}
   previewReturnFocus=null;
  }
- async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
+ async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true;media.preload='metadata'}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
  // Stage 25: any changes to story appearance invalidate an existing preview.
  // The member must re-preview the latest caption, sticker placement or framing.
  caption.addEventListener('input',()=>{if(overlay.classList.contains('ff20-open'))clearPreview()});

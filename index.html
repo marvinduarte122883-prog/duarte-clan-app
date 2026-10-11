@@ -1727,6 +1727,50 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 </style>
 
 
+<style id="duarte-v167-cover-layout-polish">
+/* Stage 17 — Facebook-style cover header polish */
+#ffFullProfile .ff-full-cover{position:relative!important;overflow:visible!important}
+#ffFullProfile .ff-full-identity{position:relative!important}
+#ffFullProfile .ff-full-avatar{z-index:5!important}
+#ffFullProfile .ff-cover-photo-action,
+#ffFullProfile .ff-cover-edit-btn{
+  right:18px!important;
+  bottom:16px!important;
+  z-index:9!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.94)!important;
+  color:#111!important;
+  padding:10px 14px!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.28)!important;
+  backdrop-filter:blur(8px)!important;
+}
+#ffFullProfile .ff-cover-photo-action:hover,
+#ffFullProfile .ff-cover-edit-btn:hover{background:#fff!important;color:#111!important;border-color:transparent!important}
+#ffFullProfile .ff-cover-photo-action:disabled,
+#ffFullProfile .ff-cover-edit-btn:disabled{opacity:.72!important}
+
+@media(min-width:761px){
+  #ffFullProfile .ff-full-cover{height:360px!important}
+  #ffFullProfile .ff-full-identity{min-height:180px!important;padding:0 28px 20px 228px!important}
+  #ffFullProfile .ff-full-avatar{width:176px!important;height:176px!important;left:28px!important;top:-88px!important;border:6px solid #151515!important;background:#222!important;box-shadow:0 6px 22px rgba(0,0,0,.38)!important}
+  #ffFullProfile .ff-full-name{padding-top:28px!important}
+}
+
+@media(max-width:760px){
+  #ffFullProfile .ff-full-cover{height:220px!important}
+  #ffFullProfile .ff-full-identity{padding:74px 14px 16px!important;min-height:202px!important;text-align:center!important}
+  #ffFullProfile .ff-full-avatar{width:132px!important;height:132px!important;top:-68px!important;left:50%!important;transform:translateX(-50%)!important;border:5px solid #151515!important;background:#222!important;box-shadow:0 6px 20px rgba(0,0,0,.32)!important}
+  #ffFullProfile .ff-cover-photo-action,
+  #ffFullProfile .ff-cover-edit-btn{right:10px!important;bottom:10px!important;padding:8px 10px!important;font-size:11px!important}
+}
+</style>
+
 <style id="duarte-v21-cover-photo">
 /* Duarte Clan V2.1 — customizable Facebook-style cover photo */
 .ff-fb-cover{
@@ -7113,13 +7157,14 @@ window.openMemberProfileById=openClanProfile;
    }catch(err){console.error('[V163 cover editor]',err);status.textContent='Unable to save: '+(err?.message||err);save.disabled=false;modal.querySelector('[data-cancel]').disabled=false}
   };
  }
- function install(){const cover=getCover();if(!cover)return;cover.style.position='relative';
+ function install(){const cover=getCover();if(!cover)return;cover.style.position='relative';cover.classList.add('ff-fb-cover');
+  const wrap=document.querySelector('#ffFullProfile .ff-full-profile-wrap');if(wrap)wrap.classList.add('ff-v167-cover-ready');
   cover.querySelectorAll('.ff-cover-edit-btn,.ff-duarte-cover-edit,.ff-cover-upload-input,.ff-duarte-cover-input,.ff-cover-photo-action:not(.ff-v163-cover-button),.ff-cover-photo-file').forEach(n=>n.remove());
   if(!isMine()){cover.querySelectorAll('.ff-v163-cover-button,.ff-v163-cover-input').forEach(n=>n.remove());return;}
   // Avoid stacking the old cover click listeners. The new button handles editing.
   if(cover.querySelector('.ff-v163-cover-button'))return;
   const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.setAttribute('aria-label','Choose cover photo');input.style.cssText='position:absolute;width:1px;height:1px;opacity:0;pointer-events:none';input.className='ff-v163-cover-input';
-  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();if(!isMine())return;input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
+  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.innerHTML='<span aria-hidden="true">📷</span><span>Edit cover photo</span>';btn.setAttribute('aria-label','Edit cover photo');btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();if(!isMine())return;input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
  }
  function hook(name){const old=window[name];if(typeof old!=='function'||old.__v163CoverHook)return;const fn=async function(...args){const arg=args[0];activeProfileId=(arg&&typeof arg==='object')?(arg.id||arg.user_id):arg;const result=await old.apply(this,args);setTimeout(install,80);return result};fn.__v163CoverHook=true;window[name]=fn}
  function boot(){['openClanProfile','openMemberProfile','openMemberProfileById','openFullClanProfile','ffViewMyProfile'].forEach(hook);install()}

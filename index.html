@@ -10168,7 +10168,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v57.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v58.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -17436,6 +17436,82 @@ html.ff-v154-profile-active #profileManager.show {
 #ffFullProfile img,#ffFullPhotos img{height:auto}
 @media(prefers-reduced-motion:reduce){#ffStoryViewer *,#ffFullProfile *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+<!-- V166 Stage 20: additive lightweight Story editor (retains existing Supabase publish path) -->
+<style id="duarte-v166-stage20-story-editor">
+#ffStoryComposer .ff20-tools{display:none;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border-radius:10px;background:#202228;border:1px solid #353840}
+#ffStoryComposer .ff-v127-editing .ff20-tools{display:flex}
+#ffStoryComposer .ff20-tools button{border:1px solid #444954;background:#30343d;color:#fff;border-radius:9px;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer;min-height:38px}
+#ffStoryComposer .ff20-tools button[aria-pressed="true"]{border-color:#e9bc37;background:#443a25}
+#ffStoryComposer .ff20-panel{display:none;flex:1 1 100%;align-items:center;gap:8px;flex-wrap:wrap}
+#ffStoryComposer .ff20-panel.ff20-on{display:flex}
+#ffStoryComposer .ff20-panel label{font-size:12px;color:#e6e6e6}
+#ffStoryComposer .ff20-panel input[type=range]{width:120px;max-width:50vw}
+#ffStoryComposer .ff20-palette{display:flex;gap:6px;flex-wrap:wrap}
+#ffStoryComposer .ff20-palette button{min-width:37px;min-height:36px;font-size:19px;padding:5px}
+#ffStoryComposer #ffV124Canvas{position:relative!important;overflow:hidden!important}
+#ffStoryComposer .ff20-sticker{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);touch-action:none;cursor:grab;user-select:none;z-index:12;font-size:46px;line-height:1;text-shadow:0 1px 3px #0008;display:none}
+#ffStoryComposer .ff20-sticker.ff20-show{display:block}
+#ffStoryComposer .ff20-preview-overlay{position:fixed;inset:0;z-index:2147483501;background:#090b11ed;display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+#ffStoryComposer .ff20-preview-overlay.ff20-open{display:flex}
+#ffStoryComposer .ff20-preview-dialog{width:min(96vw,440px);height:min(92dvh,800px);display:flex;flex-direction:column;gap:12px;color:#fff}
+#ffStoryComposer .ff20-preview-frame{flex:1;min-height:0;background:#151821;border:1px solid #393b48;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#ffStoryComposer .ff20-preview-frame img,#ffStoryComposer .ff20-preview-frame video{width:100%;height:100%;object-fit:contain}
+#ffStoryComposer .ff20-preview-frame{position:relative;isolation:isolate}
+#ffStoryComposer .ff20-preview-frame img{transition:transform .1s ease}
+#ffStoryComposer .ff20-preview-actions{display:flex;gap:10px}
+#ffStoryComposer .ff20-preview-actions button{flex:1;border:0;border-radius:9px;padding:12px;font-weight:800;background:#333;color:#fff}
+#ffStoryComposer .ff20-preview-actions .ff20-share{background:#2e67e8}
+@media(max-width:700px){#ffStoryComposer .ff20-tools{gap:5px;padding:6px}#ffStoryComposer .ff20-tools button{padding:8px;font-size:11px}}
+</style>
+<script id="duarte-v166-stage20-story-editor-js">
+(()=>{'use strict';
+ const root=document.getElementById('ffStoryComposer');if(!root)return;
+ const shell=root.querySelector('.ff-story-compose'),body=root.querySelector('.ff-story-compose-body'),file=document.getElementById('ffStoryFile'),canvas=document.getElementById('ffV124Canvas'),photo=document.getElementById('ffStoryPreview'),caption=document.getElementById('ffStoryCaptionInput'),publish=document.getElementById('ffStoryPublish');
+ if(!shell||!body||!file||!canvas||!photo||!caption||!publish)return;
+ const bar=document.createElement('div');bar.className='ff20-tools';bar.innerHTML='<button type="button" data-ff20="text">Aa Text</button><button type="button" data-ff20="sticker">😊 Stickers</button><button type="button" data-ff20="frame">⌗ Frame</button><button type="button" data-ff20="music">♫ Music</button><button type="button" data-ff20="preview">◉ Preview</button><div class="ff20-panel" id="ff20Panel"></div>';
+ body.insertBefore(bar,canvas);
+ const panel=bar.querySelector('#ff20Panel');
+ const sticker=document.createElement('span');sticker.className='ff20-sticker';sticker.setAttribute('aria-label','Drag sticker');canvas.appendChild(sticker);
+ const state={emoji:'',x:50,y:42,zoom:1,bg:'#333f72',textOnly:false,composing:false,original:null};
+ const colors=['#333f72','#b42066','#1d7577','#8d4a21','#222222','#633ea3','#1478ae'];
+ function viewPanel(html){panel.innerHTML=html;panel.classList.add('ff20-on')}
+ function textStory(color){state.textOnly=true;state.emoji='';sticker.classList.remove('ff20-show');state.zoom=1;state.bg=color||state.bg;shell.classList.add('ff-v127-editing','ff-v127-text');document.getElementById('ffV127EditorTools')?.removeAttribute('hidden');photo.style.display='block';const c=document.createElement('canvas');c.width=720;c.height=1280;const ctx=c.getContext('2d');ctx.fillStyle=state.bg;ctx.fillRect(0,0,720,1280);c.toBlob(blob=>{if(!blob)return;const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-text-story.png',{type:'image/png'}));file.files=dt.files;file.dispatchEvent(new Event('change',{bubbles:true}));photo.style.objectFit='cover';viewPanel('<label>Background</label><div class="ff20-palette">'+colors.map((v,i)=>'<button type="button" data-ff20-color="'+i+'" style="background:'+v+'" aria-label="Background '+(i+1)+'">●</button>').join('')+'</div>');caption.focus({preventScroll:true})},'image/png')}
+ document.getElementById('ffV127TextStart')?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();textStory()},true);
+ bar.addEventListener('click',e=>{const btn=e.target.closest('button[data-ff20]');if(!btn)return;const act=btn.dataset.ff20;
+  if(act==='text'){shell.classList.add('ff-v127-text');caption.focus({preventScroll:true});viewPanel('<label>Write your story text in the caption box. Drag the text on the canvas to reposition it.</label>');}
+  if(act==='sticker'){if(file.files?.[0]?.type.startsWith('video/')){viewPanel('<label>Movable stickers are available on photo/text Stories. Video Stories keep the existing caption and music options.</label>');return}viewPanel('<div class="ff20-palette">'+['❤️','🥰','😂','🎉','🙏','💛','🔥','🌸','😍','👍','🥳','💯'].map((v,i)=>'<button type="button" data-emoji="'+i+'">'+v+'</button>').join('')+'</div><button type="button" data-ff20-clear>Remove sticker</button>');}
+  if(act==='frame'){if(file.files?.[0]?.type.startsWith('video/')){viewPanel('<label>Photo framing is available for photo Stories; video playback is preserved without transcoding.</label>');return}viewPanel('<label for="ff20Zoom">Zoom photo</label><input id="ff20Zoom" type="range" min="100" max="220" value="'+Math.round(state.zoom*100)+'"><span id="ff20ZoomValue">'+Math.round(state.zoom*100)+'%</span>');}
+  if(act==='music'){shell.classList.add('ff-v127-music');document.querySelector('#ffStoryComposer .ff-story-music')?.scrollIntoView({block:'nearest',behavior:'auto'});viewPanel('<label>Choose a permitted track using the existing music selector below.</label>')}
+  if(act==='preview')previewStory();
+ });
+ panel.addEventListener('click',e=>{const colorButton=e.target.closest('[data-ff20-color]');if(colorButton){textStory(colors[Number(colorButton.dataset.ff20Color)]||colors[0]);return}const b=e.target.closest('[data-emoji]');if(b){state.emoji=['❤️','🥰','😂','🎉','🙏','💛','🔥','🌸','😍','👍','🥳','💯'][Number(b.dataset.emoji)]||'';sticker.textContent=state.emoji;sticker.classList.toggle('ff20-show',!!state.emoji);sticker.style.left=state.x+'%';sticker.style.top=state.y+'%';}if(e.target.closest('[data-ff20-clear]')){state.emoji='';sticker.classList.remove('ff20-show')}});
+ panel.addEventListener('input',e=>{if(e.target.id==='ff20Zoom'){state.zoom=Number(e.target.value)/100;photo.style.transform='scale('+state.zoom+')';panel.querySelector('#ff20ZoomValue').textContent=e.target.value+'%'}});
+ let drag=null;sticker.addEventListener('pointerdown',e=>{e.preventDefault();drag=e.pointerId;sticker.setPointerCapture(e.pointerId)});sticker.addEventListener('pointermove',e=>{if(drag!==e.pointerId)return;const r=canvas.getBoundingClientRect();state.x=Math.max(5,Math.min(95,100*(e.clientX-r.left)/r.width));state.y=Math.max(5,Math.min(95,100*(e.clientY-r.top)/r.height));sticker.style.left=state.x+'%';sticker.style.top=state.y+'%'});sticker.addEventListener('pointerup',()=>drag=null);sticker.addEventListener('pointercancel',()=>drag=null);
+ const overlay=document.createElement('div');overlay.className='ff20-preview-overlay';overlay.innerHTML='<div class="ff20-preview-dialog" role="dialog" aria-modal="true" aria-label="Story preview"><h3>Preview your Story</h3><div class="ff20-preview-frame"></div><div class="ff20-preview-actions"><button type="button" data-close>Keep editing</button><button type="button" class="ff20-share" data-share>Share Story</button></div></div>';root.appendChild(overlay);
+ let previewUrl=null;function clearPreview(){overlay.classList.remove('ff20-open');overlay.querySelector('video')?.pause();if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;overlay.querySelector('.ff20-preview-frame').replaceChildren()}
+ async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open')}
+ overlay.querySelector('[data-close]').addEventListener('click',clearPreview);overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();clearPreview()}});overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
+ file.addEventListener('change',()=>{if(!state.composing){state.zoom=1;photo.style.transform='';if(!state.textOnly)state.emoji='';sticker.classList.toggle('ff20-show',!!state.emoji)} });
+ function reset(){clearPreview();state.emoji='';state.zoom=1;state.textOnly=false;state.composing=false;sticker.classList.remove('ff20-show');photo.style.transform='';panel.classList.remove('ff20-on')}
+ ['ffStoryCancel','ffStoryComposeClose'].forEach(id=>document.getElementById(id)?.addEventListener('click',reset));
+ // Bake sticker/zoom into photo via client canvas before letting original Supabase publisher execute.
+ publish.addEventListener('click',async e=>{
+  if(state.composing||publish.disabled)return;
+  const src=file.files?.[0];if(!src||src.type.startsWith('video/')||(!state.emoji&&state.zoom===1))return;
+  e.preventDefault();e.stopImmediatePropagation();state.composing=true;publish.disabled=true;
+  const status=document.getElementById('ffStoryStatus');status.textContent='Preparing edited photo…';
+  try{const u=URL.createObjectURL(src),img=new Image();try{await new Promise((ok,fail)=>{img.onload=ok;img.onerror=()=>fail(new Error('Unable to open photo'));img.src=u})}finally{URL.revokeObjectURL(u)}
+   const w=720,h=1280,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.fillStyle='#16181c';ctx.fillRect(0,0,w,h);
+   const scale=Math.max(w/img.naturalWidth,h/img.naturalHeight)*state.zoom,iw=img.naturalWidth*scale,ih=img.naturalHeight*scale;ctx.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);
+   if(state.emoji){ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='80px system-ui, sans-serif';ctx.fillText(state.emoji,w*state.x/100,h*state.y/100)}
+   const blob=await new Promise((resolve,reject)=>c.toBlob(x=>x?resolve(x):reject(new Error('Cannot export photo')),'image/jpeg',.85));const dt=new DataTransfer();dt.items.add(new File([blob],'duarte-story-edited.jpg',{type:'image/jpeg'}));file.files=dt.files;
+   state.emoji='';state.zoom=1;sticker.classList.remove('ff20-show');photo.style.transform='';status.textContent='Edited photo ready to share.';
+  }catch(err){status.textContent='Could not prepare edits: '+(err?.message||err);state.composing=false;publish.disabled=false;return}
+  state.composing=false;publish.disabled=false;publish.click();
+ },true);
+})();
+</script>
+
 </body>
 </html>
 

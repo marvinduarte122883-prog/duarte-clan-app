@@ -4827,6 +4827,13 @@ async function loadPrivateMessages(){
  const messageGeneration=++ffMessageLoadGeneration;
  const requestedConversationId=ffActiveConversationId;
  const box=document.getElementById("ffChatMessages");if(!box)return;
+ // Stage 50: never show messages from a previous conversation under the new chat header.
+ // Keep the existing DOM when refreshing the same chat to preserve reading position.
+ if(box.dataset.ffRenderedConversation!==String(requestedConversationId)){
+  box.dataset.ffRenderedConversation='';
+  box.innerHTML='<div class="ff-chat-empty" role="status">Loading messages…</div>';
+  box.scrollTop=0;
+ }
  try{
   const r=await supabaseClient.from("messages")
    .select("id,sender_id,content,is_read,created_at,reply_to_id,attachment_url")

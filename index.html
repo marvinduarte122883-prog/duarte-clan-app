@@ -6795,7 +6795,7 @@ window.openMemberProfileById=openClanProfile;
     cover.style.backgroundImage = url
       ? `linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${String(url).replace(/"/g,'%22')}")`
       : "";
-    installOwnCoverControls(cover,userId);
+    // Stage 16: one authoritative cover editor; do not install competing controls.
   }
 
   function installOwnCoverControls(cover,userId){
@@ -7033,63 +7033,7 @@ window.openMemberProfileById=openClanProfile;
  .ff-duarte-cover-edit{right:10px!important;bottom:10px!important;padding:8px 10px!important;font-size:12px!important}
 }
 </style>
-<script id="duarte-cover-edit-visible-fix-js">
-(function(){
- const BUCKET="family-gallery";
- function uid(){return window.currentUser?.id||null}
- function coverEl(){
-   return document.querySelector("#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]");
- }
- function displayedId(){
-   return window.ffActiveProfileUserId||window.activeProfileUserId||window.currentProfileUserId||uid();
- }
- async function saveCover(file,cover,btn){
-   if(!file||!uid()||!window.supabaseClient)return;
-   if(!/^image\/(jpeg|png|webp)$/.test(file.type)){alert("Please choose a JPG, PNG, or WebP image.");return}
-   if(file.size>10*1024*1024){alert("Cover photo must be 10 MB or smaller.");return}
-   const old=btn.textContent; btn.disabled=true; btn.textContent="Uploading…";
-   try{
-     file=await window.ffStorageSaverImage(file,"cover");
-     const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
-     const path=`${uid()}/cover-${Date.now()}.${ext}`;
-     const {error:upErr}=await supabaseClient.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type});
-     if(upErr)throw upErr;
-     const {data}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
-     const url=data?.publicUrl;
-     if(!url)throw new Error("Cover photo URL was not created.");
-     const {error:saveErr}=await supabaseClient.rpc("update_my_duarte_cover",{p_cover_url:url});
-     if(saveErr)throw saveErr;
-     cover.style.backgroundImage=`linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${url.replace(/"/g,"%22")}")`;
-   }catch(e){
-     console.error("[Duarte Cover]",e);
-     alert("Cover photo could not be saved: "+(e?.message||e));
-   }finally{btn.disabled=false;btn.textContent=old}
- }
- function install(){
-   const cover=coverEl(), me=uid();
-   if(!cover||!me)return;
-   cover.style.position="relative";
-   const shown=displayedId();
-   // Never expose editing on another member's profile when an active ID is known.
-   if(shown && String(shown)!==String(me)){
-     cover.querySelectorAll(".ff-duarte-cover-edit,.ff-duarte-cover-input").forEach(n=>n.remove());
-     return;
-   }
-   if(cover.querySelector(".ff-duarte-cover-edit"))return;
-   const input=document.createElement("input");
-   input.type="file"; input.accept="image/jpeg,image/png,image/webp"; input.className="ff-duarte-cover-input";
-   const btn=document.createElement("button");
-   btn.type="button"; btn.className="ff-duarte-cover-edit"; btn.textContent="📷 Edit Cover Photo";
-   btn.onclick=()=>input.click();
-   input.onchange=async()=>{const f=input.files?.[0];if(f)await saveCover(f,cover,btn);input.value=""};
-   cover.append(input,btn);
- }
- const mo=new MutationObserver(()=>install());
- document.addEventListener("DOMContentLoaded",()=>{mo.observe(document.getElementById("ffFullProfile"),{childList:true,subtree:true});setTimeout(install,300)});
- window.addEventListener("load",()=>setTimeout(install,500));
- window.ffEnsureCoverEditButton=install;
-})();
-</script>
+<!-- Stage 16: retired duplicate cover uploader (superseded by v163 editor) -->
 
 
 <style id="duarte-facebook-cover-upload-ui">
@@ -7126,11 +7070,12 @@ window.openMemberProfileById=openClanProfile;
  'use strict';
  const BUCKET='family-gallery';let activeProfileId=null;
  const me=()=>window.currentUser?.id||null;
- const getCover=()=>document.querySelector('#ffFullProfile .ff-full-cover,.ff-fb-cover,.ff-full-profile-cover,.ff-profile-cover,[data-duarte-cover]');
- function displayedId(){const pane=document.querySelector('#ffFullProfile');if(pane?.classList.contains('open'))return pane.dataset.ffV129MemberId||null;return window.currentUser?.id||null}
+ const getCover=()=>document.querySelector('#ffFullProfile .ff-full-cover,#ffFullProfile .ff-fb-cover,#ffFullProfile .ff-full-profile-cover,#ffFullProfile .ff-profile-cover,#ffFullProfile [data-duarte-cover]');
+ function displayedId(){const pane=document.querySelector('#ffFullProfile');if(!pane?.classList.contains('open'))return null;return pane.dataset.ffV129MemberId||null}
  function isMine(){const mine=me(),other=displayedId();return !!mine&&!!other&&String(other)===String(mine)}
  async function persist(file,cover,btn){
   if(!me()||!window.supabaseClient)throw new Error('Please sign in again.');
+  if(!isMine())throw new Error('Open your own profile to edit its cover.');
   btn.disabled=true;
   try{
    if(typeof window.ffStorageSaverImage==='function')file=await window.ffStorageSaverImage(file,'cover');
@@ -7170,11 +7115,11 @@ window.openMemberProfileById=openClanProfile;
  }
  function install(){const cover=getCover();if(!cover)return;cover.style.position='relative';
   cover.querySelectorAll('.ff-cover-edit-btn,.ff-duarte-cover-edit,.ff-cover-upload-input,.ff-duarte-cover-input,.ff-cover-photo-action:not(.ff-v163-cover-button),.ff-cover-photo-file').forEach(n=>n.remove());
-  if(!isMine())return;
+  if(!isMine()){cover.querySelectorAll('.ff-v163-cover-button,.ff-v163-cover-input').forEach(n=>n.remove());return;}
   // Avoid stacking the old cover click listeners. The new button handles editing.
   if(cover.querySelector('.ff-v163-cover-button'))return;
-  const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.hidden=true;input.className='ff-v163-cover-input';
-  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
+  const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';input.setAttribute('aria-label','Choose cover photo');input.style.cssText='position:absolute;width:1px;height:1px;opacity:0;pointer-events:none';input.className='ff-v163-cover-input';
+  const btn=document.createElement('button');btn.type='button';btn.className='ff-cover-photo-action ff-v163-cover-button';btn.textContent='📷 Edit Cover Photo';btn.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();if(!isMine())return;input.click()});input.addEventListener('change',()=>{const f=input.files?.[0];if(f)editCover(f,cover);input.value=''});cover.append(input,btn)
  }
  function hook(name){const old=window[name];if(typeof old!=='function'||old.__v163CoverHook)return;const fn=async function(...args){const arg=args[0];activeProfileId=(arg&&typeof arg==='object')?(arg.id||arg.user_id):arg;const result=await old.apply(this,args);setTimeout(install,80);return result};fn.__v163CoverHook=true;window[name]=fn}
  function boot(){['openClanProfile','openMemberProfile','openMemberProfileById','openFullClanProfile','ffViewMyProfile'].forEach(hook);install()}

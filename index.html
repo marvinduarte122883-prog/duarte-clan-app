@@ -2201,6 +2201,17 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
   }
 }
 </style>
+<style id="duarte-v166-stage15-comment-emoji-fix">
+#ffCommentModal .ff-v142-tools{position:relative!important}
+#ffCommentModal .ff-v166-emoji-palette:not([hidden]){display:grid!important}
+#ffCommentModal .ff-v166-emoji-palette{position:absolute;bottom:calc(100% + 8px);left:2px;width:min(320px,calc(100vw - 34px));max-height:210px;overflow-y:auto;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;background:#fff;border:1px solid #d5d9df;box-shadow:0 10px 30px #0003;border-radius:12px;padding:8px;z-index:2147483000}
+#ffCommentModal .ff-v166-emoji-choice{border:0;background:transparent;font-size:23px;min-width:0;min-height:39px;cursor:pointer;border-radius:7px}
+#ffCommentModal .ff-v166-emoji-choice:hover,#ffCommentModal .ff-v166-emoji-choice:focus-visible{background:#e8f1ff}
+#ffCommentModal .ff-v142-actions .reaction-wrap.open>.reaction-picker{display:flex!important;position:absolute!important;bottom:calc(100% + 5px)!important;left:0!important;transform:none!important;max-width:min(350px,calc(100vw - 28px))!important;overflow-x:auto!important;z-index:2147483000!important}
+#ffCommentModal .ff-v142-actions .reaction-choice{flex:0 0 auto;min-width:39px;min-height:42px;font-size:23px;border:0;background:transparent;cursor:pointer}
+#ffCommentModal .ff-v142-actions .reaction-choice:hover{background:#eef3fa;border-radius:50%}
+@media(max-width:600px){#ffCommentModal .ff-v142-actions .reaction-wrap.open>.reaction-picker{left:0!important;max-width:calc(100vw - 22px)!important}}
+</style>
 </head>
 
 
@@ -18898,12 +18909,16 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
  }
  function compose(){
    const foot=$('ffCommentModal')?.querySelector('.ff-comment-footer'); if(!foot) return;
-   foot.innerHTML=`<div class="ff-v142-compose"><div class="ff-v142-avatar" id="ffV142Avatar"></div><div class="ff-v142-shell"><div class="ff-v142-entry"><input id="ffModalCommentInput" maxlength="1000" autocomplete="off" placeholder="Comment as ${esc((currentProfile?.full_name||'Member'))}" aria-label="Write a comment"><button type="button" class="ff-v142-send" id="ffV142Send" aria-label="Send comment">➤</button></div><div class="ff-v142-tools"><button type="button" class="ff-v142-tool" id="ffV142EmojiBtn" aria-label="Insert emoji">😊</button><label class="ff-v142-tool ff-v142-filelabel" aria-label="Add photo or video"><input id="ffV142MediaInput" type="file" accept="image/*,video/*" hidden>📷</label><span class="ff-v142-selected" id="ffV142Selected"></span></div></div></div>`;
+   foot.innerHTML=`<div class="ff-v142-compose"><div class="ff-v142-avatar" id="ffV142Avatar"></div><div class="ff-v142-shell"><div class="ff-v142-entry"><input id="ffModalCommentInput" maxlength="1000" autocomplete="off" placeholder="Comment as ${esc((currentProfile?.full_name||'Member'))}" aria-label="Write a comment"><button type="button" class="ff-v142-send" id="ffV142Send" aria-label="Send comment">➤</button></div><div class="ff-v142-tools"><button type="button" class="ff-v142-tool" id="ffV142EmojiBtn" aria-label="Choose emoji" aria-expanded="false">😊</button><div id="ffV166EmojiPalette" class="ff-v166-emoji-palette" hidden></div><label class="ff-v142-tool ff-v142-filelabel" aria-label="Add photo or video"><input id="ffV142MediaInput" type="file" accept="image/*,video/*" hidden>📷</label><span class="ff-v142-selected" id="ffV142Selected"></span></div></div></div>`;
    avatar();
    const input=$('ffModalCommentInput');
    $('ffV142Send')?.addEventListener('click',()=>window.sendModalComment());
    input?.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); window.sendModalComment(); }});
-   $('ffV142EmojiBtn')?.addEventListener('click',()=>{ if(!input) return; input.value += '😊'; input.focus(); });
+   const emojiBtn=$('ffV142EmojiBtn'), palette=$('ffV166EmojiPalette');
+   const emojiList=['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😍','🥰','😘','😎','🤗','🤔','🥹','😭','😢','😮','😡','👍','👎','👏','🙌','🙏','❤️','🧡','💛','💚','💙','💜','🎉','🥳','🔥','💯'];
+   if(palette){palette.innerHTML=emojiList.map(emoji=>`<button type="button" class="ff-v166-emoji-choice" aria-label="Insert ${emoji}">${emoji}</button>`).join('');
+     palette.addEventListener('click',e=>{const choice=e.target.closest('.ff-v166-emoji-choice');if(!choice||!input)return;const emoji=choice.textContent;const start=input.selectionStart??input.value.length,end=input.selectionEnd??input.value.length;input.setRangeText(emoji,start,end,'end');input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();});}
+   emojiBtn?.addEventListener('click',e=>{e.stopPropagation();if(!palette)return;const show=palette.hidden;palette.hidden=!show;emojiBtn.setAttribute('aria-expanded',String(show));});
    $('ffV142MediaInput')?.addEventListener('change',e=>{ const file=e.target.files?.[0]; const slot=$('ffV142Selected'); if(slot) slot.textContent=file?file.name:''; });
  }
  async function refresh(){
@@ -18936,7 +18951,13 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
    $('ffV142Comment')?.addEventListener('click',()=> $('ffModalCommentInput')?.focus());
    $('ffV142Share')?.addEventListener('click',()=>{ if(typeof sharePost==='function') sharePost(); });
    $('ffV142Save')?.addEventListener('click',()=>{ const k=saveKey(selected()); const on=localStorage.getItem(k)==='1'; localStorage.setItem(k, on?'0':'1'); updateSaveButton(); });
-   $('ffV142Like')?.addEventListener('click', async ()=>{ const like=source.querySelector('.reaction-choice[title="Like"]'); if(like && typeof chooseReaction==='function'){ await chooseReaction({stopPropagation(){},preventDefault(){}}, like, 'like'); await refresh(); }});
+   const likeBtn=$('ffV142Like');
+   const picker=body.querySelector('.ff-v142-actions .reaction-picker');
+   if(picker){
+     picker.innerHTML=Object.entries(REACTION_META).map(([key,m])=>`<button type="button" class="reaction-choice" data-v166-reaction="${key}" aria-label="${m.label}" title="${m.label}">${m.emoji}</button>`).join('');
+     picker.addEventListener('click',async e=>{const btn=e.target.closest('[data-v166-reaction]');if(!btn)return;e.stopPropagation();const type=btn.dataset.v166Reaction;const sourceButton=source.querySelector(`.reaction-choice[title="${REACTION_META[type]?.label}"]`);if(!sourceButton||typeof chooseReaction!=='function')return;picker.closest('.reaction-wrap')?.classList.remove('open');await chooseReaction({stopPropagation(){},preventDefault(){}},sourceButton,type);if(selected()===Number(postId))await refresh();});
+   }
+   likeBtn?.addEventListener('click',e=>{e.stopPropagation();const wrap=likeBtn.closest('.reaction-wrap');const wasOpen=wrap?.classList.contains('open');document.querySelectorAll('#ffCommentModal .reaction-wrap.open').forEach(el=>el.classList.remove('open'));if(!wasOpen)wrap?.classList.add('open');});
    const comments=$('ffV142Comments');if(comments)comments.textContent='Loading comments…';
    requestAnimationFrame(()=>{requestAnimationFrame(()=>{if(selected()===Number(postId))void refresh();});});
  };
@@ -18950,6 +18971,7 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
    finally{ pending=false; if(btn) btn.disabled=false; }
  };
  window.closeFacebookComments = async function(){ ++epoch; $('ffCommentModal')?.querySelectorAll('video').forEach(v=>{ try{v.pause();}catch(_){} }); $('ffCommentModal')?.classList.remove('open'); document.body.style.overflow=priorOverflow; const post=selected(), source=window.ffActiveCommentSourceCard; ffActiveCommentPostId=null; ffActiveCommentSourceCard=null; window.ffActiveCommentPostId=null; window.ffActiveCommentSourceCard=null; if(post && source?.isConnected) await loadPostActivity(post,source); };
+ document.addEventListener('click',e=>{const modal=$('ffCommentModal');if(!modal?.classList.contains('open'))return;if(!e.target.closest('#ffV142EmojiBtn,#ffV166EmojiPalette')){const palette=$('ffV166EmojiPalette');if(palette)palette.hidden=true;$('ffV142EmojiBtn')?.setAttribute('aria-expanded','false');}if(!e.target.closest('#ffCommentModal .ff-v142-actions .reaction-wrap'))modal.querySelectorAll('.ff-v142-actions .reaction-wrap.open').forEach(el=>el.classList.remove('open'));});
  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('ffCommentModal')?.classList.contains('open')){ e.preventDefault(); window.closeFacebookComments(); } },true);
 })();
 </script>

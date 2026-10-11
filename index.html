@@ -4696,11 +4696,13 @@ function openMessenger(){
  subscribeMessengerRealtime();
 }
 function closeMessenger(){
+ ffV4CancelReply();
  document.getElementById("ffMsgModal")?.classList.remove("open");
  document.body.style.overflow="";
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
 }
 function messengerBack(){
+ ffV4CancelReply();
  ffActiveConversationId=null;ffActiveChatUserId=null;window.ffActiveConversationId=null;window.ffActiveChatUserId=null;
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
  loadConversations();
@@ -4709,6 +4711,7 @@ async function startPrivateChat(uid,name){
  try{
   const r=await supabaseClient.rpc("start_duarte_private_chat",{p_other_user:uid});
   if(r.error)throw r.error;
+  if(ffActiveConversationId!==Number(r.data))ffV4CancelReply();
   ffActiveConversationId=Number(r.data);ffActiveChatName=name;ffActiveChatUserId=uid;
   window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
   openMessenger();
@@ -4770,6 +4773,7 @@ function filterMessengerConversations(value){
 }
 
 async function openConversation(id,name,userId=null){
+ if(ffActiveConversationId!==Number(id))ffV4CancelReply();
  ffActiveConversationId=Number(id);ffActiveChatName=name;ffActiveChatUserId=userId;
  window.ffActiveConversationId=ffActiveConversationId;window.ffActiveChatName=ffActiveChatName;window.ffActiveChatUserId=ffActiveChatUserId;
  document.getElementById("ffMsgShell").classList.add("chat-open");
@@ -4818,14 +4822,15 @@ async function loadPrivateMessages(){
  }catch(e){if(ffActiveConversationId!==requestedConversationId)return;box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
 }
 
-let ffV4ReplyToId=null;
+let ffV4ReplyToId=null,ffV4ReplyConversationId=null;
 function ffV4Reply(id,text){
- ffV4ReplyToId=Number(id);
+ if(!ffActiveConversationId)return;
+ ffV4ReplyToId=Number(id);ffV4ReplyConversationId=Number(ffActiveConversationId);
  const p=document.getElementById("ffV4ReplyPreview");if(!p)return;
  p.hidden=false;p.innerHTML=`<span>Replying to: ${escapeHTML(text||"Message")}</span><button type="button" onclick="ffV4CancelReply()">×</button>`;
  document.getElementById("ffChatInput")?.focus();
 }
-function ffV4CancelReply(){ffV4ReplyToId=null;const p=document.getElementById("ffV4ReplyPreview");if(p){p.hidden=true;p.innerHTML=""}}
+function ffV4CancelReply(){ffV4ReplyToId=null;ffV4ReplyConversationId=null;const p=document.getElementById("ffV4ReplyPreview");if(p){p.hidden=true;p.innerHTML=""}}
 async function ffV4React(messageId,reaction){
  try{
   const q=await supabaseClient.from("message_reactions").upsert({message_id:Number(messageId),user_id:currentUser.id,reaction},{onConflict:"message_id,user_id"});
@@ -4846,7 +4851,7 @@ let ffPrivateSendInProgress=false;
 async function sendPrivateMessage(){
  const i=document.getElementById("ffChatInput"),c=i?.value.trim()||"";
  const fi=document.getElementById("ffV4MsgPhoto"),file=fi?.files?.[0]||null;
- const targetConversation=ffActiveConversationId,replyId=ffV4ReplyToId||null;
+ const targetConversation=ffActiveConversationId,replyId=(ffV4ReplyConversationId===Number(ffActiveConversationId)?ffV4ReplyToId:null)||null;
  if((!c&&!file)||!targetConversation||ffPrivateSendInProgress)return;
  ffPrivateSendInProgress=true;
  const btn=document.querySelector(".ff-chat-compose button:last-child");

@@ -4688,6 +4688,8 @@ async function closeFacebookComments(){
 
 
 let ffActiveConversationId=null,ffActiveChatName="",ffActiveChatUserId=null,ffMessageTimer=null,ffMessengerChannel=null;
+// Stage 44: reject stale async private-chat open requests.
+let ffChatOpenGeneration=0;
 // Stage 43: volatile, conversation-scoped drafts. Never persist private text to disk.
 const ffMessengerDrafts=new Map();
 function ffSaveActiveChatDraft(){
@@ -4711,6 +4713,7 @@ function openMessenger(){
  subscribeMessengerRealtime();
 }
 function closeMessenger(){
+ ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
  ffV4CancelReply();
  document.getElementById("ffMsgModal")?.classList.remove("open");
@@ -4718,6 +4721,7 @@ function closeMessenger(){
  document.getElementById("ffMsgShell")?.classList.remove("chat-open");
 }
 function messengerBack(){
+ ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
  ffV4CancelReply();
  ffActiveConversationId=null;ffActiveChatUserId=null;window.ffActiveConversationId=null;window.ffActiveChatUserId=null;
@@ -4725,8 +4729,10 @@ function messengerBack(){
  loadConversations();
 }
 async function startPrivateChat(uid,name){
+ const generation=++ffChatOpenGeneration;
  try{
   const r=await supabaseClient.rpc("start_duarte_private_chat",{p_other_user:uid});
+  if(generation!==ffChatOpenGeneration)return;
   if(r.error)throw r.error;
   ffSaveActiveChatDraft();
   if(ffActiveConversationId!==Number(r.data))ffV4CancelReply();
@@ -4737,7 +4743,7 @@ async function startPrivateChat(uid,name){
   document.getElementById("ffMsgShell").classList.add("chat-open");
   const hn=document.getElementById("ffChatName");if(hn){hn.textContent=name;hn.onclick=()=>openClanProfile(uid);hn.style.cursor="pointer"}
   await loadPrivateMessages();
- }catch(e){alert("Chat could not be opened: "+e.message)}
+ }catch(e){if(generation===ffChatOpenGeneration)alert("Chat could not be opened: "+e.message)}
 }
 
 async function loadConversations(){
@@ -4792,6 +4798,7 @@ function filterMessengerConversations(value){
 }
 
 async function openConversation(id,name,userId=null){
+ ++ffChatOpenGeneration;
  ffSaveActiveChatDraft();
  if(ffActiveConversationId!==Number(id))ffV4CancelReply();
  ffActiveConversationId=Number(id);ffActiveChatName=name;ffActiveChatUserId=userId;

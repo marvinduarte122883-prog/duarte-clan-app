@@ -1,0 +1,8 @@
+/index.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+/login.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
+/duarte-version.json
+  Cache-Control: no-cache, max-age=0, must-revalidate
+/duarte-sw-v56.js
+  Cache-Control: no-cache, max-age=0, must-revalidate

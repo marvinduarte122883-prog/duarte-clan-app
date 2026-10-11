@@ -17524,7 +17524,7 @@ html.ff-v154-profile-active #profileManager.show {
   if(wasOpen && previewReturnFocus?.isConnected){try{previewReturnFocus.focus({preventScroll:true})}catch(_){}}
   previewReturnFocus=null;
  }
- async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true;media.preload='metadata'}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);
+ async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true;media.preload='metadata'}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);
   // Stage 33: report media decoding failures rather than leaving an empty preview.
   // Keep the editor and the original file intact so the member can choose another.
   const previewError=document.createElement('p');
@@ -17533,12 +17533,24 @@ html.ff-v154-profile-active #profileManager.show {
   previewError.textContent='This photo or video could not be previewed. Keep editing and choose another file.';
   previewError.style.cssText='display:none;position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);padding:14px;background:#231f28;color:#fff;border:1px solid #a15353;border-radius:9px;text-align:center;font-size:13px;z-index:30';
   frame.appendChild(previewError);
+  const previewShare=overlay.querySelector('[data-share]');
+  previewShare.disabled=true;
+  // Stage 34: do not allow a media Story to publish until its preview decoded.
+  // Check this exact media element, because a newer preview may already exist.
+  const previewReady=()=>{
+    if(overlay.classList.contains('ff20-open') && media.isConnected && media.src===previewUrl){
+      previewShare.disabled=false;
+    }
+  };
+  media.addEventListener(media.tagName==='VIDEO'?'loadedmetadata':'load',previewReady,{once:true});
   media.addEventListener('error',()=>{
     if(!overlay.classList.contains('ff20-open') || !media.isConnected)return;
     previewError.style.display='block';
-    overlay.querySelector('[data-share]').disabled=true;
+    previewShare.disabled=true;
   },{once:true});
-  overlay.querySelector('[data-share]').disabled=false;if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
+  media.src=previewUrl;
+  if(media.tagName==='VIDEO')media.load();
+  if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
  // Stage 25: any changes to story appearance invalidate an existing preview.
  // The member must re-preview the latest caption, sticker placement or framing.
  caption.addEventListener('input',()=>{if(overlay.classList.contains('ff20-open'))clearPreview()});

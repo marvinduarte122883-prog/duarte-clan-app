@@ -4683,11 +4683,12 @@ async function openConversation(id,name,userId=null){
 
 async function loadPrivateMessages(){
  if(!ffActiveConversationId)return;
+ const requestedConversationId=ffActiveConversationId;
  const box=document.getElementById("ffChatMessages");if(!box)return;
  try{
   const r=await supabaseClient.from("messages")
    .select("id,sender_id,content,is_read,created_at,reply_to_id,attachment_url")
-   .eq("conversation_id",ffActiveConversationId)
+   .eq("conversation_id",requestedConversationId)
    .order("created_at",{ascending:false})
    .limit(60);
   if(r.error)throw r.error;
@@ -4697,6 +4698,7 @@ async function loadPrivateMessages(){
    const rr=await supabaseClient.from("message_reactions").select("message_id,user_id,reaction").in("message_id",ids);
    if(!rr.error)(rr.data||[]).forEach(x=>(react[x.message_id]??=[]).push(x));
   }
+  if(ffActiveConversationId!==requestedConversationId)return;
   box.innerHTML=a.length?a.map((x,idx)=>{
    const mine=x.sender_id===currentUser.id, replied=x.reply_to_id?byId[x.reply_to_id]:null;
    let seen="";
@@ -4711,12 +4713,12 @@ async function loadPrivateMessages(){
   }).join(""):'<div class="ff-chat-empty">No messages yet. Say hello 👋</div>';
   box.scrollTop=box.scrollHeight;
   const unread=a.filter(x=>x.sender_id!==currentUser.id&&!x.is_read).map(x=>x.id);
-  if(unread.length){
+  if(unread.length && ffActiveConversationId===requestedConversationId){
    const u=await supabaseClient.from("messages").update({is_read:true}).in("id",unread);
    if(u.error)console.error("Seen update:",u.error);
   }
   refreshMessengerUnread();
- }catch(e){box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
+ }catch(e){if(ffActiveConversationId!==requestedConversationId)return;box.innerHTML='<div class="ff-chat-empty">Messages could not be loaded.</div>';console.error(e)}
 }
 
 let ffV4ReplyToId=null;
@@ -4743,36 +4745,42 @@ async function ffV4UploadMessagePhoto(file){
  if(u.error)throw u.error;
  return supabaseClient.storage.from("family-gallery").getPublicUrl(path)?.data?.publicUrl||null;
 }
+let ffPrivateSendInProgress=false;
 async function sendPrivateMessage(){
  const i=document.getElementById("ffChatInput"),c=i?.value.trim()||"";
  const fi=document.getElementById("ffV4MsgPhoto"),file=fi?.files?.[0]||null;
- if((!c&&!file)||!ffActiveConversationId)return;
- if(!navigator.onLine){
-   try{
-     let photo=null;
-     if(file){
-       const compressed=await window.ffStorageSaverImage(file,"message");
-       if(compressed.size>10*1024*1024)throw new Error("Photo must be 10 MB or smaller.");
-       photo={blob:compressed,name:compressed.name||file.name||"offline-message.webp",type:compressed.type||"image/webp"};
-     }
-     await window.ffOfflineQueue.enqueueMessage(ffActiveConversationId,c,ffV4ReplyToId||null,photo);
-     i.value="";if(fi)fi.value="";ffV4CancelReply();window.ffShowOfflinePending?.("message",c||"Photo");
-   }catch(e){alert("Offline message could not be saved: "+(e.message||e))}
-   return;
- }
- const btn=document.querySelector(".ff-chat-compose button:last-child");if(btn){btn.disabled=true;btn.textContent="Sending..."}
+ const targetConversation=ffActiveConversationId,replyId=ffV4ReplyToId||null;
+ if((!c&&!file)||!targetConversation||ffPrivateSendInProgress)return;
+ ffPrivateSendInProgress=true;
+ const btn=document.querySelector(".ff-chat-compose button:last-child");
+ if(btn){btn.disabled=true;btn.textContent="Sending..."}
+ const sameDraft=()=>ffActiveConversationId===targetConversation && i?.value.trim()===c && (fi?.files?.[0]||null)===file;
  try{
+  if(!navigator.onLine){
+   let photo=null;
+   if(file){
+    const compressed=await window.ffStorageSaverImage(file,"message");
+    if(compressed.size>10*1024*1024)throw new Error("Photo must be 10 MB or smaller.");
+    photo={blob:compressed,name:compressed.name||file.name||"offline-message.webp",type:compressed.type||"image/webp"};
+   }
+   await window.ffOfflineQueue.enqueueMessage(targetConversation,c,replyId,photo);
+   if(sameDraft()){i.value="";if(fi)fi.value="";ffV4CancelReply()}
+   window.ffShowOfflinePending?.("message",c||"Photo");
+   return;
+  }
   const attachment_url=await ffV4UploadMessagePhoto(file);
   const r=await supabaseClient.from("messages").insert({
-   conversation_id:ffActiveConversationId,sender_id:currentUser.id,content:c,
-   reply_to_id:ffV4ReplyToId||null,attachment_url
+   conversation_id:targetConversation,sender_id:currentUser.id,content:c,
+   reply_to_id:replyId,attachment_url
   });
   if(r.error)throw r.error;
-  i.value="";if(fi)fi.value="";ffV4CancelReply();
-  await loadPrivateMessages();loadConversations();
+  if(sameDraft()){i.value="";if(fi)fi.value="";ffV4CancelReply()}
+  if(ffActiveConversationId===targetConversation)await loadPrivateMessages();
+  loadConversations();
  }catch(e){alert("Message could not be sent: "+(e.message||e))}
- finally{if(btn){btn.disabled=false;btn.textContent="Send"}}
+ finally{ffPrivateSendInProgress=false;if(btn){btn.disabled=false;btn.textContent="Send"}}
 }
+
 window.ffV4Reply=ffV4Reply;window.ffV4CancelReply=ffV4CancelReply;window.ffV4React=ffV4React;
 
 async function refreshMessengerUnread(){

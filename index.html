@@ -2257,6 +2257,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 #ffCommentModal .ff-v142-actions .reaction-choice:hover{background:#eef3fa;border-radius:50%}
 @media(max-width:600px){#ffCommentModal .ff-v142-actions .reaction-wrap.open>.reaction-picker{left:0!important;max-width:calc(100vw - 22px)!important}}
 </style>
+<style id="duarte-v19-offline-feed-css">.ff-v19-offline-feed-notice{background:#282410;border:1px solid #a5811d;border-radius:12px;color:#f8d76c;padding:12px 14px;margin-bottom:12px;font:600 12px/1.5 system-ui,sans-serif}.ff-offline-mode #postsContainer .post-card{content-visibility:auto;contain-intrinsic-size:auto 360px}</style>
 </head>
 
 
@@ -3441,6 +3442,43 @@ function getInitials(name) {
 const FF_OFFLINE_AUTH_KEY = "duarte_offline_auth_v26";
 const FF_OFFLINE_PROFILE_KEY = "duarte_offline_profile_v26";
 
+// Stage 19: Restore only an approved member's previously loaded Home feed.
+// Store data rather than rendered HTML; posts are rendered by existing escaping code.
+const FF_HOME_SNAPSHOT_PREFIX = "duarte_home_snapshot_v19_";
+function ffHomeSnapshotKey(uid){return FF_HOME_SNAPSHOT_PREFIX+String(uid||"");}
+function ffSaveHomeSnapshot(posts, profiles){
+    try{
+        if(!currentUser?.id || currentProfile?.approved!==true || !Array.isArray(posts))return;
+        const previous=JSON.parse(localStorage.getItem(ffHomeSnapshotKey(currentUser.id))||"null");
+        const first=posts.map(post=>({id:post.id,user_id:post.user_id,content:post.content||"",image_url:post.image_url||null,video_url:post.video_url||null,created_at:post.created_at})).slice(0,6);
+        if(!first.length)return;
+        const profileSubset={};
+        first.forEach(post=>{const q=profiles?.[post.user_id];if(q)profileSubset[post.user_id]={id:q.id,full_name:q.full_name,clan_role:q.clan_role,avatar_url:q.avatar_url};});
+        const payload={owner:currentUser.id,approved:true,savedAt:Date.now(),posts:first,profiles:profileSubset};
+        localStorage.setItem(ffHomeSnapshotKey(currentUser.id),JSON.stringify(payload));
+        // Existing later batches must never replace the latest first page.
+    }catch(e){console.warn("Home offline snapshot unavailable:",e);}
+}
+function ffRestoreHomeSnapshot(){
+    try{
+        const uid=currentUser?.id,box=document.getElementById("postsContainer");
+        if(!uid || !box || currentProfile?.approved!==true)return false;
+        const snapshot=JSON.parse(localStorage.getItem(ffHomeSnapshotKey(uid))||"null");
+        if(!snapshot || snapshot.owner!==uid || snapshot.approved!==true || !Array.isArray(snapshot.posts) || !snapshot.posts.length)return false;
+        ffFeedObserver?.disconnect();
+        box.innerHTML=snapshot.posts.map(post=>renderPostCard(post,snapshot.profiles?.[post.user_id])).join("");
+        const notice=document.createElement("div");
+        notice.className="ff-v19-offline-feed-notice";
+        notice.textContent="Offline · Showing your last saved Home posts. New posts, reactions and comments will update when connected.";
+        box.prepend(notice);
+        box.querySelectorAll('button,textarea,input').forEach(el=>{if(!el.closest('.ff-offline-pending')){el.disabled=true;el.title='Reconnect to interact with cached posts';}});
+        ffFeedHasMore=false;
+        return true;
+    }catch(e){console.warn("Offline Home restoration unavailable:",e);return false;}
+}
+function ffClearHomeSnapshot(){try{const u=currentUser?.id;if(u)localStorage.removeItem(ffHomeSnapshotKey(u));}catch(_){}}
+
+
 function ffSaveOfflineIdentity(user, profile){
     try{
         if(user?.id){
@@ -3481,12 +3519,13 @@ function ffShowOfflineMode(){
 }
 async function ffEnterCachedOfflineClan(){
     const cached=ffReadOfflineIdentity();
-    if(!cached.auth?.user_id || !cached.profile?.id) return false;
+    if(!cached.auth?.user_id || cached.profile?.id!==cached.auth.user_id || cached.profile?.approved!==true) return false;
     currentUser={id:cached.auth.user_id,email:cached.auth.email || ""};
     currentProfile=cached.profile;
     applyMemberProfile(currentProfile);
     syncAnnouncementAdminAccess();
     ffShowOfflineMode();
+    ffRestoreHomeSnapshot();
     try{ mountBirthdayPanel(); }catch(e){}
     return true;
 }
@@ -3569,6 +3608,7 @@ window.addEventListener("online", async ()=>{
                 .eq("id",currentUser.id).single();
             if(profile){ currentProfile=profile; ffSaveOfflineIdentity(currentUser,profile); }
         }
+        if(currentProfile?.approved===true && document.querySelector('.ff-v19-offline-feed-notice')) await loadPosts();
         if(typeof ffSyncOfflineQueue==="function") await ffSyncOfflineQueue();
     }catch(e){ console.warn("Reconnect validation will retry later:",e); }
 });
@@ -4168,6 +4208,7 @@ async function ffLoadPostBatch(reset = false) {
         container.querySelector("#ffFeedSentinel")?.remove();
         if (reset) container.innerHTML = "";
 
+        if(reset) ffSaveHomeSnapshot(batch,profileMap);
         const holder = document.createElement("div");
         holder.innerHTML = batch.map(post => renderPostCard(post, profileMap[post.user_id])).join("");
         const newCards = [...holder.querySelectorAll(".post-card[data-post-id]")];
@@ -4183,7 +4224,7 @@ async function ffLoadPostBatch(reset = false) {
     } catch (error) {
         console.error("Load posts error:", error);
         if (reset) {
-            container.innerHTML = `<div style="background:var(--panel);border:1px solid #633;border-radius:15px;padding:22px;color:#e0a0a0;text-align:center;">Posts could not be loaded.<br>${escapeHTML(error.message || "Unknown error")}</div>`;
+            if(!ffRestoreHomeSnapshot())container.innerHTML = `<div style="background:var(--panel);border:1px solid #633;border-radius:15px;padding:22px;color:#e0a0a0;text-align:center;">Posts could not be loaded.<br>${escapeHTML(error.message || "Unknown error")}</div>`;
         } else {
             container.querySelector("#ffFeedSentinel")?.remove();
             container.insertAdjacentHTML("beforeend", `<button type="button" onclick="ffLoadPostBatch(false)" style="display:block;margin:14px auto;padding:10px 16px;border:1px solid var(--border);border-radius:20px;background:var(--panel);color:var(--gold);cursor:pointer;">Retry loading more posts</button>`);
@@ -5632,6 +5673,8 @@ function openProfile() {
 ========================= */
 
 async function logout(skipConfirm = false) {
+    ffClearHomeSnapshot();
+    ffClearOfflineIdentity();
     /* Logout immediately without the browser "workers.dev says" confirmation dialog. */
     try {
         await supabaseClient.auth.signOut();
@@ -10125,7 +10168,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v56.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v57.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();

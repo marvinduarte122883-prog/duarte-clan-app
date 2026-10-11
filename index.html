@@ -17490,8 +17490,16 @@ html.ff-v154-profile-active #profileManager.show {
  panel.addEventListener('input',e=>{if(e.target.id==='ff20Zoom'){state.zoom=Number(e.target.value)/100;photo.style.transform='scale('+state.zoom+')';panel.querySelector('#ff20ZoomValue').textContent=e.target.value+'%'}});
  let drag=null;sticker.addEventListener('pointerdown',e=>{e.preventDefault();drag=e.pointerId;sticker.setPointerCapture(e.pointerId)});sticker.addEventListener('pointermove',e=>{if(drag!==e.pointerId)return;const r=canvas.getBoundingClientRect();state.x=Math.max(5,Math.min(95,100*(e.clientX-r.left)/r.width));state.y=Math.max(5,Math.min(95,100*(e.clientY-r.top)/r.height));sticker.style.left=state.x+'%';sticker.style.top=state.y+'%'});sticker.addEventListener('pointerup',()=>drag=null);sticker.addEventListener('pointercancel',()=>drag=null);
  const overlay=document.createElement('div');overlay.className='ff20-preview-overlay';overlay.innerHTML='<div class="ff20-preview-dialog" role="dialog" aria-modal="true" aria-label="Story preview"><h3>Preview your Story</h3><div class="ff20-preview-frame"></div><div class="ff20-preview-actions"><button type="button" data-close>Keep editing</button><button type="button" class="ff20-share" data-share>Share Story</button></div></div>';root.appendChild(overlay);
- let previewUrl=null;function clearPreview(){overlay.classList.remove('ff20-open');overlay.querySelector('video')?.pause();if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;overlay.querySelector('.ff20-preview-frame').replaceChildren()}
- async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open')}
+ let previewUrl=null;let previewReturnFocus=null;
+ function clearPreview(){
+  const wasOpen=overlay.classList.contains('ff20-open');
+  overlay.classList.remove('ff20-open');overlay.querySelector('video')?.pause();
+  if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null;
+  overlay.querySelector('.ff20-preview-frame').replaceChildren();
+  if(wasOpen && previewReturnFocus?.isConnected){try{previewReturnFocus.focus({preventScroll:true})}catch(_){}}
+  previewReturnFocus=null;
+ }
+ async function previewStory(){const f=file.files?.[0];if(!f){document.getElementById('ffStoryStatus').textContent='Choose or create a Story first.';return}clearPreview();previewUrl=URL.createObjectURL(f);const media=document.createElement(f.type.startsWith('video/')?'video':'img');media.src=previewUrl;if(media.tagName==='VIDEO'){media.controls=true;media.playsInline=true}const frame=overlay.querySelector('.ff20-preview-frame');frame.appendChild(media);if(media.tagName==='IMG' && state.zoom!==1){media.style.transform='scale('+state.zoom+')';media.style.transformOrigin='center center';}if(state.emoji&&!f.type.startsWith('video/')){const s=document.createElement('span');s.textContent=state.emoji;s.style.cssText='position:absolute;font-size:38px;left:'+state.x+'%;top:'+state.y+'%;transform:translate(-50%,-50%);pointer-events:none';frame.style.position='relative';frame.appendChild(s)}if(caption.value.trim()){const t=document.createElement('span');t.textContent=caption.value.trim();t.style.cssText='position:absolute;left:10%;right:10%;bottom:12%;text-align:center;color:white;font-weight:800;font-size:19px;text-shadow:0 2px 7px #000;background:#1116;border-radius:8px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none';frame.style.position='relative';frame.appendChild(t)}overlay.classList.add('ff20-open');previewReturnFocus=document.activeElement;overlay.querySelector('[data-close]').focus({preventScroll:true})}
  // Stage 25: any changes to story appearance invalidate an existing preview.
  // The member must re-preview the latest caption, sticker placement or framing.
  caption.addEventListener('input',()=>{if(overlay.classList.contains('ff20-open'))clearPreview()});
@@ -17507,7 +17515,17 @@ html.ff-v154-profile-active #profileManager.show {
    }
  });
  previewLifecycleObserver.observe(root,{attributes:true,attributeFilter:['class']});
- overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();clearPreview()}});overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
+ overlay.addEventListener('keydown',e=>{
+  if(!overlay.classList.contains('ff20-open'))return;
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();clearPreview();return;}
+  if(e.key==='Tab'){
+   const controls=[overlay.querySelector('[data-close]'),overlay.querySelector('[data-share]')].filter(x=>x&&!x.disabled);
+   if(!controls.length)return;
+   const first=controls[0],last=controls[controls.length-1];
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+ });overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
  file.addEventListener('change',e=>{
   // A preview belongs to the previously selected media. Never leave it open after a selection change.
   clearPreview();

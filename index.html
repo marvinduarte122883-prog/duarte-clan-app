@@ -17541,9 +17541,13 @@ html.ff-v154-profile-active #profileManager.show {
  const previewLifecycleObserver=new MutationObserver(()=>{
    const editorIsOpen=root.classList.contains('open');
    if(editorWasOpen && !editorIsOpen){
-     ++backgroundRequest; ++publishGeneration;
-     state.composing=false;
-     clearPreview();
+     // Stage 32: navigation dismissal must reset the whole editing session,
+     // just like Cancel; otherwise zoom and stickers leak into the next Story.
+     reset();
+     state.x=50;state.y=42;state.bg='#333f72';
+     sticker.style.left=state.x+'%';sticker.style.top=state.y+'%';
+     shell.classList.remove('ff-v127-text');
+     panel.replaceChildren();
    }
    editorWasOpen=editorIsOpen;
  });

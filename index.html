@@ -17540,6 +17540,14 @@ html.ff-v154-profile-active #profileManager.show {
   let previewFailed=false;
   const previewReady=()=>{
     if(previewFailed || !overlay.classList.contains('ff20-open') || !media.isConnected || media.src!==previewUrl)return;
+    // Stage 39: load events alone do not guarantee visible, decodable media.
+    // Reject zero-dimension images and video tracks before enabling Share.
+    const width=media.tagName==='VIDEO'?media.videoWidth:media.naturalWidth;
+    const height=media.tagName==='VIDEO'?media.videoHeight:media.naturalHeight;
+    if(!(width>0 && height>0)){
+      failPreview('This file does not contain a viewable photo or video. Choose another file.');
+      return;
+    }
     if(previewLoadTimeout!==null){clearTimeout(previewLoadTimeout);previewLoadTimeout=null;}
     previewShare.disabled=false;
   };
@@ -19276,4 +19284,49 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
   #ffCommentModal .ff-v142-media>img,#ffCommentModal .ff-v142-media>video{max-height:48dvh!important}
   #ffCommentModal .ff-v142-grid img{max-height:35dvh!important}
 }
+</style>
+
+
+<style id="duarte-stage40-messenger-lite">
+/* Stage 40: Messenger-only presentation; no changes to messaging or calling logic. */
+#ffMsgModal{color:#1c1e21!important;font-family:Arial,system-ui,sans-serif!important}
+#ffMsgModal .ff-msg-shell{background:#fff!important;border:1px solid #dfe3ea!important;box-shadow:0 16px 55px #0004!important;max-width:1100px!important}
+#ffMsgModal .ff-msg-list{background:#fff!important;color:#1c1e21!important;border-right:1px solid #e6e9ee!important;min-width:0!important}
+#ffMsgModal .ff-msg-title,#ffMsgModal .ff-chat-head{background:#fff!important;color:#1c1e21!important;border-bottom:1px solid #edf0f4!important;font-size:16px!important;gap:8px!important}
+#ffMsgModal .ff-msg-close,#ffMsgModal .ff-chat-back{color:#1967d2!important;background:#eef3ff!important;cursor:pointer!important}
+#ffMsgModal .ff-msg-search{background:#fff!important;border-bottom:1px solid #edf0f4!important;padding:10px!important}
+#ffMsgModal .ff-msg-search input{background:#f0f2f5!important;color:#1c1e21!important;border:1px solid #e6e9ee!important;border-radius:22px!important;padding:11px 14px!important;font-size:13px!important}
+#ffMsgModal .ff-msg-search input::placeholder,#ffMsgModal #ffChatInput::placeholder{color:#737b89!important}
+#ffMsgModal .ff-conversation{background:#fff!important;color:#1c1e21!important;border-bottom:1px solid #f0f2f5!important;min-height:64px!important;gap:11px!important}
+#ffMsgModal .ff-conversation:hover,#ffMsgModal .ff-conversation.unread,#ffMsgModal .ff-conversation.active{background:#edf4ff!important}
+#ffMsgModal .ff-conversation-name{color:#1c1e21!important;font-size:13px!important;font-weight:700!important}
+#ffMsgModal .ff-conversation-preview,#ffMsgModal .ff-conversation-time{color:#667085!important;font-size:11px!important}
+#ffMsgModal .ff-conversation-avatar{height:43px!important;width:43px!important;min-width:43px!important;border-radius:50%!important;background:#dce8fc!important;color:#1d4ed8!important;overflow:hidden!important}
+#ffMsgModal .ff-conversation-avatar img{height:100%!important;width:100%!important;object-fit:cover!important}
+#ffMsgModal .ff-conversation-unread{background:#1877f2!important;color:#fff!important}
+#ffMsgModal .ff-chat{background:#fff!important;color:#1c1e21!important;min-height:0!important}
+#ffMsgModal .ff-chat-messages{background:#f8faff!important;color:#1c1e21!important;overscroll-behavior:contain!important}
+#ffMsgModal .ff-chat-empty{color:#667085!important}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{background:#e9edf3!important;color:#1c1e21!important;border-radius:17px 17px 17px 5px!important}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble{background:#1877f2!important;color:#fff!important;border-radius:17px 17px 5px 17px!important}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble .ff-bubble-time{color:#fff!important}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble .ff-bubble-time{color:#556070!important}
+#ffMsgModal .ff-chat-compose{background:#fff!important;border-top:1px solid #e5e9ef!important;align-items:center!important;gap:8px!important;padding:10px 12px!important}
+#ffMsgModal #ffChatInput{background:#f0f2f5!important;color:#1c1e21!important;border:1px solid #e0e4eb!important;border-radius:22px!important;min-height:40px!important;box-sizing:border-box!important}
+#ffMsgModal #ffMessengerSendButton{background:#1877f2!important;color:#fff!important;border-radius:20px!important;min-height:40px!important;padding:9px 16px!important}
+#ffMsgModal #ffMessengerPhotoButton{background:#edf4ff!important;color:#1877f2!important;border-radius:50%!important;min-width:38px!important;min-height:38px!important;padding:6px!important}
+#ffMsgModal .ff-call-head-btn{background:#edf4ff!important;color:#1877f2!important;border-radius:50%!important;min-width:36px!important;min-height:36px!important}
+#ffMsgModal .ff-v4-reply-preview{background:#eef4fe!important;color:#243349!important}
+#ffMsgModal .ff-v4-msg-tools{background:#fff!important;color:#1c1e21!important;box-shadow:0 2px 8px #0002!important;border-radius:9px!important}
+#ffMsgModal .ff-v4-msg-tools button{color:#344054!important}
+#ffMsgModal button:focus-visible,#ffMsgModal input:focus-visible{outline:2px solid #1877f2!important;outline-offset:2px!important}
+@media(max-width:700px){
+ #ffMsgModal{padding:0!important}
+ #ffMsgModal .ff-msg-shell{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;border:0!important;grid-template-columns:minmax(0,1fr)!important}
+ #ffMsgModal .ff-msg-list,#ffMsgModal .ff-chat{min-width:0!important;min-height:0!important}
+ #ffMsgModal .ff-chat-compose{padding-bottom:max(10px,env(safe-area-inset-bottom))!important}
+ #ffMsgModal .ff-bubble{max-width:85%!important}
+ #ffMsgModal #ffChatInput{font-size:16px!important}
+}
+@media(prefers-reduced-motion:reduce){#ffMsgModal *,#ffMsgModal *::before,#ffMsgModal *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>

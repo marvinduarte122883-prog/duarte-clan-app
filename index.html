@@ -17879,16 +17879,19 @@ html.ff-v154-profile-active #profileManager.show {
    if(sending)return;
    const input=$("ffStoryReplyV70"),content=input?.value.trim(),selectedStory=storyId,recipient=storyOwner,epoch=storyEpoch;
    if(!content||!recipient||!selectedStory)return;
-   const c=sb(),u=await getMe();if(!c||!u){alert("Please sign in to send a message.");return}
-   if(u.id===recipient||epoch!==storyEpoch||storyId!==selectedStory)return;
+   // V166 Stage 9: lock before asynchronous identity lookup to prevent duplicate replies.
    sending=true;
+   const sendButton=$("ffStorySendV70");if(sendButton)sendButton.disabled=true;
    try{
+     const c=sb(),u=await getMe();
+     if(!c||!u)throw new Error("Please sign in to send a message.");
+     if(u.id===recipient||epoch!==storyEpoch||storyId!==selectedStory)return;
      const chat=await c.rpc("start_duarte_private_chat",{p_other_user:recipient});if(chat.error)throw chat.error;
      const conversationId=Number(chat.data);if(!Number.isSafeInteger(conversationId)||conversationId<=0)throw new Error('Unable to identify the conversation.');
      const r=await c.from("messages").insert({conversation_id:conversationId,sender_id:u.id,content});if(r.error)throw r.error;
      if(storyId===selectedStory&&epoch===storyEpoch&&input.value.trim()===content){input.value="";input.placeholder="Sent ✓";setTimeout(()=>{if(storyId===selectedStory&&input)input.placeholder="Send message…"},1200)}
    }catch(err){console.error('Story reply failed',err);if(storyId===selectedStory)alert("Message could not be sent: "+(err.message||err))}
-   finally{sending=false}
+   finally{sending=false;if(sendButton)sendButton.disabled=false}
  }
  async function showReactors(){const c=sb();if(!c||!storyId)return;const viewedStory=storyId,viewEpoch=storyEpoch;const modal=$("ffStoryLikersV68"),list=$("ffStoryLikersListV68");modal.classList.add("open");modal.setAttribute("aria-hidden","false");list.innerHTML='<div style="padding:22px;color:#aaa;text-align:center">Loading…</div>';try{await sync();if(viewEpoch!==storyEpoch||viewedStory!==storyId)return;const snapshot=rows.map(x=>({...x}));const ids=snapshot.map(x=>x.user_id);let profiles={};if(ids.length){const p=await c.from("profiles").select("id,full_name,avatar_url,photo_url,profile_photo_url").in("id",ids);if(p.error)throw p.error;(p.data||[]).forEach(x=>profiles[x.id]=x)}if(viewEpoch!==storyEpoch||viewedStory!==storyId)return;list.innerHTML=ids.length?snapshot.map(r=>{const p=profiles[r.user_id]||{},n=p.full_name||"Duarte member",a=p.avatar_url||p.photo_url||p.profile_photo_url||"";return `<div class="ff-story-liker-v68">${a?`<img src="${esc(a)}" alt="">`:`<span class="ff-story-liker-avatar-v68">${esc(n.charAt(0).toUpperCase())}</span>`}<strong>${esc(n)}</strong><span class="rx">${emoji(r.reaction)}</span></div>`}).join(""):'<div style="padding:22px;color:#aaa;text-align:center">No reactions yet.</div>'}catch(_){if(viewEpoch===storyEpoch&&viewedStory===storyId)list.innerHTML='<div style="padding:22px;color:#f0a0a0;text-align:center">Reactions could not be loaded.</div>'}}
  async function selectStory(id,owner){

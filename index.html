@@ -10091,7 +10091,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v52.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v53.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -16356,7 +16356,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v158';
+ const VERSION='v166';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');

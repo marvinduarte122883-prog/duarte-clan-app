@@ -4789,6 +4789,18 @@ function updateMessengerBadge(n){
  }
 }
 
+let ffV166MessengerRefreshPending=false;
+function ffV166RefreshMessengerView(){
+ if(ffV166MessengerRefreshPending)return;
+ ffV166MessengerRefreshPending=true;
+ setTimeout(()=>{
+  ffV166MessengerRefreshPending=false;
+  if(document.hidden)return;
+  if(!document.getElementById('ffMsgModal')?.classList.contains('open'))return;
+  loadConversations();
+  if(ffActiveConversationId)loadPrivateMessages();
+ },180);
+}
 function subscribeMessengerRealtime(){
  if(!currentUser||ffMessengerChannel)return;
  try{
@@ -4796,17 +4808,12 @@ function subscribeMessengerRealtime(){
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},payload=>{
       const m=payload.new||{};
       refreshMessengerUnread();
-      loadConversations();
-      if(ffActiveConversationId && Number(m.conversation_id)===Number(ffActiveConversationId) && document.getElementById("ffMsgModal")?.classList.contains("open")){
-       loadPrivateMessages();
-      }
+      ffV166RefreshMessengerView();
    })
    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"messages"},payload=>{
       const m=payload.new||{};
       refreshMessengerUnread();
-      if(ffActiveConversationId && Number(m.conversation_id)===Number(ffActiveConversationId)){
-       loadPrivateMessages();
-      }
+      ffV166RefreshMessengerView();
    })
    .subscribe(status=>{
       if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")console.warn("Messenger realtime status:",status);
@@ -6754,6 +6761,9 @@ window.openMemberProfileById=openClanProfile;
     cover.classList.add("ff-fb-cover");
     cover.dataset.duarteCover="1";
     const url=await getCoverUrl(userId);
+    // A slower earlier profile request must never paint over the newly opened member.
+    const visible=document.getElementById('ffFullProfile');
+    if(!visible?.classList.contains('open') || visible.dataset.ffV129MemberId!==userId)return;
     cover.style.backgroundImage = url
       ? `linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${String(url).replace(/"/g,'%22')}")`
       : "";
@@ -6818,8 +6828,10 @@ window.openMemberProfileById=openClanProfile;
         .rpc("update_my_duarte_cover",{p_cover_url:coverUrl});
       if(saveErr) throw saveErr;
 
-      cover.style.backgroundImage =
-        `linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${coverUrl.replace(/"/g,'%22')}")`;
+      if(document.getElementById('ffFullProfile')?.dataset.ffV129MemberId===currentUser.id){
+        cover.style.backgroundImage =
+          `linear-gradient(to bottom,rgba(0,0,0,.04),rgba(0,0,0,.28)),url("${coverUrl.replace(/"/g,'%22')}")`;
+      }
     }catch(e){
       console.error("[Duarte Cover]",e);
       alert("Cover photo could not be saved: "+(e?.message||e));
@@ -6837,8 +6849,11 @@ window.openMemberProfileById=openClanProfile;
       const id=(args[0] && typeof args[0]==="object")
         ? (args[0].id || args[0].user_id)
         : args[0];
-      activeProfileUserId=id || window.currentUser?.id || null;
-      setTimeout(()=>paintCover(activeProfileUserId),0);
+      const visible=document.getElementById('ffFullProfile');
+      const shown=visible?.classList.contains('open') ? visible.dataset.ffV129MemberId : null;
+      // Never guess the signed-in user for an opened member profile.
+      activeProfileUserId=shown || ((typeof id==='string' && /^[0-9a-f-]{36}$/i.test(id)) ? id : null);
+      if(activeProfileUserId) setTimeout(()=>paintCover(activeProfileUserId),0);
       return result;
     };
     wrapped.__duarteCoverHook=true;
@@ -6851,7 +6866,9 @@ window.openMemberProfileById=openClanProfile;
   }
 
   window.refreshDuarteCoverPhoto=async function(userId){
-    await paintCover(userId || activeProfileUserId || window.currentUser?.id);
+    const visible=document.getElementById('ffFullProfile');
+    const shown=visible?.classList.contains('open') ? visible.dataset.ffV129MemberId : null;
+    if(shown && (!userId || userId===shown))await paintCover(shown);
   };
 
   document.addEventListener("DOMContentLoaded",()=>{
@@ -16718,8 +16735,12 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
  window.ffV139StopStoryVideo=()=>{const v=$('ffV139StoryVideo');if(v){v.pause();v.removeAttribute('src');v.load();v.hidden=true}const im=$('ffStoryViewImage');if(im)im.style.display='';};
  window.ffV139SetStoryMedia=s=>{const v=$('ffV139StoryVideo'),im=$('ffStoryViewImage');if(!v||!im)return;
    if(!s?.video_url){window.ffV139StopStoryVideo();return}
-   v.pause();v.src=s.video_url;v.hidden=false;im.style.display='none';v.onloadedmetadata=()=>{window.ffV139StoryDuration=Number.isFinite(v.duration)?v.duration:20};
-   v.play().catch(()=>{});
+   v.pause();v.removeAttribute('src');v.load();
+   v.preload='metadata';v.playsInline=true;v.src=s.video_url;v.hidden=false;im.style.display='none';
+   const requestedUrl=s.video_url;
+   v.onloadedmetadata=()=>{if(v.getAttribute('src')!==requestedUrl)return;window.ffV139StoryDuration=Number.isFinite(v.duration)&&v.duration>0?v.duration:20};
+   v.onerror=()=>{if(v.getAttribute('src')!==requestedUrl)return;console.warn('Story video failed to load',v.error?.code);};
+   v.play().catch(()=>{ v.controls=true; });
  };
  const root=$('ffStoryViewer');
  root?.addEventListener('click',e=>{if(e.target.closest('#ffStoryClose,#ffStoryNext,#ffStoryPrev'))window.ffV139StopStoryVideo()},true);

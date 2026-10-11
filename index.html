@@ -4832,12 +4832,12 @@ async function ffV4React(messageId,reaction){
   if(q.error)throw q.error;await loadPrivateMessages();
  }catch(e){alert("Reaction could not be saved: "+(e.message||e))}
 }
-async function ffV4UploadMessagePhoto(file){
+async function ffV4UploadMessagePhoto(file,targetConversation){
  if(!file)return null;
  file=await window.ffStorageSaverImage(file,"message");
  if(file.size>10*1024*1024)throw new Error("Photo must be 10 MB or smaller.");
  const ext=(file.name.split(".").pop()||"jpg").toLowerCase();
- const path=`${currentUser.id}/messages/${ffActiveConversationId}/${Date.now()}.${ext}`;
+ const path=`${currentUser.id}/messages/${targetConversation}/${Date.now()}.${ext}`;
  const u=await supabaseClient.storage.from("family-gallery").upload(path,file,{upsert:false,contentType:file.type||"image/jpeg"});
  if(u.error)throw u.error;
  return supabaseClient.storage.from("family-gallery").getPublicUrl(path)?.data?.publicUrl||null;
@@ -4865,7 +4865,7 @@ async function sendPrivateMessage(){
    window.ffShowOfflinePending?.("message",c||"Photo");
    return;
   }
-  const attachment_url=await ffV4UploadMessagePhoto(file);
+  const attachment_url=await ffV4UploadMessagePhoto(file,targetConversation);
   const r=await supabaseClient.from("messages").insert({
    conversation_id:targetConversation,sender_id:currentUser.id,content:c,
    reply_to_id:replyId,attachment_url

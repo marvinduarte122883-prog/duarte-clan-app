@@ -17498,7 +17498,16 @@ html.ff-v154-profile-active #profileManager.show {
  panel.addEventListener('click',e=>{if(e.target.closest('[data-emoji],[data-ff20-clear],[data-ff20-color]')&&overlay.classList.contains('ff20-open'))clearPreview()});
  panel.addEventListener('input',e=>{if(e.target.id==='ff20Zoom'&&overlay.classList.contains('ff20-open'))clearPreview()});
  sticker.addEventListener('pointermove',e=>{if(drag===e.pointerId&&overlay.classList.contains('ff20-open'))clearPreview()});
- overlay.querySelector('[data-close]').addEventListener('click',clearPreview);overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();clearPreview()}});overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
+ overlay.querySelector('[data-close]').addEventListener('click',clearPreview);
+ // Stage 26: close a preview if the editor is dismissed through Back or another navigation path.
+ // Watch only the editor's own class attribute, not its subtree or the entire document.
+ const previewLifecycleObserver=new MutationObserver(()=>{
+   if(!root.classList.contains('open') && (overlay.classList.contains('ff20-open')||previewUrl)){
+     ++backgroundRequest;++publishGeneration;clearPreview();
+   }
+ });
+ previewLifecycleObserver.observe(root,{attributes:true,attributeFilter:['class']});
+ overlay.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();clearPreview()}});overlay.querySelector('[data-share]').addEventListener('click',()=>{if(publish.disabled||state.composing)return;clearPreview();publish.click()});
  file.addEventListener('change',e=>{
   // A preview belongs to the previously selected media. Never leave it open after a selection change.
   clearPreview();

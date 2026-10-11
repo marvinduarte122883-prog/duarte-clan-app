@@ -10091,7 +10091,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v51.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v52.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -17001,10 +17001,13 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
   const $=id=>document.getElementById(id);
   function tuneStoryVideo(){
     const v=$('ffV139StoryVideo'); if(!v) return;
-    v.controls=false; v.removeAttribute('controls');
-    v.setAttribute('controlsList','nodownload noplaybackrate nofullscreen');
-    v.setAttribute('disablePictureInPicture','');
-    v.playsInline=true;
+    // Idempotent settings: this viewer observes DOM attribute mutations.
+    if(v.controls) v.controls=false;
+    if(v.hasAttribute('controls')) v.removeAttribute('controls');
+    const list='nodownload noplaybackrate nofullscreen';
+    if(v.getAttribute('controlsList')!==list) v.setAttribute('controlsList',list);
+    if(!v.hasAttribute('disablePictureInPicture')) v.setAttribute('disablePictureInPicture','');
+    if(!v.playsInline) v.playsInline=true;
   }
   function refreshSummary(){
     const sum=$('ffStoryReactionSummaryV71'); if(!sum || sum.style.display==='none') return;
@@ -17014,7 +17017,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
   document.addEventListener('DOMContentLoaded',()=>{
     sync();
     const root=$('ffStoryViewer');
-    if(root){ new MutationObserver(()=>setTimeout(sync,40)).observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden','src']}); }
+    if(root){ let queued=false; new MutationObserver(()=>{if(queued)return;queued=true;setTimeout(()=>{queued=false;sync()},40)}).observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden','src']}); }
     $('ffStoryPrev')?.addEventListener('click',()=>setTimeout(sync,80),true);
     $('ffStoryNext')?.addEventListener('click',()=>setTimeout(sync,80),true);
   });

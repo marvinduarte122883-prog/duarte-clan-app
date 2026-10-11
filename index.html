@@ -19371,3 +19371,40 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
 }
 @media(prefers-reduced-motion:reduce){#ffMsgModal *,#ffMsgModal *::before,#ffMsgModal *::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
+
+<style id="duarte-stage46-messenger-layout">
+/* Stage 46: scoped presentation only. Existing call and message handlers stay intact. */
+#ffMsgModal{inset:0!important;padding:0!important;background:#f2f5f9!important;}
+#ffMsgModal.open{display:flex!important;align-items:stretch!important;justify-content:stretch!important;}
+#ffMsgModal .ff-msg-shell{width:100%!important;max-width:none!important;height:100dvh!important;max-height:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;grid-template-columns:clamp(300px,27vw,390px) minmax(0,1fr)!important;}
+#ffMsgModal .ff-msg-list{display:flex!important;flex-direction:column!important;overflow:hidden!important;scrollbar-width:thin;scrollbar-color:#d6dde8 transparent;}
+#ffMsgModal .ff-msg-title{height:60px!important;min-height:60px!important;padding:0 16px!important;font-size:18px!important;}
+#ffMsgModal .ff-v101-call-shortcuts{flex:0 0 auto!important;}
+#ffMsgModal .ff-msg-search{padding:9px 12px!important;flex:0 0 auto!important;}
+#ffMsgModal #ffConversationSearch{padding:10px 13px!important;}
+#ffMsgModal #ffConversationList{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-width:thin;scrollbar-color:#d6dde8 transparent;}
+#ffMsgModal #ffConversationList::-webkit-scrollbar,#ffMsgModal #ffChatMessages::-webkit-scrollbar{width:6px!important;}
+#ffMsgModal #ffConversationList::-webkit-scrollbar-thumb,#ffMsgModal #ffChatMessages::-webkit-scrollbar-thumb{background:#cbd4e1!important;border-radius:8px!important;}
+#ffMsgModal .ff-conversation{min-height:62px!important;margin:2px 7px!important;padding:8px 10px!important;gap:10px!important;border-radius:11px!important;}
+#ffMsgModal .ff-conversation-avatar{width:43px!important;height:43px!important;min-width:43px!important;}
+#ffMsgModal .ff-chat{min-width:0!important;min-height:0!important;display:flex!important;flex-direction:column!important;height:100%!important;}
+#ffMsgModal .ff-chat-head{height:60px!important;min-height:60px!important;flex:0 0 60px!important;padding:0 16px!important;}
+#ffMsgModal .ff-chat-head #ffChatName{overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;}
+#ffMsgModal .ff-chat-messages{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;scrollbar-width:thin;scrollbar-color:#d6dde8 transparent;padding:16px clamp(12px,2vw,30px)!important;}
+#ffMsgModal .ff-chat-compose{position:relative!important;bottom:auto!important;flex:0 0 auto!important;min-height:64px!important;padding:8px 14px max(8px,env(safe-area-inset-bottom))!important;gap:8px!important;}
+#ffMsgModal #ffChatInput{min-height:40px!important;height:40px!important;}
+#ffMsgModal #ffMessengerPhotoButton,#ffMsgModal #ffMessengerSendButton{min-height:38px!important;}
+@media(max-width:760px){
+ #ffMsgModal .ff-msg-shell{width:100vw!important;height:100dvh!important;grid-template-columns:minmax(0,1fr)!important;}
+ #ffMsgModal .ff-msg-list{width:100%!important;min-width:0!important;}
+ #ffMsgModal .ff-chat{display:none!important;}
+ #ffMsgModal .ff-msg-shell.chat-open .ff-msg-list{display:none!important;}
+ #ffMsgModal .ff-msg-shell.chat-open .ff-chat{display:flex!important;}
+ #ffMsgModal .ff-msg-title{height:56px!important;min-height:56px!important;}
+ #ffMsgModal .ff-chat-head{height:56px!important;min-height:56px!important;flex-basis:56px!important;padding:0 10px!important;}
+ #ffMsgModal .ff-chat-compose{min-height:58px!important;padding:7px 8px max(8px,env(safe-area-inset-bottom))!important;gap:6px!important;}
+ #ffMsgModal #ffChatInput{font-size:16px!important;}
+}
+@media(max-width:360px){#ffMsgModal .ff-call-head-btn{min-width:32px!important;width:32px!important;}#ffMsgModal .ff-chat-head{gap:4px!important;}#ffMsgModal #ffMessengerSendButton{padding:8px 10px!important;}}
+</style>
+

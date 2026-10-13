@@ -2317,43 +2317,6 @@ body {background:#f0f2f5!important;color:#1c1e21}
  .topbar,.nav-btn,.side-link,.post-btn {transition:none!important}
 }
 </style>
-<style id="duarte-fb-source-palette-v2">
-
-/* Duarte Clan V2: Facebook light-mode design tokens adapted from user supplied page source.
-   Scope: paint, typography, controls; no app logic, event handlers or data APIs altered. */
-:root {
- --duarte-bg:#F2F4F7; --duarte-surface:#FFFFFF; --duarte-subtle:#F8F9FB;
- --duarte-primary:#080809; --duarte-secondary:#65686C; --duarte-border:#D0D3D7;
- --duarte-control:#F0F2F5; --duarte-blue:#0866FF; --duarte-link:#0064D1;
- --duarte-selected:#EBF5FF; --duarte-negative:#DD2334;
- --bg:#F2F4F7; --panel:#FFFFFF; --panel-2:#FFFFFF; --panel2:#FFFFFF;
- --text:#080809; --muted:#65686C; --border:#D0D3D7;
- --gold:#0866FF; --gold-light:#0866FF; --fb-blue:#0866FF;
- --fb-soft:#EBF5FF; --fb-surface:#FFFFFF;
-}
-html {color-scheme:light}
-body {background:var(--duarte-bg)!important;color:var(--duarte-primary)}
-.topbar {background:#fff!important;border-bottom:1px solid #E2E5E9!important}
-.nav-btn.active,.side-link.active {background:#EBF5FF!important;color:#0064D1!important}
-.brand-text h1 {color:#0866FF!important}
-:where(.post-card,.create-post,.right-card,.profile-mini,.side-menu,.gallery-manager,.profile-manager,.clan-member-card,.member-card,.profile-card-edit,.ff-album-card,.ff-v125-profile-feed-item,.notification-panel) {background:#fff!important;color:var(--duarte-primary)!important;border-color:#E2E5E9!important}
-:where(.post-text,.author-info h3,.post-author,.member-name,.right-card h3) {color:var(--duarte-primary)!important}
-:where(.author-info span,.post-stats,.post-menu,.post-btn,.post-action,.member-status,.event-info span,.announcement span,.feed-header p,.brand-text span) {color:var(--duarte-secondary)!important}
-:where(.post-input,.comment-input,#postInput) {background:#F0F2F5!important;color:#080809!important;border-color:#D0D3D7!important}
-:where(.post-input,.comment-input,#postInput)::placeholder {color:#65686C!important;opacity:1}
-:where(.publish-btn,.comment-send) {background:#0866FF!important;color:#fff!important;border-radius:8px}
-:where(.publish-btn,.comment-send):hover {background:#005BE3!important;color:#fff!important}
-:where(.nav-btn,.side-link,.icon-btn,.post-btn,.post-action):focus-visible {outline:2px solid #0866FF;outline-offset:2px}
-:where(.post-card,.create-post,.right-card,.profile-mini,.side-menu) {border-radius:12px!important}
-:where(.post-card,.create-post,.right-card,.clan-member-card) {overflow-wrap:anywhere}
-@media(max-width:760px) {
- .post-card,.create-post,.right-card {border-radius:9px!important}
- .nav-btn,.side-link,.post-btn {touch-action:manipulation}
-}
-@media(prefers-reduced-motion:reduce) { .nav-btn,.side-link,.post-btn {transition:none!important} }
-/* Media overlays, story editor/viewer, and messenger bubbles intentionally retain their own contrast rules. */
-
-</style>
 </head>
 
 
@@ -19606,29 +19569,227 @@ html[data-v140-section="profile"] #profileManager.show {display:block!important;
 
 
 
-<style id="duarte-facebook-light-visibility-fix-v3">
-/* Final paint override. Light shell + readable text, leaving media viewers and message bubbles scoped. */
-:root{color-scheme:light!important;--bg:#F2F4F7!important;--panel:#fff!important;--panel2:#fff!important;--panel-2:#fff!important;--text:#080809!important;--muted:#65686C!important;--border:#D0D3D7!important;--gold:#0866FF!important;--gold-light:#0866FF!important}
-html,body{background:#F2F4F7!important;color:#080809!important}
-body .topbar,body .topbar-inner,body header.topbar{background:#FFFFFF!important;color:#080809!important;border-color:#E2E5E9!important}
-body .brand-text h1{color:#0866FF!important}body .brand-text span{color:#65686C!important}
-body .main-nav,body .main-nav .nav-btn{background:#FFFFFF!important;color:#65686C!important}
-body .main-nav .nav-btn.active,body .side-menu .side-link.active{background:#EBF5FF!important;color:#0866FF!important;border-color:#0866FF!important}
-body .sidebar,body .right-sidebar,body .feed,body .main-content,body main{color:#080809!important}
-body .profile-mini,body .side-menu,body .create-post,body .post-card,body .right-card,body .story-panel,body .member-card,body .clan-member-card,body .post-composer,body .notification-panel{background:#FFFFFF!important;color:#080809!important;border-color:#E2E5E9!important;box-shadow:0 1px 2px #00000012!important}
-body .side-menu .side-link{background:transparent!important;color:#080809!important}
-body .side-menu .side-link:hover{background:#F0F2F5!important;color:#080809!important}
-body .profile-mini h3,body .post-card h3,body .post-card strong,body .right-card strong,body .right-card h3,body .create-post h3,body .post-author,body .post-text,body .post-content,body .post-card p,body .member-name{color:#080809!important}
-body .profile-mini p,body .author-info span,body .right-card small,body .post-stats,body .post-date,body .post-meta,body .right-card .muted{color:#65686C!important}
-body .right-card a,body .post-card a{color:#0064D1!important}
-body .create-post textarea,body .create-post input,body .post-input,body .comment-input,body #postInput,body .topbar input,body .search-input{background:#F0F2F5!important;color:#080809!important;border:1px solid #D0D3D7!important}
-body .create-post textarea::placeholder,body .create-post input::placeholder,body .post-input::placeholder,body .comment-input::placeholder,body .topbar input::placeholder{color:#65686C!important;opacity:1}
-body .publish-btn,body .comment-send,body .right-card #ffNewAnnouncementBtnSidebar{background:#0866FF!important;color:white!important;border-color:#0866FF!important}
-body .post-actions,body .post-actions button,body .post-btn{color:#65686C!important}
-body .right-card .ff-sidebar-ann-head strong{color:#080809!important}
-body .profile-mini,body .side-menu,body .create-post,body .post-card,body .right-card{border-radius:12px!important}
-body #ffMsgModal .ff-bubble-row.mine>.ff-bubble{background:#0866FF!important;color:#FFFFFF!important}
-body #ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{background:#F0F2F5!important;color:#080809!important}
-@media(max-width:760px){html,body{background:#F2F4F7!important}body .profile-mini,body .side-menu,body .create-post,body .post-card,body .right-card{box-shadow:none!important}body .topbar{background:#fff!important}}
-@media(prefers-reduced-motion:reduce){body .topbar,body .side-link,body .nav-btn{transition:none!important}}
+<style id="duarte-v167-home-light-readable-fix">
+/* Final home feed readability fix: overrides older dark composer/story/feed blocks */
+:root{
+  --ff-lite-page:#F2F4F7;
+  --ff-lite-card:#FFFFFF;
+  --ff-lite-soft:#F0F2F5;
+  --ff-lite-border:#D0D7DE;
+  --ff-lite-text:#1C1E21;
+  --ff-lite-muted:#65676B;
+  --ff-lite-blue:#0866FF;
+  --ff-lite-blue-soft:#E7F3FF;
+}
+body,
+#home,
+#homeSection,
+.main-feed,
+.feed,
+#postsContainer,
+#postsLoading{
+  color:var(--ff-lite-text)!important;
+}
+#postsLoading,
+.post-card,
+.right-card,
+.left-card,
+.profile-card,
+.section-card,
+.event-manager,
+.members-manager,
+.family-section,
+.gallery-section,
+.polls-section,
+.story-panel{
+  background:var(--ff-lite-card)!important;
+  color:var(--ff-lite-text)!important;
+  border-color:var(--ff-lite-border)!important;
+}
+#postsLoading,
+.post-card,
+.post-card *,
+.right-card,
+.right-card *,
+.profile-card,
+.profile-card *,
+.section-card,
+.section-card *{
+  color:inherit;
+}
+.post-card h1,.post-card h2,.post-card h3,.post-card h4,
+.right-card h1,.right-card h2,.right-card h3,.right-card h4,
+.profile-card h1,.profile-card h2,.profile-card h3,.profile-card h4,
+.section-card h1,.section-card h2,.section-card h3,.section-card h4,
+.author-info h3,
+.post-author h3{
+  color:var(--ff-lite-text)!important;
+}
+.post-card p,
+.post-card span,
+.post-card small,
+.author-info span,
+.comment-time,
+.post-meta,
+.ff-announcement-empty,
+#upcomingEventsBody,
+#sidebarMembersBody,
+.ff-sidebar-ann-head small{
+  color:var(--ff-lite-muted)!important;
+}
+#createPostBox,
+#createPostBox.create-post,
+#home .create-post,
+#homeSection .create-post,
+.feed > .create-post,
+.create-post:has(+ #ffStories),
+#createPostBox.create-post:has(+ #ffStories){
+  background:var(--ff-lite-card)!important;
+  color:var(--ff-lite-text)!important;
+  border:1px solid var(--ff-lite-border)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.08)!important;
+}
+#createPostBox .post-top,
+#createPostBox.create-post:has(+ #ffStories) .post-top{
+  background:transparent!important;
+}
+#createPostBox #postInput,
+#createPostBox .post-input,
+#createPostBox.create-post:has(+ #ffStories) #postInput,
+#createPostBox.create-post:has(+ #ffStories) .post-input,
+.create-post:has(+ #ffStories) .post-input{
+  background:var(--ff-lite-soft)!important;
+  color:var(--ff-lite-text)!important;
+  border:1px solid #DADDE1!important;
+  caret-color:var(--ff-lite-blue)!important;
+}
+#createPostBox #postInput::placeholder,
+#createPostBox .post-input::placeholder,
+.create-post:has(+ #ffStories) .post-input::placeholder{
+  color:var(--ff-lite-muted)!important;
+  opacity:1!important;
+}
+#createPostBox .post-tools,
+#createPostBox.create-post:has(+ #ffStories) .post-tools,
+.create-post:has(+ #ffStories) .post-tools{
+  background:transparent!important;
+  border-color:var(--ff-lite-border)!important;
+}
+#createPostBox .post-action,
+#createPostBox button.post-action,
+#createPostBox .ff-v129-photo-button,
+#createPostBox .ff-v130-profile-tools button,
+#createPostBox .ff-v130-photo-meta button{
+  background:#F0F2F5!important;
+  color:var(--ff-lite-blue)!important;
+  border:1px solid transparent!important;
+}
+#createPostBox .post-action:hover,
+#createPostBox .ff-v129-photo-button:hover,
+#createPostBox .ff-v130-profile-tools button:hover,
+#createPostBox .ff-v130-photo-meta button:hover{
+  background:var(--ff-lite-blue-soft)!important;
+  color:#0064D1!important;
+}
+#createPostBox .publish-btn,
+#createPostBox.create-post:has(+ #ffStories) .publish-btn,
+#ffNewAnnouncementBtnSidebar{
+  background:var(--ff-lite-blue)!important;
+  color:#FFFFFF!important;
+  border:0!important;
+}
+#createPostBox .publish-btn:hover,
+#ffNewAnnouncementBtnSidebar:hover{
+  background:#0057D8!important;
+}
+#createPostBox .ff-v130-photo-meta,
+#createPostBox #postPhotoPreviewWrap,
+#createPostBox #ffV130PhotoComposerMeta{
+  background:#FFFFFF!important;
+  color:var(--ff-lite-text)!important;
+}
+#createPostBox .ff-v130-profile-name,
+#createPostBox .ff-v130-profile-row,
+#createPostBox .ff-v130-profile-main,
+#createPostBox .ff-v130-profile-tools,
+#createPostBox .ff-v130-profile-tools *{
+  color:var(--ff-lite-text)!important;
+}
+#ffStories,
+#ffStoriesStrip,
+#home #ffStories,
+#homeSection #ffStories{
+  background:#FFFFFF!important;
+  color:var(--ff-lite-text)!important;
+}
+#ffStories{
+  border:1px solid var(--ff-lite-border)!important;
+  border-radius:12px!important;
+  padding:12px!important;
+  margin-top:0!important;
+  margin-bottom:18px!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)!important;
+}
+#ffStories .ff-stories-head strong,
+#ffStories .ff-stories-head span,
+#ffStories .ff-story-empty,
+#ffStories .ff-story-create span,
+#ffStories .ff-story-name{
+  color:var(--ff-lite-text)!important;
+}
+#ffStories .ff-story-empty{
+  background:transparent!important;
+}
+#ffStories .ff-story-create{
+  background:#FFFFFF!important;
+  border:1px solid var(--ff-lite-border)!important;
+}
+#ffStories .ff-story-plus{
+  background:var(--ff-lite-blue)!important;
+  color:#FFFFFF!important;
+}
+#ffStories .ff-story-card{
+  box-shadow:none!important;
+}
+#ffStories .ff-story-card:not(.ff-story-create){
+  border:1px solid var(--ff-lite-border)!important;
+}
+.comment-bubble,
+.comment-input,
+.reply-input,
+textarea,
+input[type="text"],
+input[type="search"]{
+  color:var(--ff-lite-text);
+}
+.comment-bubble,
+.comment-input,
+.reply-input{
+  background:var(--ff-lite-soft)!important;
+  border-color:var(--ff-lite-border)!important;
+}
+.comment-author,
+.comment-body,
+.comment-text,
+.post-text,
+.post-content,
+.post-body,
+.post-body p,
+.post-caption,
+.post-message,
+.post-message *{
+  color:var(--ff-lite-text)!important;
+}
+.post-btn,
+.comment-btn,
+button.post-btn,
+button.comment-btn{
+  color:var(--ff-lite-muted)!important;
+}
+.post-btn:hover,
+.comment-btn:hover{
+  background:var(--ff-lite-blue-soft)!important;
+  color:var(--ff-lite-blue)!important;
+}
 </style>
+

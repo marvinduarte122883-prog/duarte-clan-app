@@ -1,4 +1,4 @@
-const CACHE_NAME='duarte-clan-v166-stage20-shell';
+const CACHE_NAME='duarte-clan-v175-unified-shell';
 const SHELL=['./','./index.html','./login.html'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const c=await caches.open(CACHE_NAME);

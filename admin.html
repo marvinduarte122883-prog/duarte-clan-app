@@ -1273,111 +1273,10 @@ window.ff124SaveWelcome=async function(){const field=document.getElementById('ff
 </body>
 </html>
 
-<style id="duarte-v168-cohesive-facebook-lite-theme">
-
-/* Duarte Clan V168 — coordinated Facebook-inspired light theme, lightweight CSS only */
-:root{
- --bg:#F2F4F7!important;--panel:#fff!important;--panel-2:#F8F9FB!important;--panel2:#F8F9FB!important;
- --border:#D0D3D7!important;--text:#080809!important;--muted:#65686C!important;
- --gold:#0866FF!important;--gold-light:#0064D1!important;
- --dc-canvas:#F2F4F7;--dc-surface:#fff;--dc-subtle:#F0F2F5;--dc-ink:#080809;
- --dc-muted:#65686C;--dc-line:#D0D3D7;--dc-blue:#0866FF;--dc-selected:#EBF5FF;
- color-scheme:light;
-}
-html{background:var(--dc-canvas)}
-body{background:var(--dc-canvas)!important;color:var(--dc-ink)!important;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
-/* Common chrome and cards — do not affect video/story viewer overlays */
-.topbar,.topbar-inner,.header,.navbar,.site-header,.mobile-bottom-nav,.ff-mobile-bottom-nav,
-.sidebar,.left-sidebar,.right-sidebar,.profile-mini,.sidebar-menu,.sidebar-card,
-.right-card,.post-card,.create-post,.event-manager,.member-card,.clan-member-card,
-.gallery-card,.gallery-photo-card,.profile-card,.profile-main,.profile-body,.profile-header,
-.profile-card-edit,.profile-section,.section-card,.notification-panel,.poll-card,
-.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-admin-panel-body,
-.ff-directory-card,.ff-family-tools,.ff-fb-intro,.ff-fb-intro-card,
-.card,.stat,.login-box,.dc-auth-card{
- background:var(--dc-surface)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important;
-}
-.topbar,.site-header,.navbar{box-shadow:0 1px 2px #00000012!important}
-.post-card,.right-card,.profile-mini,.create-post,.clan-member-card,.gallery-card,
-.ff-album-card,.notification-panel,.card{border-radius:12px!important;box-shadow:0 1px 2px #0000000a!important}
-/* Main copy and metadata */
-:is(.post-card,.right-card,.profile-mini,.clan-member-card,.gallery-card,.profile-card,.section-card,.card,.ff-album-card,.ff-admin-panel,.ff-directory-card) :is(h1,h2,h3,h4,h5,strong,b){color:var(--dc-ink)!important}
-:is(.post-card,.right-card,.profile-mini,.clan-member-card,.gallery-card,.profile-card,.section-card,.card,.ff-album-card,.ff-admin-panel,.ff-directory-card) :is(p,div,li,label){border-color:var(--dc-line)}
-:is(.post-card,.right-card,.profile-mini,.clan-member-card,.gallery-card,.profile-card,.section-card,.card,.ff-album-card,.ff-admin-panel,.ff-directory-card) :is(small,time,.meta,.sub,.subtitle,.post-meta,.author-info span,.member-role,.member-date){color:var(--dc-muted)!important}
-.side-link,.nav-link,.nav-btn,.ff-mobile-nav-link,.ff-family-tools-item,
-.sidebar a,.right-sidebar a{color:var(--dc-ink)!important}
-:is(.side-link,.nav-link,.nav-btn,.ff-mobile-nav-link,.ff-family-tools-item):is(.active,[aria-current="page"]){background:var(--dc-selected)!important;color:var(--dc-blue)!important}
-:is(.side-link,.nav-link,.nav-btn,.ff-mobile-nav-link,.ff-family-tools-item):hover{background:var(--dc-subtle)!important}
-/* Form controls */
-:where(input:not([type="checkbox"]):not([type="radio"]),textarea,select){background:var(--dc-subtle)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important;caret-color:var(--dc-blue)!important}
-:where(input,textarea)::placeholder{color:var(--dc-muted)!important;opacity:1!important}
-:where(input,textarea,select,button,a):focus-visible{outline:2px solid var(--dc-blue)!important;outline-offset:2px}
-button.publish-btn,.publish-btn,.login-btn,.dc-auth-submit,button.primary,.primary-btn,
-#ffNewAnnouncementBtnSidebar{background:var(--dc-blue)!important;color:white!important;border-color:var(--dc-blue)!important}
-/* Feed posting and comments */
-#createPostBox,#createPostBox.create-post:has(+ #ffStories),.create-post:has(+ #ffStories){background:var(--dc-surface)!important;color:var(--dc-ink)!important}
-#createPostBox #postInput,#createPostBox.create-post:has(+ #ffStories) #postInput,
-.create-post:has(+ #ffStories) .post-input{background:var(--dc-subtle)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
-#createPostBox #postInput::placeholder{color:var(--dc-muted)!important}
-#createPostBox :is(.post-action,.ff-v129-photo-button){color:var(--dc-blue)!important;background:var(--dc-subtle)!important}
-#createPostBox :is(.post-tools,.post-top){background:transparent!important}
-#ffStories,#ffStoriesStrip,#ffStories .ff-story-create{background:white!important;color:var(--dc-ink)!important}
-#ffStories .ff-story-empty,#ffStories .ff-story-create span{color:var(--dc-ink)!important}
-/* Story photo/video cards retain their media-safe white captions */
-#ffStories .ff-story-card:not(.ff-story-create) .ff-story-name{color:white!important;text-shadow:0 1px 3px #0008!important}
-.comment-bubble,.comment-input,.reply-input,.reaction-picker,.comment-reaction-picker,
-.comment-reply-box{background:var(--dc-subtle)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
-.comment-author,.comment-text,.comment-body,.post-text,.post-content,.post-message{color:var(--dc-ink)!important}
-/* Member lists, announcements, photos, events, directory */
-#membersGrid .clan-member-card,#galleryGrid .gallery-photo-card,
-.ff-albums-grid .ff-album-card,.event-card,.event-list-card,
-.ff-sidebar-ann-list,.ff-sidebar-ann-head,.ff-sidebar-ann-list *,
-#sidebarMembersBody,#upcomingEventsBody{background-color:transparent;color:var(--dc-ink)!important}
-#ffStories .ff-stories-head span,.ff-story-empty,.author-info span,.ff-announcement-empty{color:var(--dc-muted)!important}
-/* Messenger: white/blue conversation, gray incoming, blue outgoing */
-#ffMsgModal{--dm-blue:#0866FF!important;--dm-ink:#080809!important;--dm-muted:#65686C!important;--dm-line:#D0D3D7!important;--dm-soft:#F0F2F5!important}
-#ffMsgModal .ff-msg-shell,#ffMsgModal .ff-msg-list,#ffMsgModal .ff-chat,
-#ffMsgModal .ff-msg-title,#ffMsgModal .ff-msg-search,#ffMsgModal .ff-chat-head,
-#ffMsgModal .ff-chat-compose,#ffMsgModal #ffChatMessages{background:#fff!important;color:var(--dc-ink)!important}
-#ffMsgModal .ff-conversation{background:#fff!important;color:var(--dc-ink)!important}
-#ffMsgModal .ff-conversation:is(:hover,.active){background:var(--dc-selected)!important}
-#ffMsgModal :is(.ff-conversation-name,#ffChatName){color:var(--dc-ink)!important}
-#ffMsgModal :is(.ff-conversation-preview,.ff-chat-empty){color:var(--dc-muted)!important}
-#ffMsgModal .ff-bubble-row.mine>.ff-bubble{background:var(--dc-blue)!important;color:#fff!important}
-#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{background:var(--dc-subtle)!important;color:var(--dc-ink)!important}
-#ffMsgModal #ffChatInput,#ffMsgModal #ffConversationSearch{background:var(--dc-subtle)!important;color:var(--dc-ink)!important}
-#ffMsgModal :is(#ffMessengerSendButton,.ff-conversation-unread){background:var(--dc-blue)!important;color:white!important}
-#ffMsgModal :is(.ff-call-head-btn,#ffMessengerPhotoButton){color:var(--dc-blue)!important}
-/* Allow intentional dark photo/video backgrounds and overlays to remain dark */
-@media(max-width:760px){
- .post-card,.right-card,.create-post,.profile-card,.section-card{border-radius:10px!important}
- #ffMsgModal .ff-msg-shell{width:100%!important;height:100dvh!important}
- #ffMsgModal #ffChatInput{font-size:16px!important}
-}
-@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}
-
-</style>
 
 
-<style id="duarte-v168-admin-white-readable-fix">
-:root{
-  --dc-page:#F2F4F7;--dc-surface:#FFFFFF;--dc-surface-soft:#F0F2F5;--dc-line:#DADDE1;--dc-ink:#1C1E21;--dc-muted:#65676B;--dc-blue:#0866FF;--dc-blue-soft:#E7F3FF;
-}
-html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important}
-:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.modal,.modal-box,.admin-panel,.members-panel,.role-panel,.list-row,.row,.toolbar,.filter-bar,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body){background:var(--dc-surface)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important;box-shadow:0 1px 2px rgba(0,0,0,.08)!important}
-:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.admin-panel,.members-panel,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body) :is(h1,h2,h3,h4,h5,strong,b,label){color:var(--dc-ink)!important}
-:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.admin-panel,.members-panel,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body) :is(p,span,small,div:not(.avatar):not(.member):not(.card):not(.stat)){color:inherit}
-.subtitle,.muted,.empty,.loading,.helper,.description,.member .meta,.member .role,.member .date,#ff124WelcomeStatus{color:var(--dc-muted)!important}
-textarea,input,select{background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
-textarea::placeholder,input::placeholder{color:var(--dc-muted)!important}
-button,.refresh,.secondary{background:#E4E6EB!important;color:#050505!important;border:1px solid var(--dc-line)!important}
-button:hover,.refresh:hover,.secondary:hover{background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important}
-.approve,.primary,.save,.refresh.primary{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
-.reject,.remove{background:#FFF1F0!important;color:#D9363E!important;border:1px solid #FFD6D6!important}
-#welcomeSettings,.ff124-shell,.ff124-preview,section:has(#ff124WelcomeText){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
-.member,.member-row,.actions,.card-header{border-color:var(--dc-line)!important}
-@media(max-width:760px){.card,.stat,.member,.member-row{border-radius:12px!important}}
-</style>
+
+
 
 
 
@@ -1399,3 +1298,55 @@ button{font-size:14px!important;min-height:38px!important}
 @media(max-width:760px){#ff124WelcomeText,input,textarea,select{font-size:16px!important}.member{padding:14px!important}.member-name,.member .name{font-size:15px!important}}
 </style>
 
+
+<style id="duarte-v175-unified-facebook-lite">
+
+/* Duarte Clan V175 — single final shared light design system. No external fonts or scripts. */
+:root{color-scheme:light;--dc-page:#F2F4F7;--dc-white:#fff;--dc-soft:#F0F2F5;--dc-alt:#F8F9FB;--dc-primary:#080809;--dc-muted:#65686C;--dc-blue:#0866FF;--dc-blue-soft:#EBF5FF;--dc-outline:#D0D3D7;--dc-shadow:0 1px 3px rgba(0,0,0,.08);--panel:#fff;--card:#fff;--border:#D0D3D7;--muted:#65686C;--gold:#0866FF;--gold-light:#1b74e4}
+html,body{background:var(--dc-page)!important;color:var(--dc-primary)!important;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
+body{font-size:15px!important;line-height:1.45!important}
+button,input,textarea,select{font-family:inherit!important}
+input,textarea,select{color:#080809!important;-webkit-text-fill-color:#080809!important;border:1px solid var(--dc-outline)!important;background:#fff!important;font-size:15px!important}
+input::placeholder,textarea::placeholder{color:var(--dc-muted)!important;-webkit-text-fill-color:var(--dc-muted)!important;opacity:1!important}
+input[type=search],.search-box input,.search-input,#postInput,.post-input,.comment-input,.reply-input{background:var(--dc-soft)!important;color:#080809!important;-webkit-text-fill-color:#080809!important;border-color:transparent!important;border-radius:24px!important}
+button{font-size:14px;font-weight:600}
+a{color:var(--dc-blue)}
+:focus-visible{outline:2px solid var(--dc-blue)!important;outline-offset:2px!important}
+/* normal surfaces */
+:is(.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.event-manager,.member-card,.clan-member-card,.gallery-card,.gallery-manager,.modal-box,.profile-card,.profile-manager,.profile-card-edit,.notification-panel,.ff-album-card,.ff-directory-card,.ff-birthday-panel,.ff-history-shell,.ff-announcements-panel,.ff-announcement-dialog,.ff-rsvp-dialog,.ff-member-profile-card,.ff-admin-panel,.ff-admin-panel-body,.card,.stat){background:#fff!important;color:#080809!important;border-color:var(--dc-outline)!important;box-shadow:var(--dc-shadow)!important}
+:is(.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.event-manager,.member-card,.clan-member-card,.gallery-card,.modal-box,.ff-directory-card,.ff-birthday-panel,.ff-member-profile-card,.ff-admin-panel,.card){border-radius:12px!important}
+:is(.post-card,.right-card,.profile-mini,.clan-member-card,.member-card,.section-card,.ff-directory-card,.ff-admin-panel) :is(h1,h2,h3,h4,h5,strong,b){color:var(--dc-primary)!important}
+:is(.post-card,.right-card,.profile-mini,.clan-member-card,.member-card,.section-card,.ff-directory-card,.ff-admin-panel) :is(small,.muted,.meta,.member-status,.post-stats){color:var(--dc-muted)!important}
+/* named side menus and floating menu items */
+.side-menu,.ff-family-tools-menu,#ffFamilyToolsMenu{background:#fff!important;color:var(--dc-primary)!important;border:1px solid var(--dc-outline)!important}
+.side-link,.ff-family-tools-item,#ffFamilyToolsMenu .ff-family-tools-item{color:var(--dc-primary)!important;background:#fff!important;min-height:44px!important;font-size:15px!important;font-weight:600!important;border-radius:9px!important}
+.side-link.active{background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important}
+.side-link:hover,.ff-family-tools-item:hover,#ffFamilyToolsMenu .ff-family-tools-item:hover{background:var(--dc-soft)!important;color:var(--dc-blue)!important}
+.ff-family-tools-menu .ff-family-tools-title,#ffFamilyToolsMenu .ff-family-tools-title{background:#fff!important;color:var(--dc-muted)!important}
+.ff-family-tools-menu .ff-family-tools-item span,#ffFamilyToolsMenu .ff-family-tools-item span{color:inherit!important;background:transparent!important}
+/* modals and forms */
+:is(.ff-family-tree-dialog,.ff-relationship-dialog,.ff-directory-dialog,.ff-birthday-dialog,.ff-history-shell,.ff-announcement-dialog,.ff-edit-profile-card){background:#fff!important;color:var(--dc-primary)!important;border:1px solid var(--dc-outline)!important}
+:is(.ff-family-tree-head,.ff-family-tree-toolbar,.ff-history-head,.ff-announcement-head,.ff-birthday-modal-head,.ff-edit-profile-head){background:#fff!important;color:var(--dc-primary)!important;border-color:var(--dc-outline)!important}
+.ff-family-tree-node,.ff-directory-card,.ff-birthday-person,.ff-member-profile-main{background:#fff!important;color:var(--dc-primary)!important;border-color:var(--dc-outline)!important}
+.ff-birthday-panel h3,.ff-family-tree-head strong,.ff-history-head strong{color:var(--dc-primary)!important}
+/* preserve primary button contrast without blanket overriding every button */
+.publish-btn,.ff-story-publish,#ffMessengerSendButton{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
+/* selected navigation */
+.topbar,.site-header,.navbar,header:has(.brand-text){background:#fff!important;color:var(--dc-primary)!important;border-color:var(--dc-outline)!important}
+.nav-btn,.nav-link,.side-link{font-size:15px!important}
+.nav-btn.active,.nav-link.active{color:var(--dc-blue)!important;background:var(--dc-blue-soft)!important}
+/* rich media keeps dark backdrop for contrast */
+#ffStoryViewer .ff-story-view,#ffStoryViewer .ff-story-view-bg{background-color:#101114!important}
+@media(max-width:760px){body{font-size:15px!important}.side-link{min-height:46px!important}.post-card,.create-post,.right-card{border-radius:10px!important}input,textarea,select{font-size:16px!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Admin management rows, summary, welcome message */
+.card,.stat,.member,.member-row,.ff124-welcome-settings,section:has(#ff124WelcomeText){background:#fff!important;color:var(--dc-primary)!important;border-color:var(--dc-outline)!important}
+.card h2,.card h3,.stat strong,.member .name,.member-name,.ff124-welcome-settings h3{color:var(--dc-primary)!important}
+.member small,.member .role,.member .meta,.card small,.ff124-welcome-settings p{color:var(--dc-muted)!important;font-size:14px!important}
+.member{border-bottom:1px solid var(--dc-outline)!important;min-height:64px!important}
+#ff124WelcomeText{background:#fff!important;color:var(--dc-primary)!important;font-size:16px!important;line-height:1.5!important}
+#ff124SaveBtn,.approve,.primary{background:var(--dc-blue)!important;color:#fff!important}
+.reject,.remove{background:#FFF0EF!important;color:#C82A36!important}
+
+</style>

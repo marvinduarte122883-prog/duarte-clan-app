@@ -359,6 +359,70 @@ body {
 #v166AdminCard .member-info h4{overflow-wrap:anywhere}
 @media(max-width:750px){#v166AdminCard .member{display:flex;flex-wrap:wrap;gap:9px}#v166AdminCard .actions{width:100%;justify-content:flex-end}#v166AdminCard .actions button{min-height:42px}}
 </style>
+<!-- Duarte Clan Lite palette: stylesheet-only theme, no app logic changed -->
+<style id="duarte-fb-lite-theme-20261013">
+
+/* Duarte Clan Facebook-inspired Lite palette · 2026-10-13
+   CSS-only: no new dependencies, requests, listeners, or animations. */
+:root {
+ --gold:#0866ff; --gold-light:#1877f2;
+ --bg:#f0f2f5; --panel:#ffffff; --panel-2:#ffffff; --panel2:#ffffff;
+ --border:#dfe3e8; --text:#1c1e21; --muted:#65676b;
+ --fb-blue:#0866ff; --fb-soft:#e7f3ff; --fb-surface:#ffffff;
+}
+html {color-scheme:light}
+body {background:#f0f2f5!important;color:#1c1e21}
+.topbar {background:#fff!important;border-bottom:1px solid #dfe3e8!important;box-shadow:0 1px 3px #00000012!important}
+.brand-logo,.avatar,.profile-avatar,.post-avatar,.author-avatar {background:#e7f3ff!important;color:#0866ff!important;border-color:#d5e6ff!important}
+.brand-text h1,.modal-box h2 {color:#0866ff!important}
+.brand-text span,.feed-header p,.profile-mini p {color:#65676b!important}
+.nav-btn,.side-link,.icon-btn {color:#65676b!important}
+.nav-btn.active,.side-link.active,.nav-btn:hover,.side-link:hover {background:#e7f3ff!important;color:#0866ff!important}
+.nav-btn.active {box-shadow:inset 0 -3px #0866ff}
+.icon-btn,.notification-bell {background:#f0f2f5!important;border-color:#e4e6eb!important;color:#31353b!important}
+.profile-mini,.side-menu,.create-post,.post-card,.right-card,.modal-box,
+.gallery-manager,.profile-manager,.clan-member-card,.member-card,
+.profile-card-edit,.ff-album-card,.ff-v125-profile-feed-item,
+.notification-panel {background:#fff!important;color:#1c1e21!important;border-color:#e4e6eb!important;box-shadow:0 1px 2px #00000010}
+.post-card,.create-post,.right-card,.profile-mini,.side-menu {border-radius:12px!important}
+.post-text,.author-info h3,.post-author,.member-name,.right-card h3 {color:#1c1e21!important}
+.author-info span,.post-stats,.post-menu,.post-btn,.post-action,.member-status,.event-info span,
+.announcement span {color:#65676b!important}
+.post-input,.comment-input,#postInput {background:#f0f2f5!important;color:#1c1e21!important;border:1px solid #e4e6eb!important}
+.post-input::placeholder,.comment-input::placeholder,#postInput::placeholder {color:#65676b}
+.post-btn:hover,.post-btn.liked,.post-action:hover {background:#e7f3ff!important;color:#0866ff!important}
+.publish-btn,.comment-send {background:#0866ff!important;color:#fff!important}
+.publish-btn:hover,.comment-send:hover {background:#1877f2!important;color:#fff!important}
+.post-image {background:#f0f2f5!important;border-color:#e4e6eb!important}
+.post-stats,.post-tools {border-color:#e4e6eb!important}
+.event-date {background:#e7f3ff!important;color:#0866ff!important;border-color:#cde2ff!important}
+.member-avatar {background:#e7f3ff;color:#0866ff}
+.announcement {border-left-color:#0866ff!important}
+.modal-box {background:#fff!important}
+.modal-box input,.modal-box textarea,.modal-box select {background:#f0f2f5!important;color:#1c1e21!important;border-color:#dadde1!important}
+/* Preserve specialized dark photo/video lightboxes and full-screen story viewer.
+   Give in-feed story tiles the lighter Facebook-style framing only. */
+#ffStories .ff-story-card {border-color:#e4e6eb!important}
+#membersGrid .clan-member-card {background:#fff!important;color:#1c1e21!important}
+#galleryGrid .gallery-photo-card {background:#fff!important;border-color:#e4e6eb!important}
+:where(.page,.layout,.feed,.sidebar,.right-sidebar) {min-width:0}
+:where(.post-card,.create-post,.right-card,.clan-member-card) {overflow-wrap:anywhere}
+@media(max-width:760px){
+ body {background:#f0f2f5!important}
+ .topbar {box-shadow:0 1px 2px #00000014!important}
+ .post-card,.create-post,.right-card {border-radius:9px!important}
+ .post-card {padding:12px!important}
+ .nav-btn,.side-link,.post-btn {touch-action:manipulation}
+}
+@media(prefers-reduced-motion:reduce){
+ .topbar,.nav-btn,.side-link,.post-btn {transition:none!important}
+}
+
+/* Admin management panels */
+.topbar {background:#fff!important}
+main, .main, .dashboard, .content {color:#1c1e21}
+button:focus-visible,a:focus-visible {outline:2px solid #0866ff;outline-offset:2px}
+</style>
 </head>
 
 <body>

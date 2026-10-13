@@ -1350,3 +1350,52 @@ a{color:var(--dc-blue)}
 .reject,.remove{background:#FFF0EF!important;color:#C82A36!important}
 
 </style>
+
+<style id="duarte-v176-white-surface-navigation">
+
+/* V176 Facebook-inspired unified white surfaces — presentation only */
+:root{--dc-page:#F2F4F7;--dc-card:#fff;--dc-ink:#080809;--dc-muted:#65686C;--dc-line:#D0D3D7;--dc-subtle:#F0F2F5;--dc-blue:#0866FF;--dc-active:#EBF5FF;--panel:#fff;--card:#fff;--border:#D0D3D7;--muted:#65686C}
+html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;color-scheme:light}
+/* Navigation: Facebook-like neutral hover, blue selected tab */
+:is(.topbar,.navbar,.site-header,header,.ff-full-profile-top){background:#fff!important;color:var(--dc-ink)!important}
+:is(.nav-btn,.nav-link,nav a,.side-link,.ff-family-tools-item){color:var(--dc-ink)!important;transition:background-color .13s ease,color .13s ease!important}
+:is(.nav-btn,.nav-link,nav a,.side-link,.ff-family-tools-item):hover:not(.active){background:var(--dc-subtle)!important;color:var(--dc-ink)!important}
+:is(.nav-btn,.nav-link,nav a):is(.active,[aria-current="page"]){background:transparent!important;color:var(--dc-blue)!important;box-shadow:inset 0 -3px var(--dc-blue)!important}
+.side-link:is(.active,[aria-current="page"]){background:var(--dc-active)!important;color:var(--dc-blue)!important;box-shadow:none!important}
+:is(.nav-btn,.nav-link,.side-link,.ff-family-tools-item):focus-visible{outline:2px solid var(--dc-blue)!important;outline-offset:2px!important}
+/* Page, profile, directory, tools, menu, modal, admin cards */
+:is(.profile-mini,.side-menu,.create-post,.post-card,.right-card,.section-card,.profile-card,.profile-main,.profile-body,.profile-manager,.profile-card-edit,.event-manager,.member-card,.clan-member-card,.gallery-manager,.gallery-card,.gallery-photo-card,.notification-panel,.poll-card,.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-admin-panel-body,.ff-admin-stat,.ff-directory-card,.ff-birthday-panel,.ff-history-shell,.ff-announcements-panel,.ff-announcement-dialog,.ff-member-profile-card,.modal-box,.ff-relationship-dialog,.ff-family-tree-dialog,.ff-family-tree-head,.ff-family-tree-node,.ff-family-tools-menu,.ff-story-compose,.ff-story-compose-head,.ff-story-compose-body,.ff-edit-profile-card,.ff-edit-profile-body,.ff-full-identity,.ff-full-post-card,.ff-fb-profile-intro,.ff124-welcome-settings){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+/* Specific previously persistent dark shells */
+#ffFullProfile{background:var(--dc-page)!important;color:var(--dc-ink)!important}
+#ffFullProfile :is(.ff-full-profile-top,.ff-full-identity,.ff-profile-tabs){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+#ffFullProfile :is(.ff-profile-content){background:var(--dc-page)!important;color:var(--dc-ink)!important}
+#ffFullProfile :is(.ff-full-name,.ff-fb-profile-intro h3){color:var(--dc-ink)!important}
+#ffFullProfile :is(.ff-fb-profile-intro,.ff-full-post-card,#ffFullAbout>div,#ffFullPhotos>div){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+#ffFullProfile :is(.ff-full-role,.ff-fb-intro-icon){color:var(--dc-muted)!important}
+#ffFamilyToolsMenu,#ffFamilyToolsMenu .ff-family-tools-title,#ffFamilyToolsMenu .ff-family-tools-item{background:#fff!important;color:var(--dc-ink)!important}
+#ffFamilyToolsMenu .ff-family-tools-item:hover{background:var(--dc-subtle)!important}
+#ffFamilyTreeModal :is(.ff-family-tree-dialog,.ff-family-tree-head,.ff-family-tree-toolbar,.ff-family-tree-node){background:#fff!important;color:var(--dc-ink)!important}
+#ffAdminDashboardModal :is(.ff-admin-dash-shell,.ff-admin-dash-head,.ff-admin-summary,.ff-admin-stat,.ff-admin-panels,.ff-admin-panel,.ff-admin-panel-body,.ff124-welcome-settings){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+#ffAdminDashboardModal :is(.ff-admin-dash-head strong,.ff-admin-stat strong,.ff-admin-stat span,.ff-admin-panel h3){color:var(--dc-ink)!important}
+#ffAdminDashboardModal :is(.ff-admin-dash-head small,.ff-admin-stat small){color:var(--dc-muted)!important}
+#ffStoryComposer :is(.ff-story-compose,.ff-story-compose-head,.ff-story-compose-body,.ff-v127-start,.ff-story-compose-actions,.ff-story-music){background:#fff!important;color:var(--dc-ink)!important}
+#ffStoryComposer :is(.ff-v127-modes button,.ff-v127-gallery,#ffV127EditorTools button){background:var(--dc-subtle)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+/* Inputs and detail typography */
+:is(.search-box input,.search-input,input[type="search"],.post-input,.comment-input,.reply-input,#postInput,#ffChatInput,#ffConversationSearch){background:var(--dc-subtle)!important;color:var(--dc-ink)!important;-webkit-text-fill-color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
+:is(input,textarea)::placeholder{color:var(--dc-muted)!important;opacity:1!important}
+:is(.side-link,.ff-family-tools-item,.member-name,.ff-fb-intro-row){font-size:15px!important;line-height:1.45!important}
+:is(.right-card,.post-card,.profile-mini,.section-card,.ff-family-tools-menu) :is(h2,h3,h4,strong){color:var(--dc-ink)!important}
+:is(.right-card,.post-card,.profile-mini,.section-card) :is(small,.muted){color:var(--dc-muted)!important}
+/* Preserve contrast: white text on blue buttons and outgoing bubbles */
+:is(.publish-btn,.ff-story-publish,#ff124SaveBtn,#ffNewAnnouncementBtnSidebar){background:var(--dc-blue)!important;color:#fff!important}
+#ffMsgModal :is(.ff-msg-shell,.ff-msg-list,.ff-chat,.ff-chat-head,.ff-chat-compose){background:#fff!important;color:var(--dc-ink)!important}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble{background:var(--dc-blue)!important;color:#fff!important}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{background:var(--dc-subtle)!important;color:var(--dc-ink)!important}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble :is(span,p,small){color:#fff!important}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble :is(span,p){color:var(--dc-ink)!important}
+/* Story media should remain dark for contrast, not the story editor */
+#ffStoryViewer .ff-story-view{background:#111!important}
+@media(max-width:760px){:is(.side-link,.ff-family-tools-item){min-height:44px!important;font-size:15px!important}#ffStoryComposer .ff-story-compose{width:100%!important;border-radius:0!important}#ffMsgModal #ffChatInput{font-size:16px!important}}
+@media(prefers-reduced-motion:reduce){:is(.nav-btn,.nav-link,.side-link,.ff-family-tools-item){transition:none!important}}
+
+</style>

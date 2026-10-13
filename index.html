@@ -2317,6 +2317,43 @@ body {background:#f0f2f5!important;color:#1c1e21}
  .topbar,.nav-btn,.side-link,.post-btn {transition:none!important}
 }
 </style>
+<style id="duarte-fb-source-palette-v2">
+
+/* Duarte Clan V2: Facebook light-mode design tokens adapted from user supplied page source.
+   Scope: paint, typography, controls; no app logic, event handlers or data APIs altered. */
+:root {
+ --duarte-bg:#F2F4F7; --duarte-surface:#FFFFFF; --duarte-subtle:#F8F9FB;
+ --duarte-primary:#080809; --duarte-secondary:#65686C; --duarte-border:#D0D3D7;
+ --duarte-control:#F0F2F5; --duarte-blue:#0866FF; --duarte-link:#0064D1;
+ --duarte-selected:#EBF5FF; --duarte-negative:#DD2334;
+ --bg:#F2F4F7; --panel:#FFFFFF; --panel-2:#FFFFFF; --panel2:#FFFFFF;
+ --text:#080809; --muted:#65686C; --border:#D0D3D7;
+ --gold:#0866FF; --gold-light:#0866FF; --fb-blue:#0866FF;
+ --fb-soft:#EBF5FF; --fb-surface:#FFFFFF;
+}
+html {color-scheme:light}
+body {background:var(--duarte-bg)!important;color:var(--duarte-primary)}
+.topbar {background:#fff!important;border-bottom:1px solid #E2E5E9!important}
+.nav-btn.active,.side-link.active {background:#EBF5FF!important;color:#0064D1!important}
+.brand-text h1 {color:#0866FF!important}
+:where(.post-card,.create-post,.right-card,.profile-mini,.side-menu,.gallery-manager,.profile-manager,.clan-member-card,.member-card,.profile-card-edit,.ff-album-card,.ff-v125-profile-feed-item,.notification-panel) {background:#fff!important;color:var(--duarte-primary)!important;border-color:#E2E5E9!important}
+:where(.post-text,.author-info h3,.post-author,.member-name,.right-card h3) {color:var(--duarte-primary)!important}
+:where(.author-info span,.post-stats,.post-menu,.post-btn,.post-action,.member-status,.event-info span,.announcement span,.feed-header p,.brand-text span) {color:var(--duarte-secondary)!important}
+:where(.post-input,.comment-input,#postInput) {background:#F0F2F5!important;color:#080809!important;border-color:#D0D3D7!important}
+:where(.post-input,.comment-input,#postInput)::placeholder {color:#65686C!important;opacity:1}
+:where(.publish-btn,.comment-send) {background:#0866FF!important;color:#fff!important;border-radius:8px}
+:where(.publish-btn,.comment-send):hover {background:#005BE3!important;color:#fff!important}
+:where(.nav-btn,.side-link,.icon-btn,.post-btn,.post-action):focus-visible {outline:2px solid #0866FF;outline-offset:2px}
+:where(.post-card,.create-post,.right-card,.profile-mini,.side-menu) {border-radius:12px!important}
+:where(.post-card,.create-post,.right-card,.clan-member-card) {overflow-wrap:anywhere}
+@media(max-width:760px) {
+ .post-card,.create-post,.right-card {border-radius:9px!important}
+ .nav-btn,.side-link,.post-btn {touch-action:manipulation}
+}
+@media(prefers-reduced-motion:reduce) { .nav-btn,.side-link,.post-btn {transition:none!important} }
+/* Media overlays, story editor/viewer, and messenger bubbles intentionally retain their own contrast rules. */
+
+</style>
 </head>
 
 

@@ -20059,3 +20059,344 @@ body{font-size:15px!important;line-height:1.5!important;color:var(--dc-ink)!impo
 @media(prefers-reduced-motion:reduce){.side-link,.ff-family-tools-item,.ff-bubble{transition:none!important}}
 </style>
 
+
+
+<style id="duarte-v169-family-menu-all-white-fix">
+/* Family Menu and similar popup list surfaces: force white Facebook-like background */
+#ffFamilyToolsMenu,
+.ff-family-tools-menu{
+  background:#FFFFFF!important;
+  border:1px solid #DADDE1!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.12)!important;
+}
+#ffFamilyToolsMenu *,
+.ff-family-tools-menu *{
+  color:#1C1E21!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-title,
+.ff-family-tools-menu .ff-family-tools-title{
+  background:#FFFFFF!important;
+  color:#65676B!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item,
+.ff-family-tools-menu .ff-family-tools-item{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border:1px solid #E4E6EB!important;
+  box-shadow:none!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item + .ff-family-tools-item,
+.ff-family-tools-menu .ff-family-tools-item + .ff-family-tools-item{
+  margin-top:8px!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item:hover,
+.ff-family-tools-menu .ff-family-tools-item:hover{
+  background:#F0F2F5!important;
+  color:#0866FF!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item:active,
+.ff-family-tools-menu .ff-family-tools-item:active{
+  background:#E7F3FF!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item span,
+.ff-family-tools-menu .ff-family-tools-item span,
+#ffFamilyToolsMenu .ff-family-tools-icon,
+.ff-family-tools-menu .ff-family-tools-icon{
+  background:transparent!important;
+  color:inherit!important;
+}
+/* Apply same white-list treatment to other floating quick menus/popovers where dark remnants may remain */
+.notification-panel,
+.menu-panel,
+.popover,
+[role="menu"],
+[role="listbox"]{
+  background:#FFFFFF;
+  color:#1C1E21;
+}
+@media(max-width:760px){
+  #ffFamilyToolsMenu .ff-family-tools-item,
+  .ff-family-tools-menu .ff-family-tools-item{
+    font-size:15px!important;
+    min-height:48px!important;
+    padding:12px 14px!important;
+  }
+  #ffFamilyToolsMenu .ff-family-tools-title,
+  .ff-family-tools-menu .ff-family-tools-title{
+    font-size:12px!important;
+  }
+}
+</style>
+
+
+
+<style id="duarte-v170-facebook-home-messenger-full-theme">
+/* Facebook-style Home, top nav, left menu, stories, and Messenger */
+:root{
+  --fb-page:#F0F2F5;
+  --fb-surface:#FFFFFF;
+  --fb-surface-soft:#F0F2F5;
+  --fb-surface-alt:#F7F8FA;
+  --fb-line:#DADDE1;
+  --fb-line-2:#CED0D4;
+  --fb-text:#1C1E21;
+  --fb-muted:#65676B;
+  --fb-blue:#0866FF;
+  --fb-blue-strong:#1B74E4;
+  --fb-blue-soft:#E7F3FF;
+  --fb-button:#E4E6EB;
+  --fb-shadow:0 1px 2px rgba(0,0,0,.08);
+  --fb-shadow-elevated:0 12px 28px rgba(0,0,0,.12);
+}
+html,body{background:var(--fb-page)!important;color:var(--fb-text)!important}
+.page,.layout,.main-feed,.feed,.content,.container{background:transparent!important}
+
+/* Top header / nav */
+header,.topbar,.site-header,.navbar,.nav-shell,.ff-topbar{
+  background:var(--fb-surface)!important;
+  color:var(--fb-text)!important;
+  border-bottom:1px solid var(--fb-line)!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)!important;
+}
+.brand-text h1,.brand-logo,.brand,.brand *{color:var(--fb-blue)!important}
+.brand-text span{color:var(--fb-muted)!important}
+.search-box,.search-wrap,.search-shell{background:transparent!important}
+.search-box input,.search-input,#globalSearchInput,input[type="search"]{
+  background:var(--fb-surface-soft)!important;
+  color:var(--fb-text)!important;
+  border:1px solid transparent!important;
+  border-radius:999px!important;
+  min-height:40px!important;
+  font-size:15px!important;
+  padding:10px 16px!important;
+}
+.search-box input::placeholder,.search-input::placeholder,#globalSearchInput::placeholder{color:var(--fb-muted)!important}
+nav,.top-nav,.main-nav{background:transparent!important}
+.nav-btn,.nav-link,nav a{
+  color:var(--fb-muted)!important;
+  min-height:48px!important;
+  border-radius:8px!important;
+  font-size:15px!important;
+  font-weight:600!important;
+}
+.nav-btn.active,.nav-link.active,nav a.active{
+  color:var(--fb-blue)!important;
+  background:transparent!important;
+  box-shadow:inset 0 -3px 0 var(--fb-blue)!important;
+  border-radius:0!important;
+}
+.nav-btn:hover,.nav-link:hover,nav a:hover{background:var(--fb-surface-soft)!important;color:var(--fb-blue)!important}
+.icon-btn,.notification-bell,.user-area .icon-btn,.topbar .icon-btn{
+  background:var(--fb-surface-soft)!important;
+  color:var(--fb-text)!important;
+  border:0!important;
+  width:40px!important;height:40px!important;min-width:40px!important;
+  border-radius:50%!important;
+}
+.icon-btn:hover,.notification-bell:hover{background:#E4E6EB!important}
+
+/* Left home menu */
+.sidebar,.left-sidebar,.profile-mini,.side-menu{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+.profile-mini{
+  background:var(--fb-surface)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+  padding:18px!important;
+  box-shadow:var(--fb-shadow)!important;
+}
+.side-menu{
+  background:var(--fb-surface)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+  padding:10px!important;
+  box-shadow:var(--fb-shadow)!important;
+}
+.side-link{
+  color:var(--fb-text)!important;
+  background:transparent!important;
+  border-radius:10px!important;
+  min-height:46px!important;
+  font-size:15px!important;
+  font-weight:600!important;
+}
+.side-link.active{background:var(--fb-blue-soft)!important;color:var(--fb-blue)!important}
+.side-link:hover{background:var(--fb-surface-soft)!important;color:var(--fb-text)!important}
+.side-icon{opacity:1!important}
+
+/* Home composer */
+#createPostBox,.create-post,#home .create-post,#homeSection .create-post{
+  background:var(--fb-surface)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+  box-shadow:var(--fb-shadow)!important;
+}
+#createPostBox .post-avatar,.post-avatar{background:#DDEBFF!important;color:var(--fb-blue)!important}
+#createPostBox #postInput,#createPostBox .post-input,.post-input{
+  background:var(--fb-surface-soft)!important;
+  color:var(--fb-text)!important;
+  border:1px solid transparent!important;
+  border-radius:999px!important;
+  min-height:44px!important;
+  font-size:15px!important;
+}
+#createPostBox #postInput::placeholder,.post-input::placeholder{color:var(--fb-muted)!important}
+#createPostBox .post-tools,.post-tools{border-top:1px solid var(--fb-line)!important}
+#createPostBox .post-action,.post-action{
+  background:transparent!important;
+  color:var(--fb-muted)!important;
+  min-height:40px!important;
+  font-size:14px!important;
+  font-weight:600!important;
+  border-radius:8px!important;
+}
+#createPostBox .post-action:hover,.post-action:hover{background:var(--fb-surface-soft)!important;color:var(--fb-text)!important}
+#createPostBox .publish-btn,.publish-btn{background:var(--fb-blue)!important;color:#fff!important;border:0!important;border-radius:8px!important}
+#createPostBox .publish-btn:hover,.publish-btn:hover{background:var(--fb-blue-strong)!important}
+
+/* Stories */
+#ffStories{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin:0 0 18px!important;
+}
+#ffStories .ff-stories-head{display:none!important}
+#ffStoriesStrip,.ff-stories-strip{
+  display:flex!important;
+  gap:8px!important;
+  padding:0!important;
+  overflow-x:auto!important;
+  scrollbar-width:none!important;
+}
+#ffStoriesStrip::-webkit-scrollbar{display:none}
+#ffStories .ff-story-card{
+  background:var(--fb-surface)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+  box-shadow:var(--fb-shadow)!important;
+  overflow:hidden!important;
+}
+#ffStories .ff-story-create{
+  background:var(--fb-surface)!important;
+}
+#ffStories .ff-story-create span,#ffStories .ff-story-name{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.4)!important}
+#ffStories .ff-story-create .ff-story-plus{
+  background:var(--fb-blue)!important;
+  color:#fff!important;
+  border:3px solid #fff!important;
+}
+#ffStories .ff-story-avatar{border:3px solid var(--fb-blue)!important}
+#ffStories .ff-story-empty{
+  background:var(--fb-surface)!important;
+  color:var(--fb-muted)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+}
+
+/* Feed cards */
+#postsLoading,.post-card,.right-card,.section-card,.gallery-card,.event-list-card,.member-card,.clan-member-card,.ff-directory-card,.ff-birthday-panel,.ff-announcements-panel,.ff-announcement-dialog,.ff-history-shell,.ff-member-profile-card{
+  background:var(--fb-surface)!important;
+  color:var(--fb-text)!important;
+  border:1px solid var(--fb-line)!important;
+  border-radius:12px!important;
+  box-shadow:var(--fb-shadow)!important;
+}
+.post-card h1,.post-card h2,.post-card h3,.post-card strong,.right-card h3,.section-card h3,.member-name{color:var(--fb-text)!important}
+.post-card p,.post-card span,.post-card small,.author-info span,.member-status,.post-stats,.post-menu,.ff-announcement-empty,.ff-birthday-empty{color:var(--fb-muted)!important}
+.post-text,.post-content,.post-body,.post-body p,.post-message,.post-message *,.comment-author,.comment-text{color:var(--fb-text)!important}
+.comment-bubble,.comment-input,.reply-input{background:var(--fb-surface-soft)!important;border:1px solid transparent!important;color:var(--fb-text)!important}
+.post-btn,.comment-btn{color:var(--fb-muted)!important;background:transparent!important;border-radius:8px!important;font-weight:600!important}
+.post-btn:hover,.comment-btn:hover{background:var(--fb-surface-soft)!important;color:var(--fb-text)!important}
+
+/* Messenger */
+#ffMsgModal{--dm-blue:var(--fb-blue)!important;--dm-ink:var(--fb-text)!important;--dm-muted:var(--fb-muted)!important;--dm-line:var(--fb-line)!important;--dm-soft:var(--fb-surface-soft)!important}
+#ffMsgModal .ff-msg-shell{
+  background:var(--fb-surface)!important;
+  border-radius:12px!important;
+  box-shadow:var(--fb-shadow-elevated)!important;
+}
+#ffMsgModal .ff-msg-list,
+#ffMsgModal .ff-chat,
+#ffMsgModal .ff-msg-title,
+#ffMsgModal .ff-msg-search,
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-compose,
+#ffMsgModal #ffChatMessages{
+  background:var(--fb-surface)!important;
+  color:var(--fb-text)!important;
+}
+#ffMsgModal .ff-msg-title,
+#ffMsgModal .ff-chat-head,
+#ffMsgModal .ff-chat-compose{border-color:var(--fb-line)!important}
+#ffMsgModal #ffConversationSearch,
+#ffMsgModal #ffChatInput{
+  background:var(--fb-surface-soft)!important;
+  color:var(--fb-text)!important;
+  border:1px solid transparent!important;
+  border-radius:999px!important;
+  min-height:40px!important;
+  font-size:15px!important;
+}
+#ffMsgModal .ff-conversation{
+  background:transparent!important;
+  color:var(--fb-text)!important;
+  border-radius:10px!important;
+}
+#ffMsgModal .ff-conversation:hover,
+#ffMsgModal .ff-conversation.active{background:var(--fb-surface-soft)!important}
+#ffMsgModal .ff-conversation-name,#ffChatName{color:var(--fb-text)!important;font-size:15px!important;font-weight:700!important}
+#ffMsgModal .ff-conversation-preview,#ffMsgModal .ff-chat-empty,#ffMsgModal .ff-meta,#ffMsgModal .ff-chat-sub{color:var(--fb-muted)!important;font-size:13px!important}
+#ffMsgModal .ff-bubble-row>.ff-bubble{
+  font-size:14px!important;
+  line-height:1.4!important;
+  border-radius:18px!important;
+  padding:8px 12px!important;
+}
+#ffMsgModal .ff-bubble-row.mine>.ff-bubble{
+  background:var(--fb-blue)!important;
+  color:#fff!important;
+  border-bottom-right-radius:6px!important;
+}
+#ffMsgModal .ff-bubble-row:not(.mine)>.ff-bubble{
+  background:var(--fb-surface-soft)!important;
+  color:var(--fb-text)!important;
+  border-bottom-left-radius:6px!important;
+}
+#ffMsgModal .ff-call-head-btn,#ffMsgModal #ffMessengerPhotoButton{
+  background:transparent!important;
+  color:var(--fb-blue)!important;
+  border:0!important;
+}
+#ffMsgModal #ffMessengerSendButton{
+  background:transparent!important;
+  color:var(--fb-blue)!important;
+  border:0!important;
+  min-width:auto!important;
+  padding:8px!important;
+  font-weight:700!important;
+}
+#ffMsgModal .ff-conversation-unread{background:var(--fb-blue)!important;color:#fff!important}
+
+/* Modal/menu surfaces */
+#ffFamilyToolsMenu,.ff-family-tools-menu,.notification-panel,[role="menu"],.menu-panel,.popover{
+  background:var(--fb-surface)!important;
+  border:1px solid var(--fb-line)!important;
+  box-shadow:var(--fb-shadow-elevated)!important;
+  color:var(--fb-text)!important;
+}
+
+/* Mobile */
+@media(max-width:760px){
+  .nav-btn,.nav-link,nav a{font-size:14px!important;min-height:44px!important}
+  .side-link{font-size:15px!important}
+  .profile-mini,.side-menu,#createPostBox,.create-post,.post-card,.right-card{border-radius:10px!important}
+  #ffMsgModal .ff-msg-shell{width:100%!important;height:100dvh!important;border-radius:0!important}
+  #ffMsgModal #ffChatInput,#ffMsgModal #ffConversationSearch{font-size:16px!important}
+}
+</style>
+

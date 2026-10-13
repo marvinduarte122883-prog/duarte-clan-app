@@ -1,0 +1,59 @@
+/* Duarte Clan V179 — unified Facebook-inspired light UI. */
+:root{--dc-fb-blue:#0866ff;--dc-fb-bg:#f0f2f5;--dc-fb-card:#fff;--dc-fb-ink:#1c1e21;--dc-fb-muted:#65676b;--dc-fb-border:#dadde1;--dc-fb-hover:#e4e6eb}
+html,body{background:var(--dc-fb-bg)!important;color:var(--dc-fb-ink)!important;font-size:15px}
+:is(.topbar,.top-nav,.navbar,.site-header,.nav-header,.ff-full-profile-top,header){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+:is(.nav-btn,.nav-link,.side-link,.ff-family-tools-item,.menu-item,.notification-item,.ff-profile-tab):hover{background:#e4e6eb!important;color:#1c1e21!important}
+:is(.nav-btn,.nav-link,.side-link,.ff-family-tools-item,.menu-item,.notification-item,.ff-profile-tab):focus-visible{outline:2px solid #0866ff!important;outline-offset:2px}
+:is(.nav-btn,.nav-link,.side-link,.ff-profile-tab).active,:is(.nav-btn,.nav-link,.side-link,.ff-profile-tab)[aria-current="page"]{background:#e7f3ff!important;color:#0866ff!important}
+:is(.side-menu,.profile-mini,.right-card,.post-card,.create-post,.ff-family-tools-menu,.notification-panel,.menu-panel,.ff-announcement-dialog,.ff-directory-card,.ff-birthday-panel,.ff-poll-card,.ff-gallery-card,.ff-album-card,.ff-rsvp-dialog,.ff-event-dialog,.ff-family-tree-dialog,.ff-history-shell,.ff-member-profile-card){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;box-shadow:0 1px 2px rgba(0,0,0,.08)!important}
+:is(.side-menu,.profile-mini,.post-card,.create-post,.right-card,.ff-family-tools-menu,.ff-directory-card,.ff-birthday-panel,.ff-poll-card){border-radius:12px!important}
+:is(.side-menu,.ff-family-tools-menu,.notification-panel,.post-card,.create-post,.right-card) :is(h1,h2,h3,h4,p,label,strong){color:#1c1e21!important}
+:is(.side-menu,.ff-family-tools-menu,.notification-panel,.post-card,.right-card) :is(small,.muted,.meta,time){color:#65676b!important}
+:is(.side-link,.ff-family-tools-item,.notification-item){font-size:15px!important;min-height:42px!important;color:#1c1e21!important}
+:is(.search-input,.search-box input,.post-input,.comment-input,#globalSearchInput,#memberSearch,#ffChatInput,#ffConversationSearch){background:#f0f2f5!important;color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;border:1px solid #dadde1!important;border-radius:24px!important;font-size:15px!important}
+:is(.search-input,.search-box input,.post-input,.comment-input,#globalSearchInput,#memberSearch,#ffChatInput,#ffConversationSearch)::placeholder{color:#65676b!important;-webkit-text-fill-color:#65676b!important;opacity:1!important}
+:is(.post-card,.create-post) :is(button,textarea,input){font-size:14px}
+:is(.publish-btn,.post-publish,.ff-story-publish,.ff-edit-save,.ff-full-primary){background:#0866ff!important;color:#fff!important;border-color:#0866ff!important}
+:is(.publish-btn,.post-publish,.ff-story-publish,.ff-edit-save,.ff-full-primary):hover{background:#075ce5!important;color:#fff!important}
+/* Story creator: viewer remains dark for media readability. */
+#ffStoryComposer .ff-story-compose,#ffStoryComposer .ff-story-compose-head,#ffStoryComposer .ff-story-compose-body,#ffStoryComposer .ff-story-compose-actions,#ffStoryComposer #ffV127Start,#ffStoryComposer .ff-story-music{background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffStoryComposer :is(h1,h2,h3,label,p,.ff-v124-hint,.ff-audius-note){color:#1c1e21!important;font-size:15px!important}
+#ffStoryComposer :is(.ff-v127-modes button,.ff-v127-gallery,.ff-story-file,.ff-audius-tabs button,.ff-audius-tags button){background:#f0f2f5!important;color:#1c1e21!important;border:1px solid #dadde1!important;font-size:15px!important}
+#ffStoryComposer :is(textarea,input[type=text],input[type=search]){background:#fff!important;color:#1c1e21!important;font-size:16px!important;border:1px solid #ced0d4!important}
+#ffStoryComposer .ff-story-publish{background:#0866ff!important;color:#fff!important}
+/* Messenger: preserve outgoing white on blue and incoming dark on grey. */
+#ffMsgModal :is(.ff-msg-shell,.ff-msg-list,.ff-chat,.ff-chat-head,.ff-chat-compose,#ffChatMessages){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffMsgModal :is(.ff-conversation,.ff-msg-title,.ff-conversation-name,#ffChatName){color:#1c1e21!important}
+#ffMsgModal :is(.ff-conversation:hover,.ff-conversation.active){background:#f0f2f5!important}
+#ffMsgModal .ff-bubble-row.mine .ff-bubble{background:#0866ff!important;color:#fff!important}
+#ffMsgModal .ff-bubble-row:not(.mine) .ff-bubble{background:#e4e6eb!important;color:#1c1e21!important}
+/* Full profile. */
+#ffFullProfile{background:#f0f2f5!important;color:#1c1e21!important}
+#ffFullProfile :is(.ff-full-identity,.ff-profile-tabs,.ff-fb-profile-intro,.ff-full-post-card,#ffFullAbout>div,#ffFullPhotos>div){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffFullProfile .ff-profile-content{background:#f0f2f5!important;color:#1c1e21!important}
+#ffFullProfile :is(.ff-full-name,.ff-fb-profile-intro h3,.ff-full-post-card){color:#1c1e21!important}
+#ffFullProfile :is(.ff-full-role,.ff-fb-intro-icon){color:#65676b!important}
+#ffFullProfile .ff-fb-intro-row{color:#1c1e21!important;font-size:15px!important}
+#ffFullProfile .ff-profile-tab{color:#65676b!important;font-size:15px!important}
+#ffFullProfile .ff-profile-tab.active{color:#0866ff!important}
+#ffFullProfile .ff-full-secondary{background:#e4e6eb!important;color:#1c1e21!important}
+/* Admin dashboard / welcome cards. */
+#ffAdminDashboardModal .ff-admin-dash-shell,#ffAdminDashboardModal .ff-admin-dash-head,#ffAdminDashboardModal .ff-admin-stat,#ffAdminDashboardModal .ff-admin-panel,#ffAdminDashboardModal .ff-admin-panel-body,#ffAdminDashboardModal #ff124WelcomeSettings{background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffAdminDashboardModal :is(h3,strong,.ff-admin-dash-head strong,.ff-admin-stat span){color:#1c1e21!important}
+#ffAdminDashboardModal :is(small,p,label,.muted,.meta){color:#65676b!important;font-size:14px!important;line-height:1.5!important}
+#ffAdminDashboardModal .ff-admin-stat strong{color:#0866ff!important;font-size:22px!important}
+#ffAdminDashboardModal :is(input,textarea,select){background:#fff!important;color:#1c1e21!important;border:1px solid #dadde1!important;font-size:16px!important}
+#ffAdminDashboardModal .ff-admin-stat:hover{background:#e7f3ff!important}
+/* Light edit and interaction dialogs. */
+:is(.ff-edit-profile-card,.ff-edit-profile-head,.ff-edit-profile-body,.ff-rsvp-dialog,.ff-poll-editor,.ff-album-modal,.ff-directory-modal,.ff-family-tree-dialog){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+:is(.ff-edit-profile-card,.ff-rsvp-dialog,.ff-poll-editor,.ff-album-modal,.ff-directory-modal,.ff-family-tree-dialog) :is(h2,h3,label,p,strong){color:#1c1e21!important}
+:is(.ff-edit-profile-card,.ff-rsvp-dialog,.ff-poll-editor,.ff-album-modal,.ff-directory-modal,.ff-family-tree-dialog) :is(input,textarea,select){background:#fff!important;color:#1c1e21!important;border:1px solid #ced0d4!important;font-size:16px!important}
+@media(max-width:760px){
+  body{font-size:15px!important}
+  :is(.side-link,.ff-family-tools-item,.nav-btn,.nav-link){min-height:44px!important;font-size:14px!important}
+  #ffFullProfile :is(.ff-full-name){font-size:27px!important}
+  #ffFullProfile .ff-profile-content{padding:10px 8px!important}
+  #ffAdminDashboardModal .ff-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #ffAdminDashboardModal .ff-admin-panels{grid-template-columns:1fr!important}
+  #ffMsgModal :is(#ffChatInput,#ffConversationSearch){font-size:16px!important}
+}

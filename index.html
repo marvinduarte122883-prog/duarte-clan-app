@@ -20582,13 +20582,251 @@ nav,.top-nav,.main-nav{background:transparent!important}
 
 
 
-<style id="duarte-v172-search-contrast-fix">
-:root{--dc-search-bg:#F0F2F5;--dc-search-text:#1C1E21;--dc-search-muted:#65676B;--dc-search-border:#CED0D4}
-#dcDesktopSearch,#memberSearch,.members-search,#globalSearchInput,.search-box input,.search-input,#membersSection input[type="search"],#membersManager input[type="search"]{background:var(--dc-search-bg)!important;color:var(--dc-search-text)!important;-webkit-text-fill-color:var(--dc-search-text)!important;border:1px solid var(--dc-search-border)!important;border-radius:24px!important;min-height:44px!important;padding:10px 16px!important;font-size:15px!important;font-weight:500!important;opacity:1!important}
-#dcDesktopSearch::placeholder,#memberSearch::placeholder,.members-search::placeholder,#globalSearchInput::placeholder,.search-box input::placeholder,.search-input::placeholder{color:var(--dc-search-muted)!important;-webkit-text-fill-color:var(--dc-search-muted)!important;opacity:1!important}
-#dcDesktopSearch:focus-visible,#memberSearch:focus-visible,.members-search:focus-visible{border-color:#0866FF!important;outline:2px solid rgba(8,102,255,.28)!important;outline-offset:1px!important}
-.ff-v31-directory-summary .ff-v31-chip,.ff-v31-chip{background:#FFFFFF!important;color:#1C1E21!important;border:1px solid #DADDE1!important;font-size:13px!important;font-weight:600!important;line-height:1.35!important;padding:8px 12px!important;box-shadow:none!important}
-.ff-v31-directory-summary .ff-v31-chip strong,.ff-v31-chip strong{color:#0866FF!important}
-#membersCount,.members-manager .muted,.members-manager p{color:#65676B!important}
-@media(max-width:760px){#memberSearch,.members-search{width:100%!important;max-width:100%!important;font-size:16px!important}.ff-v31-directory-summary{flex-wrap:wrap!important;gap:8px!important}.ff-v31-chip{font-size:13px!important;white-space:normal!important}}
+<style id="duarte-v173-admin-dashboard-facebook-light-fix">
+/* Facebook-style Admin Dashboard modal: white background, readable text, responsive sizing */
+#ffAdminDashboardModal.ff-admin-dash-modal{
+  background:rgba(0,0,0,.24)!important;
+}
+#ffAdminDashboardModal .ff-admin-dash-shell{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border:1px solid #DADDE1!important;
+  border-radius:16px!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.18)!important;
+}
+#ffAdminDashboardModal .ff-admin-dash-shell,
+#ffAdminDashboardModal .ff-admin-dash-shell *{
+  box-sizing:border-box;
+}
+#ffAdminDashboardModal .ff-admin-dash-head{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border-bottom:1px solid #E4E6EB!important;
+  padding:18px 20px!important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head strong{
+  color:#1C1E21!important;
+  font-size:28px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  display:block!important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head small{
+  color:#65676B!important;
+  font-size:15px!important;
+  line-height:1.4!important;
+  display:block!important;
+  margin-top:4px!important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head button{
+  background:#E4E6EB!important;
+  color:#1C1E21!important;
+  border:0!important;
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  border-radius:50%!important;
+  font-size:28px!important;
+  line-height:1!important;
+}
+#ffAdminDashboardModal #ffAdminDashboardError,
+#ffAdminDashboardModal #ffAdminSummary,
+#ffAdminDashboardModal .ff124-welcome-settings,
+#ffAdminDashboardModal .ff-admin-panels{
+  background:#FFFFFF!important;
+}
+#ffAdminDashboardModal .ff-admin-summary{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr))!important;
+  gap:14px!important;
+  padding:18px 20px!important  ;
+}
+#ffAdminDashboardModal .ff-admin-stat{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border:1px solid #DADDE1!important;
+  border-radius:14px!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.08)!important;
+  padding:18px 14px!important;
+  min-height:132px!important;
+  text-align:left!important;
+}
+#ffAdminDashboardModal .ff-admin-stat .icon{
+  font-size:22px!important;
+  line-height:1!important;
+  display:block!important;
+  margin-bottom:10px!important;
+}
+#ffAdminDashboardModal .ff-admin-stat strong{
+  color:#1C1E21!important;
+  font-size:20px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  display:block!important;
+  margin-bottom:8px!important;
+}
+#ffAdminDashboardModal .ff-admin-stat span{
+  color:#1C1E21!important;
+  font-size:15px!important;
+  line-height:1.35!important;
+  font-weight:600!important;
+  display:block!important;
+}
+#ffAdminDashboardModal .ff-admin-stat small{
+  color:#65676B!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+  display:block!important;
+  margin-top:6px!important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings{
+  margin:0 20px 18px!important;
+  padding:18px!important;
+  border:1px solid #DADDE1!important;
+  border-radius:14px!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)!important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings h3{
+  color:#1C1E21!important;
+  font-size:22px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  margin:0 0 10px!important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings p,
+#ffAdminDashboardModal .ff124-welcome-settings label,
+#ffAdminDashboardModal #ff124WelcomeStatus{
+  color:#65676B!important;
+  font-size:15px!important;
+  line-height:1.5!important;
+}
+#ffAdminDashboardModal #ff124WelcomeText,
+#ffAdminDashboardModal .ff124-preview,
+#ffAdminDashboardModal textarea,
+#ffAdminDashboardModal input,
+#ffAdminDashboardModal select{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border:1px solid #CED0D4!important;
+  border-radius:12px!important;
+  font-size:16px!important;
+  line-height:1.5!important;
+}
+#ffAdminDashboardModal #ff124WelcomeText::placeholder{color:#65676B!important;opacity:1!important}
+#ffAdminDashboardModal .ff124-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:10px!important;
+  margin-top:12px!important;
+}
+#ffAdminDashboardModal .ff124-actions button,
+#ffAdminDashboardModal #ff124SaveBtn{
+  min-height:42px!important;
+  padding:0 16px!important;
+  border-radius:10px!important;
+  font-size:15px!important;
+  font-weight:700!important;
+}
+#ffAdminDashboardModal .ff124-actions button{
+  background:#E4E6EB!important;
+  color:#1C1E21!important;
+  border:1px solid transparent!important;
+}
+#ffAdminDashboardModal #ff124SaveBtn{
+  background:#0866FF!important;
+  color:#FFFFFF!important;
+}
+#ffAdminDashboardModal .ff-admin-panels{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:16px!important;
+  padding:0 20px 20px!important;
+}
+#ffAdminDashboardModal .ff-admin-panel{
+  background:#FFFFFF!important;
+  border:1px solid #DADDE1!important;
+  border-radius:14px!important;
+  box-shadow:0 1px 2px rgba(0,0,0,.06)!important;
+  overflow:hidden!important;
+}
+#ffAdminDashboardModal .ff-admin-panel h3{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  border-bottom:1px solid #E4E6EB!important;
+  font-size:18px!important;
+  font-weight:800!important;
+  line-height:1.3!important;
+  margin:0!important;
+  padding:14px 16px!important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body{
+  background:#FFFFFF!important;
+  color:#1C1E21!important;
+  padding:14px 16px!important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body,
+#ffAdminDashboardModal .ff-admin-panel-body *{
+  color:inherit!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body strong,
+#ffAdminDashboardModal .ff-admin-panel-body h4,
+#ffAdminDashboardModal .ff-admin-panel-body .name{
+  color:#1C1E21!important;
+  font-size:15px!important;
+  font-weight:700!important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body p,
+#ffAdminDashboardModal .ff-admin-panel-body span,
+#ffAdminDashboardModal .ff-admin-panel-body small,
+#ffAdminDashboardModal .ff-admin-panel-body .muted,
+#ffAdminDashboardModal .ff-admin-panel-body .meta{
+  color:#65676B!important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body button{
+  background:#E7F3FF!important;
+  color:#0866FF!important;
+  border:1px solid transparent!important;
+  border-radius:10px!important;
+  min-height:38px!important;
+  padding:0 12px!important;
+  font-size:14px!important;
+  font-weight:700!important;
+}
+#ffAdminDashboardModal .ff-admin-error{
+  margin:16px 20px 0!important;
+  background:#FFF4D7!important;
+  color:#8A6700!important;
+  border:1px solid #F0D77A!important;
+  border-radius:12px!important;
+  padding:12px 14px!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+}
+@media(max-width:900px){
+  #ffAdminDashboardModal .ff-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #ffAdminDashboardModal .ff-admin-panels{grid-template-columns:1fr!important}
+}
+@media(max-width:700px){
+  #ffAdminDashboardModal .ff-admin-dash-shell{width:100%!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;border:0!important}
+  #ffAdminDashboardModal .ff-admin-dash-head{padding:16px!important}
+  #ffAdminDashboardModal .ff-admin-dash-head strong{font-size:23px!important}
+  #ffAdminDashboardModal .ff-admin-dash-head small{font-size:14px!important}
+  #ffAdminDashboardModal .ff-admin-summary{grid-template-columns:1fr 1fr!important;gap:10px!important;padding:14px 14px 12px!important}
+  #ffAdminDashboardModal .ff-admin-stat{min-height:118px!important;padding:14px 12px!important}
+  #ffAdminDashboardModal .ff-admin-stat strong{font-size:18px!important}
+  #ffAdminDashboardModal .ff-admin-stat span{font-size:14px!important}
+  #ffAdminDashboardModal .ff-admin-stat small{font-size:12px!important}
+  #ffAdminDashboardModal .ff124-welcome-settings{margin:0 14px 14px!important;padding:14px!important}
+  #ffAdminDashboardModal .ff124-welcome-settings h3{font-size:20px!important}
+  #ffAdminDashboardModal .ff124-welcome-settings p,
+  #ffAdminDashboardModal .ff124-welcome-settings label,
+  #ffAdminDashboardModal #ff124WelcomeStatus{font-size:14px!important}
+  #ffAdminDashboardModal #ff124WelcomeText{font-size:16px!important}
+  #ffAdminDashboardModal .ff-admin-panels{padding:0 14px 14px!important;gap:12px!important}
+  #ffAdminDashboardModal .ff-admin-panel h3{font-size:17px!important;padding:12px 14px!important}
+  #ffAdminDashboardModal .ff-admin-panel-body{padding:12px 14px!important}
+}
 </style>
+

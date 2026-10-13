@@ -739,3 +739,15 @@ button.publish-btn,.publish-btn,.login-btn,.dc-auth-submit,button.primary,.prima
 @media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}
 
 </style>
+
+
+<style id="duarte-v168-login-light-fix">
+:root{--dc-page:#F2F4F7;--dc-surface:#FFFFFF;--dc-surface-soft:#F0F2F5;--dc-line:#DADDE1;--dc-ink:#1C1E21;--dc-muted:#65676B;--dc-blue:#0866FF}
+html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important}
+:is(.login-box,.dc-auth-card,.auth-card,.card,.panel){background:var(--dc-surface)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important;box-shadow:0 1px 2px rgba(0,0,0,.08)!important}
+:is(.login-box,.dc-auth-card,.auth-card,.card,.panel) :is(h1,h2,h3,h4,strong,b){color:var(--dc-ink)!important}
+:is(.login-box,.dc-auth-card,.auth-card,.card,.panel) :is(p,span,small,label){color:var(--dc-muted)!important}
+input,textarea,select{background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
+button,.primary,.submit{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
+</style>
+

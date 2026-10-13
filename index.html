@@ -19878,3 +19878,126 @@ button.publish-btn,.publish-btn,.login-btn,.dc-auth-submit,button.primary,.prima
 @media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}
 
 </style>
+
+
+<style id="duarte-v168-facebook-global-light-fix">
+:root{
+  --dc-page:#F2F4F7;
+  --dc-surface:#FFFFFF;
+  --dc-surface-soft:#F0F2F5;
+  --dc-surface-alt:#F7F8FA;
+  --dc-line:#DADDE1;
+  --dc-line-strong:#CED0D4;
+  --dc-ink:#1C1E21;
+  --dc-muted:#65676B;
+  --dc-blue:#0866FF;
+  --dc-blue-soft:#E7F3FF;
+  --dc-btn:#E4E6EB;
+  --dc-btn-text:#050505;
+  --dc-shadow:0 1px 2px rgba(0,0,0,.08);
+  --gold:#0866FF!important;
+  --gold-light:#1B74E4!important;
+  --panel:#FFFFFF!important;
+  --card:#FFFFFF!important;
+  --border:#DADDE1!important;
+  --muted:#65676B!important;
+}
+html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important}
+body,button,input,textarea,select{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif!important}
+
+/* Generic readable cards/panels */
+:is(.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.profile-card,.profile-main,.profile-body,.profile-manager,.profile-card-edit,.gallery-card,.gallery-manager,.gallery-photo-card,.member-card,.clan-member-card,.notification-panel,.event-manager,.poll-card,.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-admin-panel-body,.ff-directory-card,.ff-directory-dialog,.ff-directory-editor-card,.ff-birthday-panel,.ff-birthday-dialog,.ff-history-shell,.ff-history-editor-shell,.ff-announcements-panel,.ff-announcement-dialog,.ff-system-health-dialog,.ff-rsvp-dialog,.ff-member-profile-card,.modal-box,.card,.stat,.login-box,.dc-auth-card,.ff-relationship-dialog,.ff-family-tree-dialog,.ff-family-tree-node,.ff-family-tree-empty,.ff-family-tree-column,.ff-family-tree-center,.ff-family-tree-toolbar select,.ff-family-tree-toolbar button,.ff-relationship-form input,.ff-relationship-form select,.ff-relationship-form textarea,.ff-edit-sheet,.ff-directory-toolbar input,.ff-directory-toolbar select,.ff-directory-toolbar button){
+  background:var(--dc-surface)!important;
+  color:var(--dc-ink)!important;
+  border-color:var(--dc-line)!important;
+}
+:is(.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.profile-card,.gallery-card,.member-card,.clan-member-card,.notification-panel,.event-manager,.poll-card,.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-directory-card,.ff-birthday-panel,.ff-history-shell,.ff-announcements-panel,.ff-member-profile-card,.modal-box,.card,.stat){box-shadow:var(--dc-shadow)!important}
+
+/* Force readable text */
+:is(body,.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.profile-card,.profile-main,.profile-body,.gallery-card,.member-card,.clan-member-card,.notification-panel,.event-manager,.poll-card,.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-directory-card,.ff-directory-dialog,.ff-birthday-panel,.ff-birthday-dialog,.ff-history-shell,.ff-announcements-panel,.ff-member-profile-card,.ff-family-tree-dialog,.ff-relationship-dialog,.card,.stat) :is(h1,h2,h3,h4,h5,h6,strong,b,label,.member-name,.author-info h3,.post-author,.ff-directory-name strong,.ff-birthday-head strong,.ff-family-tree-head strong,.ff-history-head strong,.ff-announcements-title strong,.ff-member-profile-name,.ff-member-profile-role,.ff-sidebar-ann-head strong){color:var(--dc-ink)!important}
+:is(body,.profile-mini,.side-menu,.create-post,.post-card,.right-card,.left-card,.section-card,.profile-card,.profile-main,.profile-body,.gallery-card,.member-card,.clan-member-card,.notification-panel,.event-manager,.poll-card,.ff-album-card,.ff-v125-profile-feed-item,.ff-admin-panel,.ff-directory-card,.ff-directory-dialog,.ff-birthday-panel,.ff-birthday-dialog,.ff-history-shell,.ff-announcements-panel,.ff-member-profile-card,.ff-family-tree-dialog,.ff-relationship-dialog,.card,.stat) :is(p,span,small,li,.member-status,.author-info span,.event-info span,.post-stats,.post-menu,.ff-announcement-empty,.ff-story-empty,.ff-birthday-empty,.ff-directory-empty,.ff-health-empty,.ff-health-note,.ff-member-profile-meta,.ff-member-profile-bio,.comment-time,.ff-reminder-live,.ff-directory-name span,.ff-family-tree-head small,.ff-history-head small,.ff-announcements-title small,.ff-sidebar-ann-head small){color:var(--dc-muted)!important}
+
+/* Inputs */
+input,textarea,select,.post-input,.comment-input,#postInput,#ffConversationSearch,.ff-directory-toolbar input,.ff-directory-toolbar select,.ff-family-tree-toolbar select,.ff-edit-field input,.ff-edit-field textarea{
+  background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important;
+}
+input::placeholder,textarea::placeholder,.post-input::placeholder,#postInput::placeholder{color:var(--dc-muted)!important;opacity:1!important}
+button,.nav-btn,.side-link,.icon-btn,.notification-bell,.post-btn,.comment-btn,.publish-btn,.refresh,.ff-directory-buttons button,.ff-birthday-head button,.ff-announcements-title button,.ff-history-tabs button,.ff-history-add,.ff-member-profile-action,.ff-edit-cancel,.ff-edit-save,.ff-family-profile-btn{
+  color:var(--dc-btn-text);
+}
+button:not(.publish-btn):not(.ff-history-add):not(#ffFamilyToolsFab):not(#ffFamilyTreeFab):not(#ffHistoryFab):not(#ffNewAnnouncementBtnSidebar):not(#ffNewAnnouncementBtn):not(#ffMessengerSendButton):not(.ff-call-head-btn):not(.ff-msg-close):not(.nav-btn.active):not(.side-link.active):not(.primary):not(.approve):not(.reject){
+  background:var(--dc-btn)!important;border-color:var(--dc-line)!important;
+}
+.publish-btn,.primary,.approve,#ffNewAnnouncementBtnSidebar,#ffNewAnnouncementBtn,.ff-history-add,.ff-edit-save,.ff-family-profile-btn,.nav-btn.active,.side-link.active,#ffFamilyToolsFab,#ffFamilyTreeFab,#ffHistoryFab{
+  background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important;
+}
+.nav-btn:hover,.side-link:hover,.post-btn:hover,.comment-btn:hover,.ff-family-tools-item:hover,.ff-birthday-person:hover,.ff-birthday-directory-row:hover,.ff-directory-buttons button:hover,.ff-directory-toolbar button:hover,.ff-history-tabs button:hover,.ff-announcement-card:hover,.ff-announcement-listrow:hover{
+  background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important;
+}
+
+/* Left menu and search */
+.side-menu{background:#fff!important;border:1px solid var(--dc-line)!important}
+.side-link{color:var(--dc-ink)!important;background:transparent!important;font-weight:600!important}
+.side-link.active{background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important}
+.side-icon{filter:none!important}
+.topbar .search-box input,.search-box input,#globalSearchInput,.search-input,input[type="search"]{background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
+.icon-btn,.notification-bell,.user-area .icon-btn{background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
+
+/* Family menu popup and floating buttons */
+#ffFamilyToolsMenu,.ff-family-tools-menu{background:#fff!important;border:1px solid var(--dc-line)!important;box-shadow:0 12px 28px rgba(0,0,0,.15)!important}
+#ffFamilyToolsMenu *,.ff-family-tools-menu *{color:var(--dc-ink)!important}
+#ffFamilyToolsMenu .ff-family-tools-title,.ff-family-tools-menu .ff-family-tools-title{color:var(--dc-muted)!important;text-transform:uppercase;letter-spacing:.08em!important}
+#ffFamilyToolsMenu .ff-family-tools-item,.ff-family-tools-menu .ff-family-tools-item{background:#fff!important;color:var(--dc-ink)!important;border-radius:10px!important}
+#ffFamilyToolsMenu .ff-family-tools-item:hover,.ff-family-tools-menu .ff-family-tools-item:hover{background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important}
+#ffFamilyToolsFab,#ffFamilyTreeFab,#ffHistoryFab{box-shadow:0 8px 24px rgba(8,102,255,.25)!important;border:1px solid rgba(8,102,255,.18)!important}
+
+/* Family tree */
+#ffFamilyTreeModal .ff-family-tree-dialog,.ff-family-tree-dialog,.ff-relationship-dialog{background:#fff!important;border:1px solid var(--dc-line)!important}
+#ffFamilyTreeModal .ff-family-tree-head,.ff-family-tree-head{background:#fff!important;border-bottom:1px solid var(--dc-line)!important}
+#ffFamilyTreeModal .ff-family-tree-head button,.ff-family-tree-head button{background:transparent!important;color:var(--dc-muted)!important}
+#ffFamilyTreeModal .ff-family-tree-toolbar,.ff-family-tree-toolbar{background:#fff!important}
+#ffFamilyTreeModal .ff-family-tree-node,.ff-family-tree-node{background:#fff!important;border:1px solid var(--dc-line)!important;box-shadow:var(--dc-shadow)!important}
+#ffFamilyTreeModal .ff-family-tree-node *,#ffFamilyTreeModal .ff-family-tree-column *,#ffFamilyTreeModal .ff-family-tree-center *{color:inherit!important}
+#ffFamilyTreeModal .ff-family-tree-node strong,.ff-family-tree-node strong{color:var(--dc-ink)!important}
+#ffFamilyTreeModal .ff-family-tree-node small,.ff-family-tree-node small{color:var(--dc-muted)!important}
+
+/* Birthday and announcements */
+.ff-birthday-panel,.ff-birthday-dialog,.ff-announcements-panel,.ff-announcement-dialog,.ff-history-shell,.ff-history-editor-shell{background:#fff!important;border:1px solid var(--dc-line)!important}
+.ff-birthday-head button,.ff-announcements-title button,.ff-history-tabs button,.ff-sidebar-viewall{color:var(--dc-blue)!important;background:transparent!important;border:0!important}
+.ff-sidebar-ann-head,.ff-announcements-title,.ff-history-head,.ff-birthday-head{border-color:var(--dc-line)!important}
+
+/* Directory and member cards */
+.ff-directory-card,.clan-member-card,.member-card,.member,.member-row,.ff-birthday-person,.ff-birthday-directory-row{background:#fff!important;border:1px solid var(--dc-line)!important;border-radius:12px!important}
+.ff-directory-buttons button,.clan-member-card button,.member-card button,.actions button{background:var(--dc-btn)!important;color:var(--dc-btn-text)!important;border:1px solid var(--dc-line)!important;border-radius:10px!important}
+.ff-directory-buttons button:last-child,.clan-member-card .message-btn,.member-card .message-btn{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
+
+/* Full/member profile */
+.ff-member-profile-card,.ff-member-profile-main,.profile-manager,.profile-main,.profile-body,.profile-card,.profile-section,.ff-v125-profile-feed-item{background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+.ff-member-profile-cover,.profile-cover,.profile-header-cover,.cover-photo,.profile-header{background:linear-gradient(180deg,#EAF2FF 0%, #F7F8FA 100%)!important;border-color:var(--dc-line)!important}
+.ff-member-profile-close{background:var(--dc-surface-soft)!important;color:var(--dc-muted)!important}
+#ffMemberProfileActions button,.profile-actions button,.ff-member-profile-action,.ff-family-profile-btn{background:var(--dc-btn)!important;color:var(--dc-btn-text)!important;border:1px solid var(--dc-line)!important}
+#ffMemberProfileActions .ff-family-profile-btn,.profile-actions .primary,.profile-actions .edit-btn{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
+.profile-tabs button,.profile-nav button,.ff-profile-tab{background:transparent!important;color:var(--dc-muted)!important;border:0!important}
+.profile-tabs button.active,.profile-nav button.active,.ff-profile-tab.active{color:var(--dc-blue)!important;box-shadow:inset 0 -3px var(--dc-blue)!important}
+
+/* Comments and post details */
+.comment-bubble,.reply-input,.comment-input{background:var(--dc-surface-soft)!important;border:1px solid var(--dc-line)!important;color:var(--dc-ink)!important}
+.comment-author,.comment-text,.post-text,.post-content,.post-body,.post-message,.post-message *,#postsContainer .post-card *{color:var(--dc-ink)!important}
+.comment-actions,.post-stats,.post-menu{color:var(--dc-muted)!important}
+
+/* Admin rows / approval lists */
+#approvedMembers .member,.member.approved,.member.pending,.member-row,.member-list .member,.members-list .member,.ff-admin-panel .member{background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+.reject,.remove,.actions .reject,.actions .remove{background:#FFF1F0!important;color:#D9363E!important;border:1px solid #FFD6D6!important}
+.approve,.actions .approve{background:#E7F3FF!important;color:#0866FF!important;border:1px solid #CFE0FF!important}
+
+/* Mobile readability */
+@media(max-width:760px){
+  .side-link{font-size:14px!important;padding:14px 12px!important}
+  .ff-family-tools-menu,.ff-family-tree-dialog,.ff-announcement-dialog,.ff-birthday-dialog,.ff-directory-dialog,.ff-member-profile-card,.modal-box{width:min(100%, calc(100vw - 16px))!important;border-radius:14px!important}
+  .ff-directory-card,.clan-member-card,.member-card{padding:12px!important}
+  .profile-tabs button,.profile-nav button{font-size:14px!important}
+  .ff-family-tree-toolbar{flex-wrap:wrap!important}
+  .ff-family-tree-toolbar select,.ff-family-tree-toolbar button{width:100%!important}
+}
+</style>
+

@@ -1357,3 +1357,25 @@ button.publish-btn,.publish-btn,.login-btn,.dc-auth-submit,button.primary,.prima
 @media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}
 
 </style>
+
+
+<style id="duarte-v168-admin-white-readable-fix">
+:root{
+  --dc-page:#F2F4F7;--dc-surface:#FFFFFF;--dc-surface-soft:#F0F2F5;--dc-line:#DADDE1;--dc-ink:#1C1E21;--dc-muted:#65676B;--dc-blue:#0866FF;--dc-blue-soft:#E7F3FF;
+}
+html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important}
+:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.modal,.modal-box,.admin-panel,.members-panel,.role-panel,.list-row,.row,.toolbar,.filter-bar,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body){background:var(--dc-surface)!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important;box-shadow:0 1px 2px rgba(0,0,0,.08)!important}
+:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.admin-panel,.members-panel,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body) :is(h1,h2,h3,h4,h5,strong,b,label){color:var(--dc-ink)!important}
+:is(.card,.stat,.member,.member-row,.pending-card,.approved-card,.settings-card,.welcome-card,.panel,.admin-panel,.members-panel,.header-card,.admin-summary-card,.ff-admin-panel,.ff-admin-panel-body) :is(p,span,small,div:not(.avatar):not(.member):not(.card):not(.stat)){color:inherit}
+.subtitle,.muted,.empty,.loading,.helper,.description,.member .meta,.member .role,.member .date,#ff124WelcomeStatus{color:var(--dc-muted)!important}
+textarea,input,select{background:var(--dc-surface-soft)!important;color:var(--dc-ink)!important;border:1px solid var(--dc-line)!important}
+textarea::placeholder,input::placeholder{color:var(--dc-muted)!important}
+button,.refresh,.secondary{background:#E4E6EB!important;color:#050505!important;border:1px solid var(--dc-line)!important}
+button:hover,.refresh:hover,.secondary:hover{background:var(--dc-blue-soft)!important;color:var(--dc-blue)!important}
+.approve,.primary,.save,.refresh.primary{background:var(--dc-blue)!important;color:#fff!important;border-color:transparent!important}
+.reject,.remove{background:#FFF1F0!important;color:#D9363E!important;border:1px solid #FFD6D6!important}
+#welcomeSettings,.ff124-shell,.ff124-preview,section:has(#ff124WelcomeText){background:#fff!important;color:var(--dc-ink)!important;border-color:var(--dc-line)!important}
+.member,.member-row,.actions,.card-header{border-color:var(--dc-line)!important}
+@media(max-width:760px){.card,.stat,.member,.member-row{border-radius:12px!important}}
+</style>
+

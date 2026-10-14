@@ -1,0 +1,149 @@
+/* Duarte Clan V185 — Facebook light theme for Family Directory, Polls, Albums, Calendar, History */
+:root{--dcfb-bg:#f0f2f5;--dcfb-white:#fff;--dcfb-text:#1c1e21;--dcfb-muted:#65676b;--dcfb-line:#dadde1;--dcfb-soft:#e7f3ff;--dcfb-blue:#0866ff;--dcfb-blue-line:#bcd6ff;--dcfb-red:#b42318;--dcfb-red-soft:#fef3f2}
+
+/* Common shells/editors */
+.ff-directory-shell,.ff-directory-editor,.ff-polls-shell,.ff-poll-editor,.ff-albums-shell,.ff-album-editor,.ff-calendar-shell,.ff-calendar-daybox,.ff-history-shell,.ff-history-editor{
+  background:var(--dcfb-white)!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid var(--dcfb-line)!important;
+  box-shadow:0 18px 48px rgba(28,30,33,.18)!important;
+  text-shadow:none!important;
+  filter:none!important;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.ff-directory-head,.ff-polls-head,.ff-albums-head,.ff-calendar-head,.ff-history-head,
+.ff-directory-toolbar,.ff-polls-toolbar,.ff-albums-toolbar,.ff-calendar-nav,.ff-history-toolbar{
+  background:var(--dcfb-white)!important;
+  color:var(--dcfb-text)!important;
+  border-color:var(--dcfb-line)!important;
+}
+.ff-directory-head strong,.ff-polls-head strong,.ff-albums-head strong,.ff-calendar-head strong,.ff-history-head strong,
+.ff-directory-head h1,.ff-polls-head h1,.ff-albums-head h1,.ff-calendar-head h1,.ff-history-head h1,
+.ff-directory-head h2,.ff-polls-head h2,.ff-albums-head h2,.ff-calendar-head h2,.ff-history-head h2,
+.ff-directory-head h3,.ff-polls-head h3,.ff-albums-head h3,.ff-calendar-head h3,.ff-history-head h3{
+  color:var(--dcfb-text)!important;
+}
+.ff-directory-head small,.ff-polls-head small,.ff-albums-head small,.ff-calendar-head small,.ff-history-head small,
+.ff-directory-toolbar span,.ff-polls-toolbar span,.ff-albums-toolbar span,.ff-history-dates,.ff-history-meta,
+.ff-album-description,.ff-album-card-copy span,.ff-directory-details,.ff-poll-meta,.ff-poll-card .desc,
+.ff-calendar-legend,.ff-calendar-week span,.ff-calendar-detail p,.ff-calendar-empty,.ff-history-empty,.ff-polls-empty,.ff-albums-empty,.ff-directory-empty{
+  color:var(--dcfb-muted)!important;
+  opacity:1!important;
+}
+
+/* Close buttons and secondary controls */
+.ff-directory-head button,.ff-polls-head button,.ff-albums-head button,.ff-calendar-head button,.ff-history-head button,
+.ff-history-actions button,.ff-album-actions button,.ff-directory-actions button,.ff-poll-actions button,
+.ff-calendar-nav button{
+  background:#e4e6eb!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid var(--dcfb-line)!important;
+  text-shadow:none!important;
+}
+.ff-directory-head button:hover,.ff-polls-head button:hover,.ff-albums-head button:hover,.ff-calendar-head button:hover,.ff-history-head button:hover,
+.ff-history-actions button:hover,.ff-album-actions button:hover,.ff-directory-actions button:hover,.ff-poll-actions button:hover,
+.ff-calendar-nav button:hover{
+  background:#d8dadf!important;
+}
+
+/* Primary buttons */
+.ff-directory-toolbar button,.ff-polls-toolbar button,.ff-albums-toolbar button,.ff-history-add,
+.ff-history-actions .primary,.ff-album-actions .primary,.ff-directory-actions .primary,.ff-poll-actions .primary{
+  background:var(--dcfb-blue)!important;
+  color:#fff!important;
+  border:1px solid var(--dcfb-blue)!important;
+}
+.ff-directory-toolbar button:hover,.ff-polls-toolbar button:hover,.ff-albums-toolbar button:hover,.ff-history-add:hover,
+.ff-history-actions .primary:hover,.ff-album-actions .primary:hover,.ff-directory-actions .primary:hover,.ff-poll-actions .primary:hover{
+  background:#0757d9!important;
+  border-color:#0757d9!important;
+}
+
+/* Inputs */
+.ff-directory-toolbar input,.ff-directory-form input,.ff-poll-form input,.ff-poll-form textarea,
+.ff-album-form input,.ff-album-form textarea,.ff-history-form input,.ff-history-form select,.ff-history-form textarea{
+  background:#fff!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid #ccd0d5!important;
+  caret-color:var(--dcfb-text)!important;
+}
+.ff-directory-toolbar input::placeholder,.ff-directory-form input::placeholder,.ff-poll-form input::placeholder,.ff-poll-form textarea::placeholder,
+.ff-album-form input::placeholder,.ff-album-form textarea::placeholder,.ff-history-form input::placeholder,.ff-history-form textarea::placeholder{
+  color:var(--dcfb-muted)!important;
+  opacity:1!important;
+}
+.ff-directory-form>label,.ff-poll-form label,.ff-album-form label,.ff-history-form label{color:var(--dcfb-text)!important}
+.ff-directory-privacy{background:#fff!important;border:1px solid var(--dcfb-line)!important}
+.ff-directory-privacy strong{color:var(--dcfb-text)!important}
+.ff-directory-privacy label{color:var(--dcfb-muted)!important}
+.ff-directory-status,.ff-poll-status,.ff-album-status,.ff-history-status{color:var(--dcfb-blue)!important}
+
+/* Cards/grids */
+.ff-directory-grid,.ff-polls-list,.ff-albums-grid,.ff-history-list,.ff-calendar-daylist{background:transparent!important}
+.ff-directory-card,.ff-poll-card,.ff-album-card,.ff-history-card,.ff-calendar-detail{
+  background:#fff!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid var(--dcfb-line)!important;
+  box-shadow:0 1px 2px rgba(28,30,33,.08)!important;
+}
+.ff-directory-top,.ff-history-card{color:var(--dcfb-text)!important}
+.ff-directory-avatar{background:var(--dcfb-bg)!important;color:var(--dcfb-blue)!important}
+.ff-directory-name strong,.ff-album-card-copy strong,.ff-poll-card h3,.ff-history-copy h3,.ff-calendar-detail strong{color:var(--dcfb-text)!important}
+.ff-directory-name span{color:var(--dcfb-blue)!important}
+.ff-directory-buttons button,.ff-album-card-actions button{
+  background:#f0f2f5!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid var(--dcfb-line)!important;
+}
+.ff-directory-buttons button:hover,.ff-album-card-actions button:hover{background:var(--dcfb-soft)!important;color:var(--dcfb-blue)!important;border-color:var(--dcfb-blue-line)!important}
+.ff-album-cover,.ff-history-photo{background:#f0f2f5!important}
+.ff-album-photo{background:#fff!important;border:1px solid var(--dcfb-line)!important}
+.ff-album-photo-copy{color:var(--dcfb-text)!important}
+.ff-album-photo-copy button{color:var(--dcfb-red)!important}
+
+/* Polls */
+.ff-poll-option{background:#f7f8fa!important;border:1px solid var(--dcfb-line)!important}
+.ff-poll-option-fill{background:rgba(8,102,255,.14)!important}
+.ff-poll-option-inner{color:var(--dcfb-text)!important}
+.ff-poll-option.selected{border-color:var(--dcfb-blue)!important;box-shadow:inset 0 0 0 1px var(--dcfb-blue)!important}
+.ff-poll-admin button{background:var(--dcfb-red-soft)!important;color:var(--dcfb-red)!important;border:1px solid #fecdca!important}
+
+/* Calendar */
+.ff-calendar-nav strong{color:var(--dcfb-text)!important}
+.ff-calendar-week span{color:var(--dcfb-muted)!important}
+.ff-calendar-day{
+  background:#fff!important;
+  border:1px solid var(--dcfb-line)!important;
+  color:var(--dcfb-text)!important;
+}
+.ff-calendar-day:hover{border-color:var(--dcfb-blue)!important;background:#fbfcfe!important}
+.ff-calendar-day.other{background:#f7f8fa!important;opacity:1!important}
+.ff-calendar-day.today{border-color:var(--dcfb-blue)!important;box-shadow:inset 0 0 0 1px var(--dcfb-blue)!important}
+.ff-calendar-num{color:var(--dcfb-text)!important}
+.ff-calendar-day.today .ff-calendar-num{color:var(--dcfb-blue)!important}
+.ff-calendar-item{background:#eef3ff!important;color:var(--dcfb-text)!important;border:1px solid #d8e5ff!important}
+.ff-calendar-more{color:var(--dcfb-blue)!important}
+
+/* History */
+.ff-history-tabs button{
+  background:#f0f2f5!important;
+  color:var(--dcfb-text)!important;
+  border:1px solid var(--dcfb-line)!important;
+}
+.ff-history-tabs button.active{background:var(--dcfb-soft)!important;color:var(--dcfb-blue)!important;border-color:var(--dcfb-blue)!important}
+.ff-history-text{color:var(--dcfb-text)!important}
+.ff-history-card-actions button{background:#f0f2f5!important;color:var(--dcfb-text)!important;border:1px solid var(--dcfb-line)!important}
+.ff-history-card-actions button:hover{background:var(--dcfb-soft)!important;color:var(--dcfb-blue)!important;border-color:var(--dcfb-blue-line)!important}
+
+/* Fab buttons remain readable */
+.ff-polls-fab,.ff-directory-fab,.ff-albums-fab,.ff-calendar-fab,.ff-history-fab{
+  background:#fff!important;color:var(--dcfb-text)!important;border:1px solid var(--dcfb-line)!important;box-shadow:0 2px 10px rgba(28,30,33,.12)!important
+}
+.ff-polls-fab:hover,.ff-directory-fab:hover,.ff-albums-fab:hover,.ff-calendar-fab:hover,.ff-history-fab:hover{background:var(--dcfb-soft)!important;color:var(--dcfb-blue)!important}
+
+@media(max-width:700px){
+  .ff-directory-shell,.ff-directory-editor,.ff-polls-shell,.ff-poll-editor,.ff-albums-shell,.ff-album-editor,.ff-calendar-shell,.ff-calendar-daybox,.ff-history-shell,.ff-history-editor{
+    border-radius:0!important;
+  }
+}

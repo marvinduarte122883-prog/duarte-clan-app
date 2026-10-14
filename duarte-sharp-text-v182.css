@@ -1,0 +1,24 @@
+/* Duarte Clan V182: text clarity and contrast for mobile + desktop.
+   Loaded after V181; no script, layout, database or interaction changes. */
+:root{--dc-text:#1c1e21;--dc-ink:#1c1e21;--dc-muted:#4b5563;--dc-subtext:#4b5563}
+html,body{font-family:Arial,Helvetica,system-ui,sans-serif!important;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+/* Make ordinary text crisp, without touching media or intentional fading transitions. */
+:is(.post-card,.create-post,.section-card,.card,.panel,.sidebar,.side-menu,.profile-mini,.right-card,.ff-full-profile-top,.ff-full-identity,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat,.ff-directory-card,.ff-gallery-card,.ff-album-card,.ff-poll-card,.ff-event-dialog,.ff-edit-profile-card,.modal-content,.login-side,#ffMsgModal .ff-msg-shell,#ffAdminDashboardModal .ff-admin-dash-shell){font-family:Arial,Helvetica,system-ui,sans-serif!important;filter:none!important;-webkit-filter:none!important;}
+:is(.post-card,.create-post,.section-card,.card,.panel,.sidebar,.side-menu,.profile-mini,.right-card,.ff-full-profile-top,.ff-full-identity,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat,.ff-directory-card,.ff-gallery-card,.ff-album-card,.ff-poll-card,.ff-event-dialog,.ff-edit-profile-card,.modal-content,#ffAdminDashboardModal) :is(h1,h2,h3,h4,h5,h6,p,label,legend,li,dt,dd,strong,b){text-shadow:none!important;-webkit-text-stroke:0!important;filter:none!important;color:#1c1e21!important;}
+:is(.post-card,.create-post,.section-card,.card,.panel,.sidebar,.side-menu,.profile-mini,.right-card,.ff-full-profile-top,.ff-full-identity,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat,.ff-directory-card,.ff-gallery-card,.ff-album-card,.ff-poll-card,.ff-event-dialog,.ff-edit-profile-card,.modal-content,#ffAdminDashboardModal) :is(.muted,.subtext,.secondary-text,.helper-text,.meta,small,time){color:#4b5563!important;text-shadow:none!important;filter:none!important;opacity:1!important;}
+:is(.topbar,.top-nav,.navbar,.site-header,.nav-header,.side-link,.nav-btn,.nav-link,.menu-item,.ff-family-tools-item,.ff-profile-tab){text-shadow:none!important;filter:none!important;-webkit-filter:none!important;}
+:is(input:not([type=checkbox]):not([type=radio]),textarea,select){font-family:Arial,Helvetica,system-ui,sans-serif!important;font-size:max(16px,1em);text-shadow:none!important;}
+:is(input,textarea)::placeholder{color:#555f6d!important;opacity:1!important;}
+:is(.nav-btn,.nav-link,.side-link,.menu-item,.ff-family-tools-item,.ff-profile-tab){font-weight:600!important;}
+/* Text inside ordinary dialogs and forms remains black on white. */
+:is(.modal-content,.ff-edit-profile-card,.ff-directory-modal,.ff-rsvp-dialog,.ff-event-dialog,.ff-announcement-dialog,.ff-admin-panel,.login-side) :is(input,textarea,select){color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;}
+/* Messenger metadata and received messages; outgoing bubbles retain white text. */
+#ffMsgModal :is(.ff-conversation-name,#ffChatName,.ff-msg-title){color:#1c1e21!important;text-shadow:none!important;filter:none!important;}
+#ffMsgModal :is(.ff-conversation-preview,.ff-conversation-time,.ff-msg-meta,.ff-chat-subtitle){color:#4b5563!important;opacity:1!important;}
+#ffMsgModal .ff-bubble-row.mine .ff-bubble,#ffMsgModal .ff-bubble-row.mine .ff-bubble :is(span,p,small,strong){color:#fff!important;}
+#ffMsgModal .ff-bubble-row:not(.mine) .ff-bubble,#ffMsgModal .ff-bubble-row:not(.mine) .ff-bubble :is(span,p,small,strong){color:#1c1e21!important;}
+/* Critical brand/action text must remain white against blue. */
+:is(.publish-btn,.post-publish,.ff-story-publish,.ff-edit-save,.ff-full-primary,.dc-auth-submit,#ff124SaveBtn,#ffNewAnnouncementBtnSidebar){color:#fff!important;-webkit-text-fill-color:#fff!important;}
+/* Avoid applying generic dark-on-white overrides to dark story/photo viewers. */
+#ffStoryViewer :is(.ff-story-name,.ff-story-caption,.ff-story-text),#ffV74PhotoViewer :is(.ff-v74-pv-head,.ff-v74-pv-actions button){color:#fff!important;}
+@media(max-width:760px){body{font-size:15px;}#ffMsgModal #ffChatInput{font-size:16px!important;}}

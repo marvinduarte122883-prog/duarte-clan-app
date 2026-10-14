@@ -1,0 +1,97 @@
+/* Duarte Clan V184: Family Features popup exact Facebook-style cleanup */
+:root{--duarte-fb-bg:#f0f2f5;--duarte-fb-white:#ffffff;--duarte-fb-text:#1c1e21;--duarte-fb-muted:#606770;--duarte-fb-line:#dadde1;--duarte-fb-blue:#0866ff;--duarte-fb-soft:#e7f3ff}
+#ffFamilyToolsMenu,
+.ff-family-tools-menu{
+  background:var(--duarte-fb-white)!important;
+  color:var(--duarte-fb-text)!important;
+  border:1px solid var(--duarte-fb-line)!important;
+  border-radius:16px!important;
+  box-shadow:0 12px 32px rgba(28,30,33,.16)!important;
+  padding:10px!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-title,
+.ff-family-tools-menu .ff-family-tools-title{
+  color:var(--duarte-fb-text)!important;
+  opacity:1!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.08em!important;
+  padding:8px 10px 10px!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item,
+.ff-family-tools-menu .ff-family-tools-item{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  width:100%!important;
+  background:var(--duarte-fb-white)!important;
+  color:var(--duarte-fb-text)!important;
+  border:1px solid var(--duarte-fb-line)!important;
+  border-radius:12px!important;
+  min-height:48px!important;
+  padding:14px 14px!important;
+  margin:0 0 10px 0!important;
+  font-size:15px!important;
+  font-weight:700!important;
+  line-height:1.28!important;
+  text-align:left!important;
+  text-shadow:none!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  filter:none!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item:last-child,
+.ff-family-tools-menu .ff-family-tools-item:last-child{margin-bottom:0!important}
+#ffFamilyToolsMenu .ff-family-tools-item span,
+.ff-family-tools-menu .ff-family-tools-item span,
+#ffFamilyToolsMenu .ff-family-tools-item *,
+.ff-family-tools-menu .ff-family-tools-item *{
+  color:inherit!important;
+  opacity:1!important;
+  text-shadow:none!important;
+  filter:none!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-icon,
+.ff-family-tools-menu .ff-family-tools-icon{
+  width:28px!important;
+  min-width:28px!important;
+  text-align:center!important;
+  font-size:18px!important;
+  line-height:1!important;
+}
+#ffFamilyToolsMenu .ff-family-tools-item:hover,
+#ffFamilyToolsMenu .ff-family-tools-item:focus-visible,
+.ff-family-tools-menu .ff-family-tools-item:hover,
+.ff-family-tools-menu .ff-family-tools-item:focus-visible{
+  background:var(--duarte-fb-soft)!important;
+  color:var(--duarte-fb-text)!important;
+  border-color:#b7d3ff!important;
+  outline:none!important;
+}
+#ffFamilyToolsFab,
+.ff-family-tools-fab{
+  background:var(--duarte-fb-white)!important;
+  color:var(--duarte-fb-text)!important;
+  border:1px solid var(--duarte-fb-line)!important;
+  box-shadow:0 6px 18px rgba(28,30,33,.14)!important;
+  text-shadow:none!important;
+}
+#ffFamilyToolsFab:hover,
+.ff-family-tools-fab:hover{
+  background:var(--duarte-fb-soft)!important;
+  color:var(--duarte-fb-blue)!important;
+  border-color:#b7d3ff!important;
+}
+@media (max-width:700px){
+  #ffFamilyToolsMenu,
+  .ff-family-tools-menu{
+    width:min(290px,calc(100vw - 16px))!important;
+    right:8px!important;
+  }
+  #ffFamilyToolsMenu .ff-family-tools-item,
+  .ff-family-tools-menu .ff-family-tools-item{
+    min-height:52px!important;
+    font-size:14px!important;
+    padding:13px 14px!important;
+  }
+}

@@ -1,0 +1,88 @@
+/* Duarte Clan V184 — Family Features popup Facebook-style light theme */
+:root{--duarte-fb-bg:#f0f2f5;--duarte-fb-white:#ffffff;--duarte-fb-text:#1c1e21;--duarte-fb-muted:#65676b;--duarte-fb-line:#dadde1;--duarte-fb-soft:#e7f3ff;--duarte-fb-blue:#0866ff}
+.ff-family-tools-menu,#ffFamilyToolsMenu{
+  background:var(--duarte-fb-white)!important;
+  color:var(--duarte-fb-text)!important;
+  border:1px solid var(--duarte-fb-line)!important;
+  border-radius:16px!important;
+  padding:10px!important;
+  box-shadow:0 12px 32px rgba(28,30,33,.16)!important;
+}
+.ff-family-tools-title,#ffFamilyToolsMenu .ff-family-tools-title{
+  color:var(--duarte-fb-muted)!important;
+  opacity:1!important;
+  padding:6px 8px 10px!important;
+  font-size:13px!important;
+  letter-spacing:.08em!important;
+}
+.ff-family-tools-item,#ffFamilyToolsMenu .ff-family-tools-item{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+  width:100%!important;
+  min-height:72px!important;
+  margin:0 0 10px!important;
+  padding:14px 14px!important;
+  background:var(--duarte-fb-white)!important;
+  color:var(--duarte-fb-text)!important;
+  border:1px solid var(--duarte-fb-line)!important;
+  border-radius:12px!important;
+  box-shadow:0 1px 2px rgba(28,30,33,.08)!important;
+  text-align:left!important;
+  font-size:15px!important;
+  font-weight:700!important;
+  line-height:1.35!important;
+  opacity:1!important;
+  text-shadow:none!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+}
+.ff-family-tools-item:last-child,#ffFamilyToolsMenu .ff-family-tools-item:last-child{margin-bottom:0!important}
+.ff-family-tools-item:hover,.ff-family-tools-item:focus-visible,#ffFamilyToolsMenu .ff-family-tools-item:hover,#ffFamilyToolsMenu .ff-family-tools-item:focus-visible{
+  background:var(--duarte-fb-soft)!important;
+  color:var(--duarte-fb-blue)!important;
+  border-color:#bcd6ff!important;
+  outline:none!important;
+}
+.ff-family-tools-item span,#ffFamilyToolsMenu .ff-family-tools-item span,
+.ff-family-tools-item strong,#ffFamilyToolsMenu .ff-family-tools-item strong,
+.ff-family-tools-item small,#ffFamilyToolsMenu .ff-family-tools-item small{
+  color:inherit!important;
+  opacity:1!important;
+}
+.ff-family-tools-icon,#ffFamilyToolsMenu .ff-family-tools-icon{
+  width:36px!important;
+  min-width:36px!important;
+  height:36px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:999px!important;
+  background:var(--duarte-fb-bg)!important;
+  color:var(--duarte-fb-blue)!important;
+  font-size:18px!important;
+  line-height:1!important;
+  text-align:center!important;
+  box-shadow:none!important;
+}
+.ff-family-tools-fab,#ffFamilyToolsFab{
+  background:#ffffff!important;
+  color:#1c1e21!important;
+  border:1px solid #dadde1!important;
+  box-shadow:0 2px 10px rgba(28,30,33,.12)!important;
+}
+.ff-family-tools-fab:hover,#ffFamilyToolsFab:hover{background:#e7f3ff!important;color:#0866ff!important}
+@media (max-width:700px){
+  .ff-family-tools-menu,#ffFamilyToolsMenu{
+    right:8px!important;
+    left:auto!important;
+    width:min(310px,calc(100vw - 16px))!important;
+    max-width:calc(100vw - 16px)!important;
+    padding:10px!important;
+  }
+  .ff-family-tools-item,#ffFamilyToolsMenu .ff-family-tools-item{
+    min-height:68px!important;
+    padding:13px 14px!important;
+    font-size:14px!important;
+  }
+}

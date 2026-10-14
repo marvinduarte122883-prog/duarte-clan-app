@@ -1,0 +1,36 @@
+/* Duarte Clan V183: scoped Facebook-style contrast, family menu/tree/admin. */
+:root{--duarte-fb-bg:#f0f2f5;--duarte-fb-white:#fff;--duarte-fb-text:#1c1e21;--duarte-fb-muted:#606770;--duarte-fb-line:#dadde1;--duarte-fb-blue:#0866ff}
+/* Family launcher and dropdown */
+.ff-family-tools-fab,#ffFamilyToolsFab,.ff-family-tree-fab,#ffFamilyTreeFab,.ff-admin-dash-fab,#ffAdminDashboardFab{background:#fff!important;color:#1c1e21!important;border:1px solid #dadde1!important;box-shadow:0 2px 10px #1c1e211c!important;text-shadow:none!important}
+.ff-family-tools-fab:hover,.ff-family-tree-fab:hover,.ff-admin-dash-fab:hover{background:#e7f3ff!important;color:#0866ff!important}
+.ff-family-tools-menu,#ffFamilyToolsMenu{background:#fff!important;color:#1c1e21!important;border:1px solid #dadde1!important;box-shadow:0 8px 28px #1c1e2124!important}
+.ff-family-tools-menu .ff-family-tools-title{color:#606770!important;opacity:1!important}
+.ff-family-tools-menu .ff-family-tools-item{background:#fff!important;color:#1c1e21!important;opacity:1!important;text-shadow:none!important}
+.ff-family-tools-menu .ff-family-tools-item:hover,.ff-family-tools-menu .ff-family-tools-item:focus-visible{background:#e7f3ff!important;color:#0866ff!important}
+/* Family Tree and relationship editor */
+#ffFamilyTreeModal .ff-family-tree-dialog,#ffRelationshipModal .ff-relationship-dialog{background:#fff!important;color:#1c1e21!important;border:1px solid #dadde1!important}
+#ffFamilyTreeModal .ff-family-tree-head,#ffRelationshipModal .ff-family-tree-head{background:#fff!important;color:#1c1e21!important;border-bottom:1px solid #dadde1!important}
+#ffFamilyTreeModal .ff-family-tree-head strong,#ffRelationshipModal .ff-family-tree-head strong{color:#1c1e21!important}
+#ffFamilyTreeModal .ff-family-tree-head small,#ffRelationshipModal .ff-family-tree-head small,#ffFamilyTreeModal .ff-family-none,#ffFamilyTreeModal .ff-family-tree-empty,#ffFamilyTreeModal .ff-family-node small{color:#606770!important;opacity:1!important}
+#ffFamilyTreeModal .ff-family-tree-canvas,#ffFamilyTreeModal .ff-family-generation,#ffRelationshipModal .ff-relationship-form{background:#fff!important;color:#1c1e21!important}
+#ffFamilyTreeModal .ff-family-node{background:#fff!important;color:#1c1e21!important;border:1px solid #dadde1!important;box-shadow:0 1px 3px #1c1e210c!important}
+#ffFamilyTreeModal .ff-family-node:hover{background:#e7f3ff!important;border-color:#0866ff!important}
+#ffFamilyTreeModal .ff-family-tree-toolbar :is(select,button,input),#ffRelationshipModal .ff-relationship-form :is(select,button,input,textarea){background:#fff!important;color:#1c1e21!important;border:1px solid #b0b3b8!important;opacity:1!important}
+#ffFamilyTreeModal .ff-family-tree-head button,#ffRelationshipModal .ff-family-tree-head button{color:#1c1e21!important;background:#f0f2f5!important}
+#ffFamilyTreeModal .ff-family-connector{color:#0866ff!important}
+/* Admin dashboard: shell, navigation, panels, data, controls */
+#ffAdminDashboardModal .ff-admin-dash-shell,#ffAdminDashboardModal .ff-admin-dash-head,#ffAdminDashboardModal .ff-admin-panels,#ffAdminDashboardModal .ff-admin-summary{background:#fff!important;color:#1c1e21!important}
+#ffAdminDashboardModal .ff-admin-dash-shell{border:1px solid #dadde1!important}
+#ffAdminDashboardModal .ff-admin-dash-head{border-bottom:1px solid #dadde1!important}
+#ffAdminDashboardModal :is(.ff-admin-stat,.ff-admin-panel,.ff-admin-panel-body,.ff-admin-row,.ff-admin-item,.ff-admin-list,.ff-admin-card,.ff-admin-dash-tabs,.ff-admin-tab){background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffAdminDashboardModal :is(h1,h2,h3,h4,strong,label,th,td,p,li,a,span){color:#1c1e21!important;text-shadow:none!important;opacity:1!important}
+#ffAdminDashboardModal :is(small,.muted,.ff-admin-stat span,.ff-admin-stat small,.ff-admin-dash-head small){color:#606770!important;opacity:1!important}
+#ffAdminDashboardModal .ff-admin-stat strong{color:#0866ff!important}
+#ffAdminDashboardModal :is(input,textarea,select){background:#fff!important;color:#1c1e21!important;border:1px solid #b0b3b8!important;opacity:1!important}
+#ffAdminDashboardModal :is(input,textarea)::placeholder{color:#606770!important;opacity:1!important}
+#ffAdminDashboardModal button:not(.primary):not(.btn-primary):not([class*="blue"]){background:#f0f2f5!important;color:#1c1e21!important;border-color:#dadde1!important}
+#ffAdminDashboardModal :is(button.primary,button.btn-primary,.btn-primary){background:#0866ff!important;color:#fff!important;border-color:#0866ff!important}
+#ffAdminDashboardModal .ff-admin-dash-head button{background:#e4e6eb!important;color:#1c1e21!important}
+#ffAdminDashboardModal tr:nth-child(even){background:#f7f8fa!important}
+/* Keep overlays dark-translucent behind, but dialogs bright. */
+@media(max-width:700px){.ff-family-tools-menu{max-width:calc(100vw - 16px)!important}#ffFamilyTreeModal .ff-family-tree-dialog,#ffRelationshipModal .ff-relationship-dialog,#ffAdminDashboardModal .ff-admin-dash-shell{max-width:100%!important}}

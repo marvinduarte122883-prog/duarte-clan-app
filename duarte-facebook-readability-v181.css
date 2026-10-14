@@ -1,0 +1,41 @@
+/* Duarte Clan V181 — Facebook-inspired legible light theme.
+   Scoped light surfaces and foreground pairing; avoid changing photos, media viewers,
+   message bubble colors, overlays, emoji or functional state styling. */
+:root{--dc-bg:#f0f2f5;--dc-white:#ffffff;--dc-text:#1c1e21;--dc-ink:#1c1e21;--dc-primary:#1c1e21;--dc-subtext:#606770;--dc-muted:#606770;--dc-edge:#dadde1;--dc-blue:#0866ff;--dc-hover:#e4e6eb;--dc-blue-hover:#e7f3ff;color-scheme:light}
+html,body{background:#f0f2f5!important;color:#1c1e21!important}
+/* Major white surfaces need matching dark text, even when legacy custom properties remain. */
+:is(.side-menu,.sidebar,.profile-mini,.right-card,.post-card,.create-post,.section-card,.card,.panel,.notification-panel,.notification-item,.menu-panel,.dropdown-menu,.modal-content,.ff-family-tools-menu,.ff-directory-card,.ff-directory-modal,.ff-history-shell,.ff-announcements-panel,.ff-announcement-dialog,.ff-poll-card,.ff-album-card,.ff-gallery-card,.ff-member-profile-card,.ff-edit-profile-card,.ff-edit-profile-body,.ff-rsvp-dialog,.ff-event-dialog,.ff-family-tree-dialog,.ff-family-tree-node,.ff-full-profile-top,.ff-full-identity,.ff-profile-tabs,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat){background-color:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;color-scheme:light}
+:is(.topbar,.top-nav,.navbar,.site-header,.nav-header,.ff-full-profile-top,header){background-color:#fff!important;color:#1c1e21!important}
+:is(.side-menu,.sidebar,.profile-mini,.right-card,.post-card,.create-post,.section-card,.card,.panel,.notification-panel,.menu-panel,.dropdown-menu,.modal-content,.ff-family-tools-menu,.ff-directory-card,.ff-directory-modal,.ff-history-shell,.ff-announcements-panel,.ff-poll-card,.ff-album-card,.ff-gallery-card,.ff-member-profile-card,.ff-edit-profile-card,.ff-rsvp-dialog,.ff-event-dialog,.ff-family-tree-dialog,.ff-full-profile-top,.ff-full-identity,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat) :is(h1,h2,h3,h4,h5,h6,p,label,legend,strong,b,dt,dd,li){color:#1c1e21!important}
+:is(.side-menu,.sidebar,.profile-mini,.right-card,.post-card,.create-post,.section-card,.card,.panel,.notification-panel,.menu-panel,.ff-family-tools-menu,.ff-directory-card,.ff-history-shell,.ff-announcements-panel,.ff-poll-card,.ff-album-card,.ff-gallery-card,.ff-member-profile-card,.ff-edit-profile-card,.ff-full-profile-top,.ff-full-identity,.ff-fb-profile-intro,.ff-full-post-card,.ff-admin-panel,.ff-admin-stat) :is(.muted,.subtext,.secondary-text,.helper-text,.meta,small,time){color:#606770!important}
+/* Correct the text specifically inside inputs, rather than merely painting the parent card white. */
+:is(.modal-content,.ff-edit-profile-card,.ff-directory-modal,.ff-rsvp-dialog,.ff-event-dialog,.ff-announcement-dialog,.ff-family-tree-dialog,.ff-admin-panel,.ff-admin-dash-shell,.post-card,.create-post,.login-side) :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select){background-color:#fff!important;color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;border-color:#ced0d4!important;color-scheme:light}
+:is(input,textarea)::placeholder{color:#65676b!important;opacity:1!important}
+/* Menus and selectable rows */
+:is(.nav-btn,.nav-link,.side-link,.menu-item,.ff-family-tools-item,.ff-profile-tab,.notification-item){color:#1c1e21!important}
+:is(.nav-btn,.nav-link,.side-link,.menu-item,.ff-family-tools-item,.ff-profile-tab,.notification-item):hover:not(.active):not([aria-current="page"]){background:#e4e6eb!important;color:#1c1e21!important}
+:is(.side-link,.menu-item,.ff-family-tools-item,.ff-profile-tab).active,:is(.side-link,.menu-item,.ff-family-tools-item,.ff-profile-tab)[aria-current="page"]{background:#e7f3ff!important;color:#0866ff!important}
+/* Light neutral buttons versus Facebook-blue primary actions. */
+:is(.ff-full-secondary,.ff-admin-dash-head button,.dc-auth-cancel){background:#e4e6eb!important;color:#1c1e21!important}
+:is(.publish-btn,.post-publish,.ff-story-publish,.ff-edit-save,.ff-full-primary,.dc-auth-submit,#ff124SaveBtn,#ffNewAnnouncementBtnSidebar){background:#0866ff!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+/* Posts and profile need readable metadata and tabs. */
+#ffFullProfile{background:#f0f2f5!important;color:#1c1e21!important}
+#ffFullProfile :is(.ff-profile-content){background:#f0f2f5!important;color:#1c1e21!important}
+#ffFullProfile :is(.ff-full-name,.ff-fb-profile-intro h3,.ff-full-post-card h3,.ff-full-post-card p){color:#1c1e21!important}
+#ffFullProfile :is(.ff-full-role,.ff-fb-intro-icon,.ff-profile-meta){color:#606770!important}
+/* Messenger is white; outgoing messages deliberately retain white-on-blue. */
+#ffMsgModal :is(.ff-msg-shell,.ff-msg-list,.ff-chat,.ff-msg-title,.ff-chat-head,.ff-chat-compose,#ffChatMessages){background:#fff!important;color:#1c1e21!important}
+#ffMsgModal :is(.ff-conversation-name,#ffChatName){color:#1c1e21!important}
+#ffMsgModal :is(#ffChatInput,#ffConversationSearch){background:#f0f2f5!important;color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important}
+#ffMsgModal .ff-bubble-row.mine .ff-bubble{background-color:#0866ff!important;color:#fff!important}
+#ffMsgModal .ff-bubble-row.mine .ff-bubble :is(span,p,small,strong){color:#fff!important}
+#ffMsgModal .ff-bubble-row:not(.mine) .ff-bubble{background-color:#e4e6eb!important;color:#1c1e21!important}
+#ffMsgModal .ff-bubble-row:not(.mine) .ff-bubble :is(span,p,small,strong){color:#1c1e21!important}
+/* Admin surfaces (including dynamically populated dashboard sections). */
+#ffAdminDashboardModal .ff-admin-dash-shell,#ffAdminDashboardModal :is(.ff-admin-panel,.ff-admin-stat,.ff-admin-dash-head,.ff-admin-panel-body,#ff124WelcomeSettings){background:#fff!important;color:#1c1e21!important}
+#ffAdminDashboardModal :is(.ff-admin-dash-head strong,.ff-admin-panel h3,.ff-admin-panel h4,.ff-admin-stat strong,.ff-admin-stat span,.ff-admin-panel-body p,.ff124-welcome-settings h3){color:#1c1e21!important}
+#ffAdminDashboardModal :is(.ff-admin-dash-head small,.ff-admin-stat small,.ff-admin-panel .muted){color:#606770!important}
+/* Keep image/video story viewer dark, since white UI there obscures captions. */
+#ffStoryViewer :is(.ff-story-view,.ff-story-media-wrap){background:#111!important}
+/* Low-cost CSS only: no scripts, animations, or extra requests per item. */
+@media(max-width:760px){:is(.side-link,.ff-family-tools-item){min-height:44px!important}#ffMsgModal :is(#ffChatInput,#ffConversationSearch){font-size:16px!important}}

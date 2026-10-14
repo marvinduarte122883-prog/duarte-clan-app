@@ -1810,7 +1810,7 @@ input:focus,textarea:focus,select:focus{box-shadow:0 0 0 3px rgba(212,175,55,.08
 </style>
 
 
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10316,7 +10316,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v58.js").catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v59.js").catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -19830,3 +19830,6 @@ html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;colo
 @media(prefers-reduced-motion:reduce){:is(.nav-btn,.nav-link,.side-link,.ff-family-tools-item){transition:none!important}}
 
 </style>
+
+<!-- Final readable Facebook-style color layer (after legacy inline themes) -->
+<link rel="stylesheet" href="./duarte-facebook-readability-v181.css?v=181">

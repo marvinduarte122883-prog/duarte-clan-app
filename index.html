@@ -20377,3 +20377,47 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
   .member-row .member-status {font-size:12px !important;}
 }
 </style>
+
+<!-- V199 gallery tab blue color consistency -->
+<style id="duarte-v199-gallery-action-blue">
+/* Keep Photos and Albums visually consistent with Upload Photo. */
+.ff-gallery-main-actions .ff-gallery-tab,
+.ff-gallery-main-actions .ff-gallery-tab.is-active,
+.ff-gallery-main-actions .publish-btn {
+  background: #0866ff !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  border: 1px solid #0866ff !important;
+  border-radius: 9px !important;
+  font: 700 13px/1.3 Arial, Helvetica, sans-serif !important;
+  letter-spacing: .1px !important;
+  min-height: 42px !important;
+  padding: 10px 15px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: background-color .15s ease, border-color .15s ease !important;
+}
+.ff-gallery-main-actions .ff-gallery-tab:hover,
+.ff-gallery-main-actions .ff-gallery-tab.is-active:hover,
+.ff-gallery-main-actions .publish-btn:hover {
+  background: #0757d5 !important;
+  border-color: #0757d5 !important;
+  color: #fff !important;
+}
+.ff-gallery-main-actions .ff-gallery-tab:focus-visible,
+.ff-gallery-main-actions .publish-btn:focus-visible {
+  outline: 3px solid #98beff !important;
+  outline-offset: 2px !important;
+}
+.ff-gallery-main-actions .ff-gallery-tab.is-active {
+  box-shadow: inset 0 -3px 0 #fff !important;
+}
+@media(max-width:600px) {
+  .ff-gallery-main-actions .ff-gallery-tab,
+  .ff-gallery-main-actions .publish-btn { min-height: 44px !important; padding: 10px 9px !important; font-size: 12px !important; }
+}
+</style>
+
+<link rel="stylesheet" href="./duarte-announcements-theme-v200.css?v=200">
+
+<link rel="stylesheet" href="./duarte-gallery-readability-v201.css?v=201">

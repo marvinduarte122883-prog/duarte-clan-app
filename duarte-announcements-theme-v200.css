@@ -1,0 +1,103 @@
+/* V200 - Duarte Clan announcements: consistent white / blue theme */
+#ffAnnouncementModal .ff-announcement-dialog,
+#ffAnnouncementsPanel.ff-announcements-panel {
+  background:#fff!important; color:#1c1e21!important;
+  border:1px solid #dce1e8!important; border-radius:16px!important;
+  box-shadow:0 18px 48px rgba(24,40,64,.17)!important;
+}
+#ffAnnouncementModal .ff-announcement-head,
+#ffAnnouncementsPanel .ff-announcements-title {
+  background:#fff!important; color:#1c1e21!important;
+  border-bottom:1px solid #e4e6eb!important;
+}
+#ffAnnouncementModal .ff-announcement-head strong,
+#ffAnnouncementsPanel .ff-announcements-title strong {
+  color:#172033!important; font-size:16px!important; font-weight:750!important;
+  line-height:1.35!important;
+}
+#ffAnnouncementModal .ff-announcement-head small,
+#ffAnnouncementsPanel .ff-announcements-title small,
+#ffAnnouncementModal .ff-announcement-empty,
+#ffAnnouncementModal .ff-announcement-listrow small,
+#ffAnnouncementsPanel .ff-announcement-card small {
+  color:#596579!important; font-size:12px!important; line-height:1.45!important;
+}
+#ffAnnouncementModal .ff-announcement-body,
+#ffAnnouncementsPanel .ff-announcement-preview {
+  background:#fff!important; color:#172033!important;
+}
+#ffAnnouncementModal .ff-announcement-listrow,
+#ffAnnouncementsPanel .ff-announcement-card {
+  display:flex!important; flex-direction:column!important; align-items:flex-start!important;
+  width:100%!important; min-height:76px!important; gap:7px!important;
+  padding:13px 14px!important; background:#fff!important; color:#1c1e21!important;
+  border:1px solid #dce1e8!important; border-radius:11px!important;
+  box-shadow:0 2px 8px rgba(23,39,64,.04)!important;
+  font:inherit!important; text-align:left!important;
+  transition:background .16s ease,border-color .16s ease!important;
+}
+#ffAnnouncementModal .ff-announcement-listrow:hover,
+#ffAnnouncementsPanel .ff-announcement-card:hover {
+  background:#f2f3f5!important; border-color:#bad1ff!important;
+}
+#ffAnnouncementModal .ff-announcement-listrow:focus-visible,
+#ffAnnouncementsPanel .ff-announcement-card:focus-visible {
+  outline:3px solid #9cc2ff!important; outline-offset:2px!important;
+}
+#ffAnnouncementModal .ff-announcement-listrow strong,
+#ffAnnouncementsPanel .ff-announcement-card strong {
+  color:#172033!important; font-size:14px!important; font-weight:700!important;
+  line-height:1.45!important; overflow-wrap:anywhere!important;
+}
+#ffAnnouncementModal .ff-announcement-badge,
+#ffAnnouncementModal .ff-announcement-pin,
+#ffAnnouncementsPanel .ff-announcement-badge,
+#ffAnnouncementsPanel .ff-announcement-pin {
+  display:inline-block!important; background:#eaf2ff!important; color:#0759cc!important;
+  border:1px solid #cfe0ff!important; padding:3px 8px!important;
+  border-radius:999px!important; font-size:11px!important; font-weight:650!important;
+  line-height:1.35!important;
+}
+#ffAnnouncementModal .ff-announcement-badge.important,
+#ffAnnouncementsPanel .ff-announcement-badge.important {
+  background:#fff5df!important; color:#805100!important; border-color:#f5dca0!important;
+}
+#ffAnnouncementModal .ff-announcement-badge.urgent,
+#ffAnnouncementsPanel .ff-announcement-badge.urgent {
+  background:#fff0f0!important; color:#ac2730!important; border-color:#f4c6ca!important;
+}
+#ffAnnouncementModal .ff-announcement-detail,
+#ffAnnouncementModal .ff-announcement-copy {
+  color:#263347!important; font-size:14px!important; line-height:1.6!important;
+  overflow-wrap:anywhere!important;
+}
+#ffAnnouncementModal .ff-announcement-detail h2 {
+  color:#172033!important; font-size:18px!important; line-height:1.4!important;
+}
+#ffAnnouncementModal .ff-announcement-readcount {
+  background:#f2f5fa!important; color:#475569!important;
+}
+#ffAnnouncementModal .ff-announcement-form input,
+#ffAnnouncementModal .ff-announcement-form textarea,
+#ffAnnouncementModal .ff-announcement-form select {
+  background:#fff!important; color:#172033!important;
+  -webkit-text-fill-color:#172033!important; border:1px solid #cbd5e1!important;
+}
+#ffAnnouncementModal .ff-announcement-form label {color:#172033!important}
+#ffAnnouncementModal .ff-announcement-actions button,
+#ffAnnouncementModal .ff-announcement-form button {
+  background:#0866ff!important; color:#fff!important; border:1px solid #0866ff!important;
+  font-size:13px!important; font-weight:650!important; border-radius:9px!important;
+}
+#ffAnnouncementModal .ff-announcement-actions .danger {
+  background:#fff1f1!important; color:#a62830!important; border-color:#f0caca!important;
+}
+#ffAnnouncementModal .ff-announcement-head button {
+  color:#334155!important; background:transparent!important; border-radius:8px!important;
+}
+#ffAnnouncementModal .ff-announcement-head button:hover {background:#f2f3f5!important}
+@media(max-width:600px){
+  #ffAnnouncementModal .ff-announcement-body{padding:12px!important}
+  #ffAnnouncementModal .ff-announcement-listrow{padding:12px!important}
+  #ffAnnouncementModal .ff-announcement-head strong{font-size:15px!important}
+}

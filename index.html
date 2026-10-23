@@ -6265,7 +6265,7 @@ function ffHistoryPreviewPhoto(){
  else preview.removeAttribute("src");
 }
 async function ffHistoryUploadPhoto(file){
- if(!/^image\\/(jpeg|png|webp|gif)$/.test(file.type))throw new Error("Choose a JPEG, PNG, WebP or GIF image.");
+ if(!/^image\/(jpeg|png|webp|gif)$/.test(file.type))throw new Error("Choose a JPEG, PNG, WebP or GIF image.");
  if(file.size>8*1024*1024)throw new Error("Choose a photo smaller than 8 MB.");
  if(!currentUser?.id)throw new Error("Please sign in before uploading.");
  const ext=({ "image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif" })[file.type];
@@ -6281,7 +6281,7 @@ async function saveHistoryEntry(){
  if(!title||!content){status.textContent="Title and story/biography are required.";return;}
  const photoFile=document.getElementById("ffHistoryPhotoFile").files[0];
  const photoLink=document.getElementById("ffHistoryPhoto").value.trim();
- if(photoLink && !/^https:\\/\\//i.test(photoLink)){status.textContent="Use an HTTPS photo link.";return;}
+ if(photoLink && !/^https:\/\//i.test(photoLink)){status.textContent="Use an HTTPS photo link.";return;}
  const payload={entry_type:type,title,content,photo_url:photoLink||null,birth_date:type==="memorial"?(document.getElementById("ffHistoryBorn").value||null):null,death_date:type==="memorial"?(document.getElementById("ffHistoryPassed").value||null):null,is_featured:document.getElementById("ffHistoryFeatured").checked};
  const saveButton=document.querySelector("#ffHistoryEditor .ff-history-actions .primary");
  if(saveButton)saveButton.disabled=true;

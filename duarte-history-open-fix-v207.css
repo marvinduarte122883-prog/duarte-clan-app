@@ -1,0 +1,5 @@
+/* V207: ensure Family History opens above page and is clickable */
+#ffFamilyToolsMenu .ff-family-tools-item[onclick*="ffV207OpenHistory"]{pointer-events:auto!important;cursor:pointer!important}
+#ffHistoryModal.ff-history-modal{z-index:2147482000!important;pointer-events:none!important;visibility:hidden!important}
+#ffHistoryModal.ff-history-modal.open{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+#ffHistoryModal .ff-history-shell{pointer-events:auto!important}

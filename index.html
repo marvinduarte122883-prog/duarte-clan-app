@@ -6135,7 +6135,7 @@ protectPrivateClan();
  <button class="ff-family-tools-item" type="button" onclick="familyToolsOpen('directory')"><span class="ff-family-tools-icon">👥</span><span>Family Directory</span></button>
  <button class="ff-family-tools-item" type="button" onclick="familyToolsOpen('albums')"><span class="ff-family-tools-icon">📸</span><span>Family Albums</span></button>
  <button class="ff-family-tools-item" type="button" onclick="familyToolsOpen('calendar')"><span class="ff-family-tools-icon">📅</span><span>Family Calendar</span></button>
- <button class="ff-family-tools-item" type="button" onclick="familyToolsOpen('history')"><span class="ff-family-tools-icon">📖</span><span>Duarte Family History &amp; Memorial</span></button>
+ <button class="ff-family-tools-item" type="button" data-duarte-history-open="1" onclick="return ffV209OpenHistory(event)"><span class="ff-family-tools-icon">📖</span><span>Duarte Family History &amp; Memorial</span></button>
 </div>
 
 <button id="ffHistoryFab" class="ff-history-fab" type="button" onclick="openFamilyHistory()">📖 Family History</button>
@@ -6170,7 +6170,12 @@ protectPrivateClan();
         <label>Born<input id="ffHistoryBorn" type="date"></label>
         <label>Passed Away<input id="ffHistoryPassed" type="date"></label>
       </div>
-      <label>Photo URL (optional)<input id="ffHistoryPhoto" type="url" placeholder="https://..."></label>
+      <label>Photo link (optional)<input id="ffHistoryPhoto" type="url" placeholder="https://example.com/family-photo.jpg" oninput="ffHistoryPreviewPhoto()"></label>
+      <label class="ff-history-upload-label">Or upload a photo
+        <input id="ffHistoryPhotoFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" onchange="ffHistoryPreviewPhoto()">
+      </label>
+      <div class="ff-history-photo-help">Choose a photo from your device or paste a direct image link. Maximum upload: 8 MB. Uploads use your existing family gallery storage.</div>
+      <img id="ffHistoryPhotoPreview" class="ff-history-photo-preview" alt="Selected family photo preview" hidden>
       <label>Story / Biography<textarea id="ffHistoryContent" maxlength="8000" placeholder="Write the family story, biography or memory..."></textarea></label>
       <label class="ff-history-check"><input id="ffHistoryFeatured" type="checkbox"> Feature this entry</label>
       <div id="ffHistoryStatus" class="ff-history-status"></div>
@@ -6187,10 +6192,23 @@ function ffHistoryEsc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;
 function ffHistoryAdmin(){return !!(currentProfile&&(currentProfile.is_admin===true||currentProfile.clan_role==="Administrator"));}
 
 async function openFamilyHistory(){
- document.getElementById("ffHistoryModal")?.classList.add("open");
- await loadFamilyHistory();
+ const modal=document.getElementById("ffHistoryModal");
+ if(!modal){console.error("Family History modal missing");return;}
+ modal.classList.add("open");
+ modal.setAttribute("aria-hidden","false");
+ try{await loadFamilyHistory();}catch(error){
+   console.error("Family History load failed",error);
+   const list=document.getElementById("ffHistoryList");
+   if(list){list.textContent="Family History could not be loaded. Please try again.";}
+ }
 }
-function closeFamilyHistory(){document.getElementById("ffHistoryModal")?.classList.remove("open");}
+function ffV207OpenHistory(event){
+ event?.preventDefault();event?.stopPropagation();
+ closeFamilyToolsMenu();
+ void openFamilyHistory();
+ return false;
+}
+function closeFamilyHistory(){const modal=document.getElementById("ffHistoryModal");modal?.classList.remove("open");modal?.setAttribute("aria-hidden","true");}
 function setHistoryTab(t){ffHistoryTab=t;document.getElementById("ffHistoryTabStories")?.classList.toggle("active",t==="story");document.getElementById("ffHistoryTabMemorials")?.classList.toggle("active",t==="memorial");renderFamilyHistory();}
 async function loadFamilyHistory(){
  const box=document.getElementById("ffHistoryList");if(box)box.innerHTML='<div class="ff-history-empty">Loading family history...</div>';
@@ -6224,7 +6242,7 @@ function openHistoryEditor(){
  document.getElementById("ffHistoryTitle").value="";
  document.getElementById("ffHistoryBorn").value="";
  document.getElementById("ffHistoryPassed").value="";
- document.getElementById("ffHistoryPhoto").value="";
+ document.getElementById("ffHistoryPhoto").value="";document.getElementById("ffHistoryPhotoFile").value="";ffHistoryPreviewPhoto();
  document.getElementById("ffHistoryContent").value="";
  document.getElementById("ffHistoryFeatured").checked=false;
  document.getElementById("ffHistoryStatus").textContent="";
@@ -6234,17 +6252,48 @@ function closeHistoryEditor(){document.getElementById("ffHistoryEditor")?.classL
 function syncHistoryEditorType(){const t=document.getElementById("ffHistoryType").value;document.getElementById("ffMemorialFields").style.display=t==="memorial"?"grid":"none";document.getElementById("ffHistoryEditorTitle").textContent=t==="memorial"?"Add Memorial":"Add Family Story";}
 function editHistoryEntry(id){
  const x=ffHistoryEntries.find(v=>Number(v.id)===Number(id));if(!x)return;
- ffEditingHistoryId=Number(id);document.getElementById("ffHistoryType").value=x.entry_type;document.getElementById("ffHistoryTitle").value=x.title||"";document.getElementById("ffHistoryBorn").value=x.birth_date||"";document.getElementById("ffHistoryPassed").value=x.death_date||"";document.getElementById("ffHistoryPhoto").value=x.photo_url||"";document.getElementById("ffHistoryContent").value=x.content||"";document.getElementById("ffHistoryFeatured").checked=!!x.is_featured;syncHistoryEditorType();document.getElementById("ffHistoryEditorTitle").textContent="Edit "+(x.entry_type==="memorial"?"Memorial":"Family Story");document.getElementById("ffHistoryEditor")?.classList.add("open");
+ ffEditingHistoryId=Number(id);document.getElementById("ffHistoryType").value=x.entry_type;document.getElementById("ffHistoryTitle").value=x.title||"";document.getElementById("ffHistoryBorn").value=x.birth_date||"";document.getElementById("ffHistoryPassed").value=x.death_date||"";document.getElementById("ffHistoryPhoto").value=x.photo_url||"";document.getElementById("ffHistoryPhotoFile").value="";ffHistoryPreviewPhoto();document.getElementById("ffHistoryContent").value=x.content||"";document.getElementById("ffHistoryFeatured").checked=!!x.is_featured;syncHistoryEditorType();document.getElementById("ffHistoryEditorTitle").textContent="Edit "+(x.entry_type==="memorial"?"Memorial":"Family Story");document.getElementById("ffHistoryEditor")?.classList.add("open");
+}
+let ffHistoryPreviewBlob=null;
+function ffHistoryPreviewPhoto(){
+ const file=document.getElementById("ffHistoryPhotoFile")?.files?.[0], url=document.getElementById("ffHistoryPhoto")?.value.trim(), preview=document.getElementById("ffHistoryPhotoPreview");
+ if(!preview)return;
+ if(ffHistoryPreviewBlob){URL.revokeObjectURL(ffHistoryPreviewBlob);ffHistoryPreviewBlob=null;}
+ const chosen=file?(ffHistoryPreviewBlob=URL.createObjectURL(file)):url;
+ preview.hidden=!chosen;
+ if(chosen)preview.src=chosen;
+ else preview.removeAttribute("src");
+}
+async function ffHistoryUploadPhoto(file){
+ if(!/^image\\/(jpeg|png|webp|gif)$/.test(file.type))throw new Error("Choose a JPEG, PNG, WebP or GIF image.");
+ if(file.size>8*1024*1024)throw new Error("Choose a photo smaller than 8 MB.");
+ if(!currentUser?.id)throw new Error("Please sign in before uploading.");
+ const ext=({ "image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif" })[file.type];
+ const path=`family-history/${currentUser.id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+ const {error}=await supabaseClient.storage.from("family-gallery").upload(path,file,{upsert:false,contentType:file.type,cacheControl:"3600"});
+ if(error)throw error;
+ const url=supabaseClient.storage.from("family-gallery").getPublicUrl(path)?.data?.publicUrl;
+ if(!url)throw new Error("Photo uploaded, but its public URL is unavailable.");
+ return url;
 }
 async function saveHistoryEntry(){
  const status=document.getElementById("ffHistoryStatus"),type=document.getElementById("ffHistoryType").value,title=document.getElementById("ffHistoryTitle").value.trim(),content=document.getElementById("ffHistoryContent").value.trim();
  if(!title||!content){status.textContent="Title and story/biography are required.";return;}
- const payload={entry_type:type,title,content,photo_url:document.getElementById("ffHistoryPhoto").value.trim()||null,birth_date:type==="memorial"?(document.getElementById("ffHistoryBorn").value||null):null,death_date:type==="memorial"?(document.getElementById("ffHistoryPassed").value||null):null,is_featured:document.getElementById("ffHistoryFeatured").checked};
- status.textContent="Saving...";
- let q;
- if(ffEditingHistoryId)q=await supabaseClient.from("family_history").update(payload).eq("id",ffEditingHistoryId);
- else q=await supabaseClient.from("family_history").insert({...payload,created_by:currentUser.id});
- if(q.error){status.textContent=q.error.message;return;}
+ const photoFile=document.getElementById("ffHistoryPhotoFile").files[0];
+ const photoLink=document.getElementById("ffHistoryPhoto").value.trim();
+ if(photoLink && !/^https:\\/\\//i.test(photoLink)){status.textContent="Use an HTTPS photo link.";return;}
+ const payload={entry_type:type,title,content,photo_url:photoLink||null,birth_date:type==="memorial"?(document.getElementById("ffHistoryBorn").value||null):null,death_date:type==="memorial"?(document.getElementById("ffHistoryPassed").value||null):null,is_featured:document.getElementById("ffHistoryFeatured").checked};
+ const saveButton=document.querySelector("#ffHistoryEditor .ff-history-actions .primary");
+ if(saveButton)saveButton.disabled=true;
+ try{
+   if(photoFile){status.textContent="Uploading family photo...";payload.photo_url=await ffHistoryUploadPhoto(photoFile);}
+   status.textContent="Saving family entry...";
+   let q;
+   if(ffEditingHistoryId)q=await supabaseClient.from("family_history").update(payload).eq("id",ffEditingHistoryId);
+   else q=await supabaseClient.from("family_history").insert({...payload,created_by:currentUser.id});
+   if(q.error)throw q.error;
+ }catch(e){status.textContent=e.message||"Could not save family entry.";return;}
+ finally{if(saveButton)saveButton.disabled=false;}
  closeHistoryEditor();ffHistoryTab=type;setHistoryTab(type);await loadFamilyHistory();
 }
 async function deleteHistoryEntry(id){
@@ -20421,3 +20470,74 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
 <link rel="stylesheet" href="./duarte-announcements-theme-v200.css?v=200">
 
 <link rel="stylesheet" href="./duarte-gallery-readability-v201.css?v=201">
+
+<link rel="stylesheet" href="./duarte-notifications-v202.css?v=202">
+
+<link rel="stylesheet" href="./duarte-posts-facebook-v203.css?v=203">
+
+<link rel="stylesheet" href="./duarte-family-history-v204.css?v=204">
+
+<link rel="stylesheet" href="./duarte-announcement-sidebar-v205.css?v=205">
+
+<link rel="stylesheet" href="./duarte-post-actions-v206.css?v=206">
+
+<link rel="stylesheet" href="./duarte-history-open-fix-v207.css?v=207">
+
+<link rel="stylesheet" href="./duarte-reactions-light-v208.css?v=208">
+
+<!-- V209 — Family History & Memorial reliable navigation -->
+<style id="ff-v209-history-nav-style">
+#ffHistoryModal.ff-history-modal.open { display:flex!important; visibility:visible!important; opacity:1!important; z-index:2147482500!important; pointer-events:auto!important; }
+#ffHistoryModal.ff-history-modal.open .ff-history-shell { visibility:visible!important; opacity:1!important; }
+</style>
+<script id="ff-v209-history-nav-repair">
+(function(){
+  function openHistory(e){
+    if(e){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();}
+    const modal=document.getElementById('ffHistoryModal');
+    if(!modal){console.error('Family History dialog is missing');return false;}
+    // Do not leave the modal inside hidden or transformed navigation containers.
+    if(modal.parentElement!==document.body)document.body.appendChild(modal);
+    try{if(typeof closeFamilyToolsMenu==='function')closeFamilyToolsMenu();}catch(err){console.warn(err);}
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+    modal.setAttribute('role','dialog');
+    modal.setAttribute('aria-modal','true');
+    modal.style.setProperty('display','flex','important');
+    modal.style.setProperty('z-index','2147482500','important');
+    document.body.classList.add('ff-v209-history-open');
+    const list=document.getElementById('ffHistoryList');
+    if(list)list.innerHTML='<div class="ff-history-empty">Loading family history…</div>';
+    Promise.resolve().then(()=>{
+      if(typeof loadFamilyHistory!=='function')throw new Error('History loading function is unavailable');
+      return loadFamilyHistory();
+    }).catch(err=>{
+      console.error('History loading failed',err);
+      if(list)list.textContent='Family history could not be loaded: '+(err?.message||'Please try again.');
+    });
+    return false;
+  }
+  window.ffV209OpenHistory=openHistory;
+  // Capture before legacy document menu closers and section navigation listeners.
+  document.addEventListener('click',function(e){
+    const target=e.target?.closest?.('[data-duarte-history-open="1"],#ffFamilyToolsMenu .ff-family-tools-item');
+    if(!target)return;
+    if(target.matches('[data-duarte-history-open="1"]') || /Duarte Family History\s*&\s*Memorial/i.test(target.textContent||''))openHistory(e);
+  },true);
+  document.addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target?.matches?.('[data-duarte-history-open="1"]'))openHistory(e);
+  },true);
+  // Restore original close behavior and clear the visual flag.
+  const previousClose=window.closeFamilyHistory;
+  window.closeFamilyHistory=function(){
+    const modal=document.getElementById('ffHistoryModal');
+    modal?.style.removeProperty('display');
+    modal?.style.removeProperty('z-index');
+    document.body.classList.remove('ff-v209-history-open');
+    if(typeof previousClose==='function')return previousClose.apply(this,arguments);
+    modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');
+  };
+})();
+</script>
+
+<link rel="stylesheet" href="./duarte-sidebar-members-v211.css?v=211">

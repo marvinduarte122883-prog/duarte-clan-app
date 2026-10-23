@@ -1,0 +1,133 @@
+
+/* V202 – Duarte Clan notifications: one scroll area, clean white theme */
+#notificationPanel.notification-panel {
+  display: none !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  color: #1c1e21 !important;
+  border: 1px solid #dfe3eb !important;
+  border-radius: 14px !important;
+  box-shadow: 0 18px 45px rgba(22,42,74,.17) !important;
+  max-height: min(620px, calc(100dvh - 82px)) !important;
+  padding: 0 !important;
+}
+#notificationWrap.open #notificationPanel.notification-panel,
+#notificationPanel.notification-panel.ff-v31r-fullscreen {
+  display: flex !important;
+}
+#notificationPanel .notification-head,
+#notificationPanel .ff-n3-tabs,
+#notificationPanel .ff-v31r-alert-head {
+  flex: 0 0 auto !important;
+  position: relative !important;
+  top: auto !important;
+  background: #fff !important;
+  color: #1c1e21 !important;
+  border-color: #e4e6eb !important;
+}
+#notificationPanel .notification-head {
+  padding: 15px 16px !important;
+  border-bottom: 1px solid #e4e6eb !important;
+}
+#notificationPanel .notification-head strong,
+#notificationPanel .ff-v31r-alert-title {
+  color: #1c1e21 !important;
+  font: 700 17px/1.35 Arial,Helvetica,sans-serif !important;
+}
+#notificationPanel .notification-head button,
+#notificationPanel .ff-v31r-alert-read {
+  color: #0866ff !important;
+  background: #e7f3ff !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  font-weight: 700 !important;
+}
+#notificationPanel .ff-n3-tabs {
+  display: flex !important;
+  gap: 5px !important;
+  padding: 9px 12px !important;
+  border-bottom: 1px solid #e4e6eb !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none !important;
+}
+#notificationPanel .ff-n3-tabs::-webkit-scrollbar { display:none !important; }
+#notificationPanel .ff-n3-tab {
+  flex: 0 0 auto !important;
+  color: #526174 !important;
+  background: #f0f2f5 !important;
+  border-radius: 18px !important;
+  padding: 8px 12px !important;
+  font: 700 12px/1.2 Arial,Helvetica,sans-serif !important;
+}
+#notificationPanel .ff-n3-tab.active {
+  background: #e7f3ff !important;
+  color: #0866ff !important;
+}
+#notificationPanel #notificationList {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  background: #fff !important;
+  scrollbar-width: thin;
+  scrollbar-color: #c3c9d2 transparent;
+}
+#notificationPanel .notification-item {
+  background: #fff !important;
+  color: #1c1e21 !important;
+  border-bottom: 1px solid #edf0f4 !important;
+  border-left: 0 !important;
+  padding: 13px 14px !important;
+}
+#notificationPanel .notification-item:hover,
+#notificationPanel .notification-item:focus-visible {
+  background: #f2f3f5 !important;
+}
+#notificationPanel .notification-item.unread {
+  background: #f1f7ff !important;
+}
+#notificationPanel .notification-item.unread:hover {
+  background: #e7f3ff !important;
+}
+#notificationPanel .notification-item.unread::after,
+#notificationPanel .ff-notification-unread-dot {
+  background: #0866ff !important;
+}
+#notificationPanel :is(.notification-message,.ff-n3-message,.ff-notification-copy) {
+  color: #1c1e21 !important;
+  -webkit-text-fill-color: #1c1e21 !important;
+  font: 500 13px/1.5 Arial,Helvetica,sans-serif !important;
+  opacity: 1 !important;
+}
+#notificationPanel :is(.notification-time,.ff-n3-time,.ff-n3-empty,.notification-empty) {
+  color: #606b7a !important;
+  -webkit-text-fill-color: #606b7a !important;
+  font: 400 12px/1.45 Arial,Helvetica,sans-serif !important;
+  opacity: 1 !important;
+}
+#notificationPanel .ff-n3-avatar { background: #e7f3ff !important; }
+#notificationPanel .ff-v31r-alert-back { background:#e7f3ff !important;color:#0866ff !important; }
+@media (max-width:760px) {
+  #notificationPanel.notification-panel.ff-v31r-fullscreen {
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    max-width:100vw !important;
+    border:0 !important;
+    border-radius:0 !important;
+    padding:0 !important;
+  }
+  #notificationPanel.notification-panel:not(.ff-v31r-fullscreen) {
+    max-height:calc(100dvh - 74px) !important;
+  }
+  #notificationPanel .ff-n3-tab { min-height:36px !important; }
+}

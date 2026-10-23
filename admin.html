@@ -666,7 +666,7 @@ header.topbar .back-btn:focus-visible {
 
     <!-- APPROVED MEMBERS -->
 
-    <section class="card">
+    <section class="card" id="approvedClanMembersCard">
 
         <div class="card-header">
 
@@ -1523,4 +1523,24 @@ html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;colo
 #v166AdminCard .member .approve {background:#0866ff !important;color:#fff !important;}
 #v166AdminCard .member .reject {background:#e4e6eb !important;color:#b42318 !important;}
 @media(prefers-reduced-motion:reduce){#v166AdminCard .member{transition:none !important}}
+</style>
+
+<!-- V210: Consistent Approved Clan Members hover and Duarte blue Admin actions -->
+<style id="duarte-v210-admin-controls">
+#approvedClanMembersCard .member{background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;transition:background-color .15s ease,border-color .15s ease!important}
+#approvedClanMembersCard .member:hover,#approvedClanMembersCard .member:focus-within{background:#f2f3f5!important;color:#1c1e21!important;border-color:#d8dadf!important}
+#approvedClanMembersCard .member .member-info h4{color:#1c1e21!important;font-weight:700!important}
+#approvedClanMembersCard .member .member-info p{color:#65676b!important}
+#approvedClanMembersCard .member .member-avatar{color:#fff!important}
+/* Refresh and Preview controls across Admin Management and welcome settings */
+button.refresh,.refresh, .ff124-actions button, .ff124-welcome-settings button[onclick*="Preview"],#v166AdminCard .refresh {
+ background:#0866ff!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+ border:1px solid #0866ff!important;border-radius:9px!important;font-weight:700!important;
+ min-height:38px!important;padding:9px 13px!important;
+ transition:background-color .15s ease!important;
+}
+button.refresh:hover,.refresh:hover,.ff124-actions button:hover,.ff124-welcome-settings button[onclick*="Preview"]:hover{background:#0757d8!important;border-color:#0757d8!important;color:#fff!important}
+button.refresh:focus-visible,.ff124-actions button:focus-visible{outline:2px solid #0866ff!important;outline-offset:2px!important}
+button.refresh:disabled,.ff124-actions button:disabled{opacity:.55!important;cursor:not-allowed!important}
+@media(prefers-reduced-motion:reduce){#approvedClanMembersCard .member,.refresh,.ff124-actions button{transition:none!important}}
 </style>

@@ -1,0 +1,59 @@
+
+/* V204 – Duarte Family Stories and Memorials */
+#ffHistoryModal .ff-history-shell,#ffHistoryEditor .ff-history-editor{
+ background:#fff!important;color:#1c1e21!important;border:1px solid #dce2ea!important;
+ box-shadow:0 22px 70px rgba(18,35,64,.22)!important;
+}
+#ffHistoryModal .ff-history-head,#ffHistoryEditor .ff-history-head,
+#ffHistoryModal .ff-history-toolbar{background:#fff!important;color:#1c1e21!important;border-color:#e4e6eb!important}
+#ffHistoryModal .ff-history-head strong,#ffHistoryEditor .ff-history-head strong{
+ color:#1c1e21!important;font:700 18px/1.35 Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-head small,#ffHistoryEditor .ff-history-head small{
+ color:#526174!important;font:400 12px/1.5 Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-head button,#ffHistoryEditor .ff-history-head button{
+ background:#f0f2f5!important;color:#1c1e21!important}
+#ffHistoryModal .ff-history-tabs button{
+ background:#f0f2f5!important;color:#1c1e21!important;border:1px solid #dce2ea!important;
+ font:600 13px Arial,Helvetica,sans-serif!important;min-height:39px}
+#ffHistoryModal .ff-history-tabs button.active{background:#e7f3ff!important;color:#0866ff!important;border-color:#0866ff!important}
+#ffHistoryModal .ff-history-add,#ffHistoryEditor .ff-history-actions .primary{
+ background:#0866ff!important;color:#fff!important;border:1px solid #0866ff!important;
+ font:700 13px Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-list{background:#fff!important}
+#ffHistoryModal .ff-history-card{
+ background:#fff!important;color:#1c1e21!important;border:1px solid #dce2ea!important;
+ border-radius:12px!important;box-shadow:0 2px 8px rgba(0,0,0,.045)!important}
+#ffHistoryModal .ff-history-photo{background:#f0f2f5!important;color:#0866ff!important}
+#ffHistoryModal .ff-history-photo img{object-fit:contain!important}
+#ffHistoryModal .ff-history-copy h3{color:#1c1e21!important;font:700 17px/1.4 Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-text{color:#263445!important;font:400 14px/1.7 Arial,Helvetica,sans-serif!important;white-space:pre-wrap!important}
+#ffHistoryModal .ff-history-dates,#ffHistoryModal .ff-history-meta{
+ color:#526174!important;font:400 12px/1.5 Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-card-actions button{background:#e7f3ff!important;color:#0866ff!important;border:1px solid #cfe1ff!important;font:600 12px Arial,Helvetica,sans-serif!important}
+#ffHistoryModal .ff-history-empty{color:#526174!important}
+#ffHistoryEditor .ff-history-form{background:#fff!important;color:#1c1e21!important}
+#ffHistoryEditor .ff-history-form label{color:#263445!important;font:600 13px/1.45 Arial,Helvetica,sans-serif!important}
+#ffHistoryEditor .ff-history-form input:not([type="checkbox"]):not([type="file"]),
+#ffHistoryEditor .ff-history-form textarea,#ffHistoryEditor .ff-history-form select{
+ background:#fff!important;color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;
+ border:1px solid #cbd3df!important;border-radius:9px!important;font:400 14px/1.5 Arial,Helvetica,sans-serif!important}
+#ffHistoryEditor .ff-history-form input::placeholder,#ffHistoryEditor .ff-history-form textarea::placeholder{color:#677484!important;opacity:1!important}
+#ffHistoryEditor .ff-history-form input:focus,#ffHistoryEditor .ff-history-form textarea:focus{
+ outline:2px solid #8fbaff!important;outline-offset:0!important}
+#ffHistoryEditor .ff-history-upload-label{display:block!important}
+#ffHistoryEditor #ffHistoryPhotoFile{
+ display:block!important;width:100%!important;margin-top:7px!important;padding:10px!important;
+ background:#f6f8fb!important;border:1px dashed #9eb6d9!important;border-radius:9px!important;
+ color:#263445!important;font:400 13px Arial,Helvetica,sans-serif!important}
+#ffHistoryEditor .ff-history-photo-help{color:#526174!important;font-size:12px!important;line-height:1.5!important;margin:-3px 0 12px}
+#ffHistoryEditor .ff-history-photo-preview:not([hidden]){
+ display:block!important;max-width:100%!important;max-height:230px!important;object-fit:contain!important;
+ margin:0 0 14px!important;background:#f5f7fa!important;border:1px solid #dce2ea!important;border-radius:10px!important}
+#ffHistoryEditor .ff-history-status{color:#0759cc!important;font:500 12px/1.5 Arial,Helvetica,sans-serif!important}
+#ffHistoryEditor .ff-history-actions button:not(.primary){background:#f0f2f5!important;color:#1c1e21!important}
+@media(max-width:700px){
+ #ffHistoryModal .ff-history-card{grid-template-columns:80px minmax(0,1fr)!important}
+ #ffHistoryModal .ff-history-photo{width:80px!important;height:80px!important}
+ #ffHistoryModal .ff-history-text{font-size:14px!important;line-height:1.65!important}
+ #ffHistoryModal .ff-history-toolbar{gap:7px!important;flex-wrap:wrap!important}
+}

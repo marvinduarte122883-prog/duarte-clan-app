@@ -1,0 +1,105 @@
+/* Duarte Clan V206 — Facebook-style post action bar */
+.post-actions,
+.post-card .post-actions,
+.ff-v125-profile-feed-item .post-actions,
+.ff-full-post-card .post-actions {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:0 !important;
+  align-items:stretch !important;
+  border-top:1px solid #dadde1 !important;
+  margin-top:8px !important;
+  padding-top:4px !important;
+  background:#fff !important;
+}
+.post-btn,
+.post-card .post-btn,
+.post-actions .post-btn,
+button.post-btn,
+.post-action {
+  appearance:none !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#65676b !important;
+  -webkit-text-fill-color:#65676b !important;
+  min-height:40px !important;
+  border-radius:8px !important;
+  padding:8px 10px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:15px !important;
+  font-weight:600 !important;
+  line-height:1.2 !important;
+  text-align:center !important;
+  cursor:pointer !important;
+  transition:background-color .15s ease,color .15s ease !important;
+}
+.post-btn:hover,
+.post-actions .post-btn:hover,
+.post-action:hover,
+.post-btn:focus-visible,
+.post-actions .post-btn:focus-visible,
+.post-action:focus-visible {
+  background:#f2f3f5 !important;
+  color:#1c1e21 !important;
+  -webkit-text-fill-color:#1c1e21 !important;
+  outline:none !important;
+}
+.post-btn.selected-reaction,
+.post-btn.active,
+.post-actions .post-btn.selected-reaction {
+  color:#0866ff !important;
+  -webkit-text-fill-color:#0866ff !important;
+  background:#e7f3ff !important;
+}
+.post-btn .ico,
+.post-btn .icon,
+.post-action .ico,
+.post-action .icon,
+.post-btn i,
+.post-action i {
+  color:inherit !important;
+  font-size:20px !important;
+  line-height:1 !important;
+}
+.post-stats,
+.post-card .post-stats,
+.ff-v125-profile-feed-item .post-stats,
+.ff-full-post-card .post-stats {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:14px !important;
+  line-height:1.45 !important;
+  color:#65676b !important;
+  -webkit-text-fill-color:#65676b !important;
+  margin-top:8px !important;
+  padding:0 2px 8px !important;
+}
+.post-stats .left,
+.post-stats .right {display:flex !important; align-items:center !important; gap:14px !important; flex-wrap:wrap !important;}
+.reaction-summary,
+.reaction-icons,
+.post-stats strong,
+.post-stats span {
+  color:inherit !important;
+}
+@media (max-width:640px){
+  .post-btn,
+  .post-card .post-btn,
+  .post-actions .post-btn,
+  .post-action {font-size:14px !important; min-height:38px !important; gap:6px !important; padding:8px 6px !important;}
+  .post-btn .ico,
+  .post-btn .icon,
+  .post-action .ico,
+  .post-action .icon,
+  .post-btn i,
+  .post-action i {font-size:18px !important;}
+  .post-stats,
+  .post-card .post-stats {font-size:13px !important; gap:8px !important;}
+}

@@ -2354,6 +2354,18 @@ body {background:#f0f2f5!important;color:#1c1e21}
 }
 </style>
 
+<style id="duarte-brand-image-v186">
+/* Brand image replacement; scalable on mobile and desktop. */
+header.topbar .topbar-inner .brand .brand-logo {display:none!important}
+header.topbar .topbar-inner .brand .brand-text {display:flex!important;align-items:center!important;min-width:0!important}
+header.topbar .topbar-inner .brand .duarte-brand-banner {
+ display:block!important;width:clamp(125px, 15vw, 220px)!important;height:auto!important;
+ max-width:100%!important;object-fit:contain!important;border-radius:5px!important;
+ margin:0!important;flex:0 1 auto!important;
+}
+header.topbar .topbar-inner .brand {min-width:0!important;padding:0!important;gap:0!important;background:transparent!important}
+@media(max-width:600px){header.topbar .topbar-inner .brand .duarte-brand-banner {width:clamp(120px, 37vw, 165px)!important}}
+</style>
 </head>
 
 
@@ -2380,7 +2392,7 @@ body {background:#f0f2f5!important;color:#1c1e21}
             </div>
 
             <div class="brand-text">
-                <h1>DUARTE CLAN</h1>
+                <img class="duarte-brand-banner" src="./duarte-clan-brand-banner.png?v=186" alt="Duarte Clan" width="220" height="74" decoding="async" fetchpriority="high">
                 <span>OUR FAMILY • OUR STORIES • OUR LEGACY</span>
             </div>
 
@@ -19874,3 +19886,47 @@ html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;colo
 <link rel="stylesheet" href="./duarte-sharp-text-v182.css?v=182">
 <link rel="stylesheet" href="./duarte-family-features-v184.css?v=184">
 <link rel="stylesheet" href="./duarte-family-sections-v185.css?v=185">
+
+<!-- DUARTE CLAN TOP-LEFT BRAND FIX: final override to ensure the requested header styling wins -->
+<style id="duarte-clan-top-left-brand-final-fix">
+  header.topbar .topbar-inner .brand {
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+    min-width:0 !important;
+    flex:0 0 auto !important;
+  }
+  header.topbar .topbar-inner .brand .brand-logo {
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    border-radius:50% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    background:#0866ff !important;
+    border:3px solid #e7f3ff !important;
+    color:#fff !important;
+    font-size:20px !important;
+    font-weight:800 !important;
+    line-height:1 !important;
+  }
+  header.topbar .topbar-inner .brand .brand-text h1 {
+    color:#0866ff !important;
+    font-family:Arial,Helvetica,sans-serif !important;
+    font-size:18px !important;
+    font-weight:800 !important;
+    letter-spacing:2px !important;
+    line-height:1.2 !important;
+    white-space:nowrap !important;
+    margin:0 !important;
+  }
+  header.topbar .topbar-inner .brand .brand-text span {
+    display:none !important;
+  }
+  header.topbar {
+    background:#fff !important;
+    border-bottom:1px solid #e4e6eb !important;
+  }
+  header.topbar .topbar-inner .brand .brand-text { min-width:0 !important; }
+</style>

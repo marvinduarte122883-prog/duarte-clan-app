@@ -1,0 +1,134 @@
+/* Duarte Clan V213 — Professional profile form inputs */
+#profileManager .profile-card-edit,
+#ffEditProfileModal .ff-edit-profile-card,
+#ffEditProfileModal .ff-edit-profile-body {
+  background:#fff !important;
+  color:#1c1e21 !important;
+}
+#profileManager .profile-hero,
+#ffEditProfileModal .ff-edit-profile-head {
+  border-color:#e4e6eb !important;
+}
+#profileManager .profile-field label,
+#ffEditProfileModal .ff-edit-field label,
+#ffEditProfileModal .ff-photo-label,
+#profileManager .profile-card-edit small,
+#ffEditProfileModal .ff-edit-note {
+  color:#526174 !important;
+  -webkit-text-fill-color:#526174 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}
+#profileManager .profile-field label,
+#ffEditProfileModal .ff-edit-field label {
+  font-size:12px !important;
+  font-weight:700 !important;
+  letter-spacing:.02em !important;
+  margin-bottom:7px !important;
+}
+#profileManager .profile-field input,
+#profileManager .profile-field select,
+#profileManager .profile-field textarea,
+#ffEditProfileModal .ff-edit-field input,
+#ffEditProfileModal .ff-edit-field select,
+#ffEditProfileModal .ff-edit-field textarea,
+#ffEditProfileModal .ff-photo-label input[type="file"],
+#profileManager #profilePhotoFile {
+  width:100% !important;
+  box-sizing:border-box !important;
+  background:#fff !important;
+  color:#1c1e21 !important;
+  -webkit-text-fill-color:#1c1e21 !important;
+  border:1px solid #cfd6df !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  min-height:46px !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:15px !important;
+  font-weight:500 !important;
+  line-height:1.35 !important;
+  box-shadow:0 1px 2px rgba(16,24,40,.03) !important;
+}
+#profileManager .profile-field input::placeholder,
+#ffEditProfileModal .ff-edit-field input::placeholder,
+#ffEditProfileModal .ff-edit-field textarea::placeholder {
+  color:#7a8699 !important;
+  -webkit-text-fill-color:#7a8699 !important;
+  opacity:1 !important;
+}
+#profileManager .profile-field input:focus,
+#profileManager .profile-field select:focus,
+#profileManager .profile-field textarea:focus,
+#ffEditProfileModal .ff-edit-field input:focus,
+#ffEditProfileModal .ff-edit-field select:focus,
+#ffEditProfileModal .ff-edit-field textarea:focus,
+#ffEditProfileModal .ff-photo-label input[type="file"]:focus,
+#profileManager #profilePhotoFile:focus {
+  border-color:#0866ff !important;
+  box-shadow:0 0 0 3px rgba(8,102,255,.14) !important;
+  outline:none !important;
+}
+#profileManager .profile-readonly {
+  background:#f7f9fb !important;
+  color:#3d4a5c !important;
+  -webkit-text-fill-color:#3d4a5c !important;
+  border-color:#d7dee8 !important;
+}
+#profileManager #profilePhotoStatus {
+  color:#0866ff !important;
+  font-size:12px !important;
+  font-weight:600 !important;
+  margin-top:8px !important;
+}
+#profileManager .profile-note,
+#ffEditProfileModal .ff-edit-note {
+  background:#f7f9fb !important;
+  color:#526174 !important;
+  -webkit-text-fill-color:#526174 !important;
+  border:1px solid #dce3ec !important;
+  border-radius:10px !important;
+  padding:12px 14px !important;
+  font-size:12px !important;
+  line-height:1.55 !important;
+}
+#ffEditProfileModal .ff-edit-note { margin-top:12px !important; }
+#profileManager .publish-btn,
+#ffEditProfileModal .ff-edit-save {
+  background:#0866ff !important;
+  color:#fff !important;
+  border:1px solid #0866ff !important;
+  border-radius:10px !important;
+  min-height:42px !important;
+  padding:10px 18px !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  letter-spacing:.01em !important;
+}
+#ffEditProfileModal .ff-edit-cancel {
+  background:#e9eef5 !important;
+  color:#1c1e21 !important;
+  border:1px solid #d3dbe7 !important;
+}
+#profileManager .publish-btn:hover,
+#ffEditProfileModal .ff-edit-save:hover {
+  background:#0757d8 !important;
+  border-color:#0757d8 !important;
+}
+#ffEditProfileModal .ff-edit-cancel:hover {
+  background:#dde5ef !important;
+}
+#profileManager .profile-big-avatar {
+  background:linear-gradient(135deg,#0866ff,#0b5ed7) !important;
+  color:#fff !important;
+}
+@media (max-width:700px) {
+  #profileManager .profile-field input,
+  #profileManager .profile-field select,
+  #profileManager .profile-field textarea,
+  #ffEditProfileModal .ff-edit-field input,
+  #ffEditProfileModal .ff-edit-field select,
+  #ffEditProfileModal .ff-edit-field textarea,
+  #ffEditProfileModal .ff-photo-label input[type="file"],
+  #profileManager #profilePhotoFile {
+    font-size:16px !important;
+  }
+}

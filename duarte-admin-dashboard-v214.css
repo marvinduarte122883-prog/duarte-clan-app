@@ -1,0 +1,136 @@
+
+/* Duarte Clan V214 — Admin Dashboard typography and layout refinement */
+#ffAdminDashboardModal .ff-admin-dash-shell {
+  background:#fff !important; color:#1c1e21 !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+#ffAdminDashboardModal .ff-admin-dash-head {
+  background:#fff !important; border-bottom:1px solid #e4e6eb !important;
+  padding:18px 22px !important; gap:12px !important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head strong {
+  color:#1c1e21 !important; font-size:clamp(18px,2vw,23px) !important;
+  font-weight:700 !important; line-height:1.35 !important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head small {
+  color:#526174 !important; font-size:13px !important;
+  line-height:1.45 !important; margin-top:5px !important;
+}
+#ffAdminDashboardModal .ff-admin-dash-head button {
+  color:#344054 !important; background:#f0f2f5 !important;
+  width:38px !important; height:38px !important; flex:0 0 38px !important;
+}
+#ffAdminDashboardModal .ff-admin-summary {
+  gap:12px !important; padding:16px !important; background:#fff !important;
+}
+#ffAdminDashboardModal .ff-admin-stat {
+  min-width:0 !important; padding:15px !important;
+  background:#fff !important; color:#1c1e21 !important;
+  border:1px solid #d6dce5 !important; border-radius:12px !important;
+  box-shadow:0 2px 8px rgba(20,40,70,.05) !important;
+}
+#ffAdminDashboardModal .ff-admin-stat:hover,
+#ffAdminDashboardModal .ff-admin-stat:focus-visible {
+  border-color:#8ab4f8 !important; background:#f5f9ff !important;
+  outline:2px solid transparent !important;
+}
+#ffAdminDashboardModal .ff-admin-stat .icon {
+  display:block !important; font-size:20px !important; line-height:1.3 !important;
+}
+#ffAdminDashboardModal .ff-admin-stat strong {
+  color:#1c1e21 !important; font-size:26px !important;
+  font-weight:750 !important; line-height:1.2 !important;
+  margin:8px 0 4px !important; font-variant-numeric:tabular-nums !important;
+}
+#ffAdminDashboardModal .ff-admin-stat span:not(.icon) {
+  display:block !important; color:#202b3c !important; font-size:14px !important;
+  font-weight:700 !important; line-height:1.4 !important;
+}
+#ffAdminDashboardModal .ff-admin-stat small {
+  color:#596579 !important; font-size:12px !important;
+  line-height:1.45 !important; margin-top:4px !important; font-weight:400 !important;
+}
+#ffAdminDashboardModal .ff-admin-panels {
+  gap:14px !important; padding:0 16px 16px !important; background:#fff !important;
+}
+#ffAdminDashboardModal .ff-admin-panel {
+  background:#fff !important; border:1px solid #d6dce5 !important;
+  border-radius:12px !important; min-width:0 !important;
+  box-shadow:0 2px 8px rgba(20,40,70,.05) !important;
+}
+#ffAdminDashboardModal .ff-admin-panel h3 {
+  margin:0 !important; padding:15px 17px !important;
+  color:#1c1e21 !important; font-size:17px !important;
+  font-weight:700 !important; line-height:1.4 !important;
+  border-bottom:1px solid #e4e6eb !important;
+}
+#ffAdminDashboardModal .ff-admin-panel-body {
+  padding:8px 14px 12px !important; max-height:300px !important;
+  color:#1c1e21 !important; background:#fff !important;
+  scrollbar-width:thin; scrollbar-color:#c1c9d4 transparent;
+}
+#ffAdminDashboardModal .ff-admin-row {
+  min-width:0 !important; padding:12px 5px !important; gap:12px !important;
+  border-bottom:1px solid #edf0f4 !important; background:#fff !important;
+  color:#202b3c !important; align-items:center !important;
+}
+#ffAdminDashboardModal .ff-admin-row:hover {background:#f6f8fb !important;}
+#ffAdminDashboardModal .ff-admin-row > div:first-child {
+  flex:1 1 auto !important; min-width:0 !important;
+}
+#ffAdminDashboardModal .ff-admin-row .main,
+#ffAdminDashboardModal .ff-admin-row-main strong {
+  color:#28364a !important; font-size:13px !important;
+  font-weight:600 !important; line-height:1.5 !important;
+  overflow-wrap:anywhere !important; opacity:1 !important;
+}
+#ffAdminDashboardModal .ff-admin-row .sub,
+#ffAdminDashboardModal .ff-admin-row-main small {
+  display:block !important; color:#596579 !important; font-size:12px !important;
+  line-height:1.5 !important; margin-top:4px !important; opacity:1 !important;
+}
+#ffAdminDashboardModal .ff-admin-badge {
+  flex:0 0 auto !important; background:#e7f3ff !important;
+  border:1px solid #cfe1ff !important; color:#0759cc !important;
+  border-radius:999px !important; font-size:11px !important;
+  font-weight:600 !important; line-height:1.2 !important; padding:5px 9px !important;
+}
+#ffAdminDashboardModal .ff-admin-empty,
+#ffAdminDashboardModal .ff-admin-error {
+  font-size:13px !important; line-height:1.55 !important;
+  color:#596579 !important; opacity:1 !important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings {
+  background:#fff !important; color:#1c1e21 !important;
+  border:1px solid #d6dce5 !important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings h3 {
+  color:#1c1e21 !important; font-size:17px !important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings p,
+#ffAdminDashboardModal .ff124-welcome-settings label {
+  color:#526174 !important; font-size:13px !important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings textarea {
+  background:#fff !important; color:#1c1e21 !important;
+  border:1px solid #cbd5e1 !important;
+}
+#ffAdminDashboardModal .ff124-welcome-settings .ff124-actions button {
+  background:#0866ff !important; color:#fff !important;
+  border:1px solid #0866ff !important;
+}
+@media(max-width:850px) {
+  #ffAdminDashboardModal .ff-admin-summary {grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  #ffAdminDashboardModal .ff-admin-panels {grid-template-columns:minmax(0,1fr) !important;}
+}
+@media(max-width:600px) {
+  #ffAdminDashboardModal .ff-admin-dash-head {padding:14px !important;}
+  #ffAdminDashboardModal .ff-admin-summary {padding:10px !important;gap:9px !important;}
+  #ffAdminDashboardModal .ff-admin-stat {padding:12px !important;}
+  #ffAdminDashboardModal .ff-admin-stat strong {font-size:23px !important;}
+  #ffAdminDashboardModal .ff-admin-panels {padding:0 10px 12px !important;}
+  #ffAdminDashboardModal .ff-admin-panel h3 {font-size:16px !important;}
+  #ffAdminDashboardModal .ff-admin-panel-body {max-height:340px !important;}
+}

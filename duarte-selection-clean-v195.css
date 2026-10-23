@@ -1,0 +1,27 @@
+/* V195: Keep normal interface labels from turning bright selection-blue.
+   Editable text stays selectable so typing, copy/paste and accessibility work. */
+button, button *, nav, nav *, .brand, .brand *, .post-tools, .post-tools *,
+.ff114-options, .ff114-options *, .ff-v130-photo-actions, .ff-v130-photo-actions *,
+.ff-story-card, .ff-story-card *, .ff-v31-member-actions, .ff-v31-member-actions *,
+.ff-v31-directory-summary, .ff-v31-directory-summary * {
+  -webkit-user-select:none;
+  user-select:none;
+}
+/* Neutral selection on ordinary page elements; do not cover selections in editors. */
+body :not(input):not(textarea):not([contenteditable="true"])::selection {
+  background:rgba(8,102,255,.12);
+  color:inherit;
+}
+/* Actual text entry remains accessible and visibly editable. */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select:text !important;
+  user-select:text !important;
+}
+input::selection, textarea::selection, [contenteditable="true"]::selection {
+  background:#a8c9ff;
+  color:#151c2b;
+}
+button:focus-visible, a:focus-visible, [role="button"]:focus-visible {
+  outline:2px solid #fff;
+  outline-offset:2px;
+}

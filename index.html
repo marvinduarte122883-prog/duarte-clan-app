@@ -2392,7 +2392,7 @@ header.topbar .topbar-inner .brand {min-width:0!important;padding:0!important;ga
             </div>
 
             <div class="brand-text">
-                <img class="duarte-brand-banner" src="./duarte-clan-brand-banner.png?v=186" alt="Duarte Clan" width="220" height="74" decoding="async" fetchpriority="high">
+                <img class="duarte-brand-banner" src="./duarte-clan-wordmark-transparent.png?v=191" alt="Duarte Clan" width="220" height="74" decoding="async" fetchpriority="high">
                 <span>OUR FAMILY • OUR STORIES • OUR LEGACY</span>
             </div>
 
@@ -2433,14 +2433,10 @@ header.topbar .topbar-inner .brand {min-width:0!important;padding:0!important;ga
                     </div>
                 </div>
             </div>
-<button class="ff-mobile-menu-btn" type="button" onclick="openMobileClanMenu()" title="Menu">☰</button></nav>
+</nav>
 
 
         <div class="user-area">
-
-            <button class="icon-btn" title="Notifications">
-                🔔
-            </button>
 
             <div class="avatar">
                 D
@@ -19887,14 +19883,34 @@ html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;colo
 <link rel="stylesheet" href="./duarte-family-features-v184.css?v=184">
 <link rel="stylesheet" href="./duarte-family-sections-v185.css?v=185">
 
-<!-- DUARTE CLAN TOP-LEFT BRAND FIX: final override to ensure the requested header styling wins -->
-<style id="duarte-clan-top-left-brand-final-fix">
+<!-- DUARTE CLAN HEADER BLUE THEME V187 -->
+<style id="duarte-clan-header-blue-theme-v187">
+  :root {
+    --duarte-header-blue-1:#0b5ed7;
+    --duarte-header-blue-2:#0866ff;
+    --duarte-header-blue-3:#0a58ca;
+    --duarte-header-white:rgba(255,255,255,.96);
+    --duarte-header-soft:rgba(255,255,255,.16);
+    --duarte-header-soft-2:rgba(255,255,255,.22);
+    --duarte-header-border:rgba(255,255,255,.24);
+  }
+  header.topbar {
+    background:linear-gradient(135deg,var(--duarte-header-blue-1) 0%,var(--duarte-header-blue-2) 52%,var(--duarte-header-blue-3) 100%) !important;
+    color:#fff !important;
+    border-bottom:1px solid rgba(255,255,255,.18) !important;
+    box-shadow:0 10px 26px rgba(8,102,255,.20) !important;
+  }
+  header.topbar .topbar-inner {
+    gap:14px !important;
+  }
   header.topbar .topbar-inner .brand {
     display:flex !important;
     align-items:center !important;
     gap:12px !important;
     min-width:0 !important;
     flex:0 0 auto !important;
+    padding:0 !important;
+    background:transparent !important;
   }
   header.topbar .topbar-inner .brand .brand-logo {
     width:44px !important;
@@ -19904,29 +19920,460 @@ html,body{background:var(--dc-page)!important;color:var(--dc-ink)!important;colo
     display:flex !important;
     align-items:center !important;
     justify-content:center !important;
-    background:#0866ff !important;
-    border:3px solid #e7f3ff !important;
-    color:#fff !important;
+    background:rgba(255,255,255,.95) !important;
+    border:2px solid rgba(255,255,255,.55) !important;
+    color:#0866ff !important;
     font-size:20px !important;
     font-weight:800 !important;
     line-height:1 !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.15) !important;
   }
-  header.topbar .topbar-inner .brand .brand-text h1 {
-    color:#0866ff !important;
-    font-family:Arial,Helvetica,sans-serif !important;
-    font-size:18px !important;
-    font-weight:800 !important;
-    letter-spacing:2px !important;
-    line-height:1.2 !important;
-    white-space:nowrap !important;
-    margin:0 !important;
+  header.topbar .topbar-inner .brand .brand-text,
+  header.topbar .topbar-inner .brand .brand-text h1,
+  header.topbar .topbar-inner .brand .brand-text span {
+    color:#fff !important;
   }
   header.topbar .topbar-inner .brand .brand-text span {
     display:none !important;
   }
-  header.topbar {
-    background:#fff !important;
-    border-bottom:1px solid #e4e6eb !important;
+  header.topbar .topbar-inner .brand .duarte-brand-banner {
+    display:block !important;
+    border-radius:12px !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.16) !important;
   }
-  header.topbar .topbar-inner .brand .brand-text { min-width:0 !important; }
+  header.topbar .main-nav,
+  header.topbar .user-area {
+    background:transparent !important;
+  }
+  header.topbar .main-nav .nav-btn,
+  header.topbar .main-nav button,
+  header.topbar .user-area .icon-btn,
+  header.topbar .notification-bell,
+  header.topbar .ff-mobile-menu-btn,
+  header.topbar .avatar,
+  header.topbar a,
+  header.topbar .main-nav a {
+    color:#fff !important;
+  }
+  header.topbar .main-nav .nav-btn,
+  header.topbar .notification-bell,
+  header.topbar .ff-mobile-menu-btn,
+  header.topbar .user-area .icon-btn {
+    background:transparent !important;
+    border:0 !important;
+    border-radius:12px !important;
+    transition:background .2s ease, transform .2s ease, box-shadow .2s ease !important;
+  }
+  header.topbar .main-nav .nav-btn:hover,
+  header.topbar .main-nav .nav-btn:focus-visible,
+  header.topbar .notification-bell:hover,
+  header.topbar .notification-bell:focus-visible,
+  header.topbar .ff-mobile-menu-btn:hover,
+  header.topbar .ff-mobile-menu-btn:focus-visible,
+  header.topbar .user-area .icon-btn:hover,
+  header.topbar .user-area .icon-btn:focus-visible {
+    background:rgba(255,255,255,.14) !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.10) !important;
+    outline:none !important;
+  }
+  header.topbar .main-nav .nav-btn.active {
+    background:rgba(255,255,255,.16) !important;
+    color:#fff !important;
+    box-shadow:inset 0 -3px 0 rgba(255,255,255,.95) !important;
+  }
+  header.topbar .main-nav .nav-btn.active::after,
+  header.topbar .main-nav .nav-btn::after {
+    background:#fff !important;
+  }
+  header.topbar .notification-bell .notification-badge {
+    background:#fff !important;
+    color:#0866ff !important;
+    border:1px solid rgba(8,102,255,.15) !important;
+    box-shadow:0 2px 8px rgba(0,0,0,.15) !important;
+  }
+  header.topbar .avatar {
+    background:rgba(255,255,255,.95) !important;
+    color:#0866ff !important;
+    border:2px solid rgba(255,255,255,.55) !important;
+    box-shadow:0 8px 18px rgba(0,0,0,.14) !important;
+  }
+  #dcDesktopSearch,
+  header.topbar input[type="search"],
+  header.topbar .search-box input,
+  header.topbar .search-input {
+    background:rgba(255,255,255,.16) !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    border:1px solid rgba(255,255,255,.26) !important;
+    border-radius:999px !important;
+    box-shadow:none !important;
+    backdrop-filter:blur(8px) !important;
+  }
+  #dcDesktopSearch::placeholder,
+  header.topbar input[type="search"]::placeholder,
+  header.topbar .search-box input::placeholder,
+  header.topbar .search-input::placeholder {
+    color:rgba(255,255,255,.86) !important;
+    opacity:1 !important;
+  }
+  header.topbar .notification-panel {
+    background:#ffffff !important;
+    color:#1c1e21 !important;
+    border:1px solid #dfe3ea !important;
+    box-shadow:0 20px 48px rgba(0,0,0,.16) !important;
+  }
+  header.topbar .notification-panel * {
+    color:inherit;
+  }
+  @media (max-width: 800px) {
+    header.topbar {
+      padding:8px 0 !important;
+    }
+    header.topbar .topbar-inner {
+      gap:10px !important;
+    }
+    header.topbar .topbar-inner .brand .brand-logo {
+      width:40px !important;
+      height:40px !important;
+      min-width:40px !important;
+    }
+    header.topbar .topbar-inner .brand .duarte-brand-banner {
+      width:clamp(118px, 36vw, 168px) !important;
+      height:auto !important;
+    }
+    #dcDesktopSearch {
+      min-width:0 !important;
+      width:min(42vw,240px) !important;
+    }
+  }
+</style>
+
+
+<!-- DUARTE CLAN HEADER ALIGNMENT FIX V188 -->
+<style id="duarte-clan-header-alignment-fix-v188">
+  header.topbar {
+    overflow:hidden !important;
+  }
+  header.topbar .topbar-inner {
+    align-items:center !important;
+    min-height:58px !important;
+  }
+  header.topbar .topbar-inner .brand {
+    align-self:center !important;
+    overflow:hidden !important;
+    border-radius:0 !important;
+    max-height:42px !important;
+  }
+  header.topbar .topbar-inner .brand .brand-text {
+    display:flex !important;
+    align-items:center !important;
+    line-height:0 !important;
+    overflow:hidden !important;
+  }
+  header.topbar .topbar-inner .brand .duarte-brand-banner {
+    display:block !important;
+    width:auto !important;
+    height:40px !important;
+    max-width:min(220px, 24vw) !important;
+    object-fit:contain !important;
+    object-position:left center !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    margin:0 !important;
+  }
+  @media (max-width: 900px) {
+    header.topbar .topbar-inner .brand {
+      max-height:38px !important;
+    }
+    header.topbar .topbar-inner .brand .duarte-brand-banner {
+      height:36px !important;
+      max-width:min(190px, 34vw) !important;
+    }
+  }
+  @media (max-width: 600px) {
+    header.topbar .topbar-inner {
+      min-height:54px !important;
+    }
+    header.topbar .topbar-inner .brand {
+      max-height:34px !important;
+    }
+    header.topbar .topbar-inner .brand .duarte-brand-banner {
+      height:32px !important;
+      max-width:min(160px, 42vw) !important;
+    }
+  }
+</style>
+
+<!-- DUARTE CLAN SEARCH FIELD WHITE FIX V189 -->
+<style id="duarte-search-white-v189">
+  header.topbar #dcDesktopSearch,
+  header.topbar input[type="search"],
+  header.topbar .search-box input,
+  header.topbar .search-input {
+    background:#ffffff !important;
+    background-color:#ffffff !important;
+    color:#1c1e21 !important;
+    -webkit-text-fill-color:#1c1e21 !important;
+    border:1px solid #d9e1ed !important;
+    border-radius:999px !important;
+    box-shadow:0 1px 4px rgba(0,0,0,.10) !important;
+    opacity:1 !important;
+  }
+  header.topbar #dcDesktopSearch::placeholder,
+  header.topbar input[type="search"]::placeholder,
+  header.topbar .search-box input::placeholder,
+  header.topbar .search-input::placeholder {
+    color:#596579 !important;
+    -webkit-text-fill-color:#596579 !important;
+    opacity:1 !important;
+  }
+  header.topbar #dcDesktopSearch:focus,
+  header.topbar input[type="search"]:focus {
+    outline:2px solid rgba(255,255,255,.65) !important;
+    outline-offset:2px !important;
+  }
+</style>
+
+<!-- DUARTE CLAN V190: consistent professional blue top navigation -->
+<style id="duarte-professional-header-v190">
+  header.topbar {
+    height:64px !important;
+    min-height:64px !important;
+    padding:0 !important;
+    overflow:visible !important; /* keep notification dropdown accessible */
+    background:linear-gradient(110deg,#0866e8 0%,#0866ff 52%,#0861df 100%) !important;
+    border-bottom:1px solid rgba(255,255,255,.20) !important;
+    box-shadow:0 2px 8px rgba(9,57,146,.12) !important;
+  }
+  header.topbar .topbar-inner {
+    width:calc(100% - 32px) !important;
+    max-width:1440px !important;
+    min-height:64px !important;
+    height:64px !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:14px !important;
+  }
+  header.topbar .brand {
+    height:44px !important;
+    max-height:44px !important;
+    flex:0 0 auto !important;
+    border-radius:0 !important;
+    overflow:hidden !important;
+  }
+  header.topbar .brand .brand-text {height:44px !important; overflow:hidden !important}
+  header.topbar .brand .duarte-brand-banner {
+    height:40px !important;
+    width:190px !important;
+    max-width:190px !important;
+    border-radius:4px !important;
+    box-shadow:none !important;
+    object-fit:contain !important;
+    vertical-align:middle !important;
+  }
+  header.topbar #dcDesktopSearch {
+    box-sizing:border-box !important;
+    flex:0 1 238px !important;
+    width:238px !important;
+    min-width:150px !important;
+    height:40px !important;
+    margin:0 !important;
+    padding:0 17px !important;
+    border-radius:22px !important;
+    background:#fff !important;
+    background-color:#fff !important;
+    color:#242b37 !important;
+    -webkit-text-fill-color:#242b37 !important;
+    border:1px solid rgba(255,255,255,.96) !important;
+    font:400 14px/1.4 Arial,Helvetica,sans-serif !important;
+    letter-spacing:0 !important;
+    opacity:1 !important;
+    box-shadow:0 1px 4px rgba(0,36,95,.11) !important;
+    transition:box-shadow .16s ease,border-color .16s ease !important;
+  }
+  header.topbar #dcDesktopSearch::placeholder {
+    color:#606c7f !important;
+    -webkit-text-fill-color:#606c7f !important;
+    opacity:1 !important;
+  }
+  header.topbar #dcDesktopSearch:focus {
+    outline:none !important;
+    border-color:#c9defa !important;
+    box-shadow:0 0 0 3px rgba(255,255,255,.28) !important;
+  }
+  header.topbar .main-nav {
+    height:64px !important;
+    min-height:64px !important;
+    display:flex !important;
+    align-items:center !important;
+    gap:6px !important;
+    flex:1 1 auto !important;
+    justify-content:center !important;
+    min-width:0 !important;
+  }
+  header.topbar .main-nav > .nav-btn {
+    box-sizing:border-box !important;
+    height:42px !important;
+    min-width:0 !important;
+    padding:0 12px !important;
+    border:1px solid transparent !important;
+    border-bottom:2px solid transparent !important;
+    border-radius:9px !important;
+    background:transparent !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    font:600 14px/1.3 Arial,Helvetica,sans-serif !important;
+    letter-spacing:0 !important;
+    white-space:nowrap !important;
+    text-shadow:none !important;
+    box-shadow:none !important;
+    transition:background-color .16s ease,border-color .16s ease !important;
+  }
+  header.topbar .main-nav > .nav-btn:hover,
+  header.topbar .main-nav > .nav-btn:focus-visible {
+    background:rgba(255,255,255,.13) !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+  }
+  header.topbar .main-nav > .nav-btn.active {
+    background:rgba(255,255,255,.17) !important;
+    border-bottom:2px solid #fff !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    box-shadow:none !important;
+  }
+  header.topbar .main-nav > .nav-btn::after {background:transparent !important}
+  header.topbar .notification-bell,
+  header.topbar .ff-mobile-menu-btn,
+  header.topbar .user-area .icon-btn {
+    width:42px !important;
+    height:42px !important;
+    min-height:42px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:50% !important;
+    background:rgba(255,255,255,.10) !important;
+    color:#fff !important;
+    -webkit-text-fill-color:#fff !important;
+    font-size:18px !important;
+    box-shadow:none !important;
+  }
+  header.topbar .notification-bell:hover,
+  header.topbar .ff-mobile-menu-btn:hover,
+  header.topbar .user-area .icon-btn:hover {background:rgba(255,255,255,.20) !important}
+  header.topbar .notification-panel {color:#1c1e21 !important; overflow:auto !important}
+  header.topbar .user-area {flex:0 0 auto !important; align-items:center !important}
+  @media (max-width:1100px) {
+    header.topbar .topbar-inner {gap:9px !important}
+    header.topbar .brand .duarte-brand-banner {width:156px !important;max-width:156px !important}
+    header.topbar .main-nav > .nav-btn {font-size:13px !important;padding:0 8px !important}
+    header.topbar #dcDesktopSearch {flex-basis:210px !important;width:210px !important}
+  }
+  @media (max-width:800px) {
+    header.topbar {height:58px !important;min-height:58px !important}
+    header.topbar .topbar-inner {height:58px !important;min-height:58px !important;width:calc(100% - 20px) !important}
+    header.topbar .brand {height:36px !important;max-height:36px !important}
+    header.topbar .brand .brand-text {height:36px !important}
+    header.topbar .brand .duarte-brand-banner {height:34px !important;width:148px !important;max-width:148px !important}
+    header.topbar .main-nav {height:58px !important;min-height:58px !important}
+    header.topbar #dcDesktopSearch {display:none !important}
+    header.topbar .notification-bell,header.topbar .ff-mobile-menu-btn {width:38px !important;height:38px !important;min-height:38px !important}
+  }
+  @media (prefers-reduced-motion:reduce) {
+    header.topbar .main-nav > .nav-btn,header.topbar #dcDesktopSearch {transition:none !important}
+  }
+</style>
+
+<!-- V191: clean single-line controls and seamless transparent Duarte Clan wordmark -->
+<style id="duarte-header-inline-v191">
+header.topbar,header.topbar .topbar-inner{background:#0866ef !important;background-image:none !important}
+header.topbar{overflow:visible !important}
+header.topbar .topbar-inner{display:flex !important;flex-flow:row nowrap !important;align-items:center !important;gap:12px !important}
+header.topbar .brand,header.topbar .brand .brand-text{background:transparent !important;box-shadow:none !important;border:0 !important;border-radius:0 !important;overflow:visible !important;align-items:center !important}
+header.topbar .brand .duarte-brand-banner{height:27px !important;width:auto !important;max-width:140px !important;object-fit:contain !important;box-shadow:none !important;border-radius:0 !important;display:block !important}
+header.topbar .main-nav{display:flex !important;flex-direction:row !important;align-items:center !important;gap:8px !important;flex-wrap:nowrap !important;height:auto !important;min-height:0 !important}
+header.topbar .notification-wrap{display:flex !important;align-items:center !important;flex:0 0 auto !important;position:relative !important}
+header.topbar .notification-bell{display:flex !important;align-items:center !important;justify-content:center !important;position:relative !important;width:40px !important;height:40px !important;margin:0 !important}
+header.topbar .user-area{display:flex !important;align-items:center !important;flex-direction:row !important;flex-wrap:nowrap !important;gap:8px !important;margin-left:0 !important}
+header.topbar .ff-mobile-menu-btn{display:none !important}
+header.topbar .notification-panel{color:#242b37 !important;background:#fff !important}
+@media(max-width:800px){
+  header.topbar .topbar-inner{justify-content:space-between !important;gap:8px !important;width:calc(100% - 20px) !important;min-height:56px !important}
+  header.topbar .main-nav{display:flex !important;flex:0 0 auto !important;margin-left:auto !important;height:44px !important;min-height:0 !important;gap:8px !important}
+  header.topbar .main-nav>.nav-btn{display:none !important}
+  header.topbar .brand{flex:0 1 auto !important;min-width:0 !important}
+  header.topbar .brand .duarte-brand-banner{height:24px !important;width:auto !important;max-width:min(126px,29vw) !important}
+  header.topbar .brand .brand-logo{height:34px !important;width:34px !important;min-width:34px !important}
+  header.topbar .notification-bell{width:38px !important;height:38px !important;min-height:38px !important}
+  header.topbar .user-area{min-width:0 !important;gap:6px !important}
+  header.topbar .user-area .icon-btn{display:flex !important;width:38px !important;height:38px !important;min-height:38px !important}
+  header.topbar .topbar-inner .brand{gap:7px !important}
+}
+@media(max-width:390px){header.topbar .brand .duarte-brand-banner{max-width:90px !important}header.topbar .topbar-inner{gap:5px !important}}
+</style>
+
+<!-- V192: keep only the functional notification bell near Messenger -->
+<style id="duarte-single-header-notification-v192">
+header.topbar .user-area > .icon-btn[title="Notifications"] {display:none !important}
+header.topbar .notification-wrap .notification-bell {display:flex !important}
+</style>
+
+<!-- V193 professional shared color/typography polish -->
+<link rel="stylesheet" href="./duarte-professional-polish-v193.css?v=193">
+
+<!-- V194: Duarte Clan blue View Profile / Message buttons for every member card -->
+<link rel="stylesheet" href="./duarte-member-buttons-v194.css?v=194">
+
+<!-- V195: neutral labels without blue selection highlights -->
+<link rel="stylesheet" href="./duarte-selection-clean-v195.css?v=195">
+
+
+<!-- DUARTE CLAN V196 — READABLE MEMBER AVATARS & LABELS -->
+<style id="duarte-member-avatar-readability-v196">
+/* Member initials stay white against the existing dark-blue circles. */
+#membersGrid .clan-member-card .member-avatar,
+#sidebarMembersBody .member-avatar,
+.members-manager .member-avatar,
+.ff-directory-card .member-avatar,
+.member-row .member-avatar {
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.25) !important;
+}
+/* Images are unaffected: their existing photo colors remain natural. */
+#membersGrid .clan-member-card .member-name,
+#sidebarMembersBody .member-name,
+.members-manager .member-name,
+.ff-directory-card .member-name,
+.member-row .member-name {
+  color:#172033 !important;
+  -webkit-text-fill-color:#172033 !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  line-height:1.35 !important;
+  text-shadow:none !important;
+}
+#membersGrid .clan-member-card p,
+#sidebarMembersBody .member-status,
+.members-manager .member-status,
+.ff-directory-card .member-status,
+.member-row .member-status {
+  color:#475569 !important;
+  -webkit-text-fill-color:#475569 !important;
+  font-size:12px !important;
+  font-weight:500 !important;
+  line-height:1.4 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+}
+@media(max-width:600px){
+  #membersGrid .clan-member-card .member-name,
+  .member-row .member-name {font-size:14px !important;}
+  #membersGrid .clan-member-card p,
+  .member-row .member-status {font-size:12px !important;}
+}
 </style>

@@ -1,0 +1,51 @@
+/* Duarte Clan V194 — Member directory action buttons */
+#membersGrid .clan-member-card .ff-v31-member-actions {
+  display:flex !important;
+  gap:8px !important;
+  width:100% !important;
+  min-width:0 !important;
+}
+#membersGrid .clan-member-card .ff-v31-view-profile,
+#membersGrid .clan-member-card .ff-member-message {
+  appearance:none !important;
+  background:#0866ef !important;
+  background-image:none !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  border:1px solid #0866ef !important;
+  border-radius:9px !important;
+  box-shadow:none !important;
+  font:600 13px/1.35 system-ui,-apple-system,"Segoe UI",Arial,sans-serif !important;
+  letter-spacing:0 !important;
+  text-shadow:none !important;
+  min-height:40px !important;
+  padding:9px 12px !important;
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  cursor:pointer !important;
+  transition:background-color .15s ease,border-color .15s ease !important;
+}
+#membersGrid .clan-member-card .ff-v31-view-profile:hover,
+#membersGrid .clan-member-card .ff-member-message:hover {
+  background:#0757c9 !important;
+  border-color:#0757c9 !important;
+}
+#membersGrid .clan-member-card .ff-v31-view-profile:focus-visible,
+#membersGrid .clan-member-card .ff-member-message:focus-visible {
+  outline:3px solid #8fc0ff !important;
+  outline-offset:2px !important;
+}
+#membersGrid .clan-member-card .ff-v31-view-profile:active,
+#membersGrid .clan-member-card .ff-member-message:active {
+  background:#044eaf !important;
+}
+@media(max-width:760px){
+  #membersGrid .clan-member-card .ff-v31-view-profile,
+  #membersGrid .clan-member-card .ff-member-message {min-height:40px !important;font-size:12px !important;padding:9px 8px !important}
+}
+@media(prefers-reduced-motion:reduce){
+  #membersGrid .clan-member-card .ff-v31-view-profile,
+  #membersGrid .clan-member-card .ff-member-message {transition:none !important}
+}

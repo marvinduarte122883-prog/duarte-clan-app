@@ -20610,3 +20610,78 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
 @media (max-width:390px){html body .ff-mobile-nav-panel{width:min(320px,92vw)!important}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}html body *,html body *::before,html body *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+
+
+<!-- V222: media and Messenger performance layer; visual optimization only. -->
+<style id="duarte-v222-media-messenger-lite">
+/* Keep content within the viewport while allowing the browser to skip off-screen paint. */
+#postsContainer .post-card, #ffConversationList .ff-conversation,
+#notificationList .notification-item, .ff-album-card, .ff-album-photo {
+  contain:layout style;
+}
+#postsContainer .post-card, .ff-album-card, .ff-album-photo {
+  content-visibility:auto;
+  contain-intrinsic-size:auto 300px;
+}
+#postsContainer img, .ff-album-card img, .ff-album-photo img,
+#ffConversationList img, #ffChatMessages img, .ff-gallery-image {
+  max-width:100%;
+}
+#ffChatMessages, #ffConversationList {
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#ffChatMessages .ff-bubble-row {contain:layout style;}
+@media (max-width:760px){
+  #postsContainer .post-card, .ff-album-card, .ff-album-photo {
+    contain-intrinsic-size:auto 260px;
+  }
+  #ffMsgModal .ff-chat, #ffMsgModal .ff-msg-list, #ffMsgModal .ff-chat-messages,
+  #ffChatMessages, #ffConversationList {min-width:0;max-width:100%;}
+  #ffMsgModal .ff-chat-messages {overflow-wrap:anywhere;}
+  #postsContainer img, .ff-album-photo img {height:auto;}
+  /* Large glass-like filters cost extra GPU memory on low-end WebViews. */
+  .post-card, .ff-conversation, .ff-mobile-nav-panel, .ff-v29c-bottom-nav,
+  .ff-msg-list, #ffMsgModal .ff-chat {backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  .ff-chat-messages, #ffConversationList, #postsContainer {
+    scrollbar-width:thin;
+  }
+}
+@media (max-width:520px), (prefers-reduced-motion:reduce){
+  #postsContainer .post-card, #ffConversationList .ff-conversation,
+  #ffChatMessages .ff-bubble-row {transition:none!important;}
+}
+</style>
+<script id="duarte-v222-media-loading">
+/* Progressive image hints for dynamically inserted feed and conversation images.
+   No changes to messages, uploads, Supabase, call sessions or story state. */
+(function(){
+  'use strict';
+  if (!('MutationObserver' in window)) return;
+  const scopeIds=['postsContainer','ffConversationList'];
+  function tuneImg(img){
+    if(!img || img.tagName!=='IMG') return;
+    if(!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+    if(!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+    if(!img.hasAttribute('fetchpriority')) img.setAttribute('fetchpriority','low');
+  }
+  function tuneTree(node){
+    if(node.nodeType!==1) return;
+    if(node.tagName==='IMG') tuneImg(node);
+    else if(node.querySelectorAll) node.querySelectorAll('img').forEach(tuneImg);
+  }
+  function attach(){
+    scopeIds.forEach(function(id){
+      const root=document.getElementById(id);
+      if(!root || root.dataset.ffV222Media==='1')return;
+      root.dataset.ffV222Media='1';
+      root.querySelectorAll('img').forEach(tuneImg);
+      new MutationObserver(function(records){
+        records.forEach(function(record){record.addedNodes.forEach(tuneTree);});
+      }).observe(root,{childList:true,subtree:true});
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attach,{once:true});
+  else attach();
+})();
+</script>

@@ -1,0 +1,48 @@
+{
+  "index.html": {
+    "size_bytes": 1298023,
+    "script_count": 182,
+    "inline_js_syntax": {
+      "pass": 180,
+      "fail": 0,
+      "skipped": 2
+    },
+    "invalid_inline_scripts": [],
+    "duplicate_ids": {
+      "ff-v84-group-call-lite": 2,
+      "duarte-v149-story-video-preview-fix": 2
+    },
+    "missing_local_asset_refs": []
+  },
+  "login.html": {
+    "size_bytes": 44866,
+    "script_count": 4,
+    "inline_js_syntax": {
+      "pass": 3,
+      "fail": 0,
+      "skipped": 1
+    },
+    "invalid_inline_scripts": [],
+    "duplicate_ids": {},
+    "missing_local_asset_refs": []
+  },
+  "admin.html": {
+    "size_bytes": 55558,
+    "script_count": 5,
+    "inline_js_syntax": {
+      "pass": 4,
+      "fail": 0,
+      "skipped": 1
+    },
+    "invalid_inline_scripts": [],
+    "duplicate_ids": {},
+    "missing_local_asset_refs": []
+  },
+  "service_worker_syntax_failures": [
+    "duarte-sw-v59.js"
+  ],
+  "livekit_authorization_review": {
+    "checks_authenticated_user": true,
+    "looks_up_room_membership": false
+  }
+}

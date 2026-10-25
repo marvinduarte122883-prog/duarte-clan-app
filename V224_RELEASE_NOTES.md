@@ -1,0 +1,1 @@
+Duarte Clan V224: static security/functionality audit and conservative Cloudflare header hardening. No application JavaScript changed. See V224_SECURITY_FUNCTIONAL_AUDIT.md for confirmed risks and live test checklist.

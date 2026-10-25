@@ -1,0 +1,18 @@
+{
+  "local_static_checks": {
+    "index.html": true,
+    "login.html": true,
+    "admin.html": true,
+    "duarte-version.json": true,
+    "duarte-sw-v62.js": true,
+    "_headers": true,
+    "unique_HTML_ids": true,
+    "version_manifest_parse": true,
+    "group_call_membership_guard": true,
+    "no_service_role_key_in_worker_source": true
+  },
+  "local_static_pass": true,
+  "preview_reads": {},
+  "manual_authorization_tests": "NOT PERFORMED",
+  "production_approval": "NO-GO: requires live admin/RLS, staging LiveKit, browser and APK tests"
+}

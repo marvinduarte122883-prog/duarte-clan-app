@@ -1,0 +1,18 @@
+{
+  "baseline": "V227",
+  "state": "Preview deployment NOT performed; production unchanged",
+  "checks": {
+    "index.html": true,
+    "login.html": true,
+    "admin.html": true,
+    "duarte-version.json": true,
+    "duarte-sw-v62.js": true,
+    "_headers": true,
+    "version_matches_v227": true,
+    "no_duplicate_ids": true,
+    "duarte-sw-v62.js_syntax": true
+  },
+  "overall_static_pass": true,
+  "live_tests": "NOT PERFORMED",
+  "production_decision": "NO-GO until LiveKit and administrator-approval authorization verified"
+}

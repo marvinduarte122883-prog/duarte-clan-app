@@ -43,10 +43,22 @@ export default {async fetch(request,env){
   if(!['ringing','accepted'].includes(call.status))return json({error:'This call is no longer active'},409);
   room='duarte-direct-'+callId;
  }else{
+  const callId=String(input.call_id||'');
   room=String(input.room_name||'');
-  if(!/^duarte-[0-9a-f-]{36}$/i.test(room))return json({error:'Invalid Duarte group room'},400);
-  // Existing group-call authorization retained here. For stronger group privacy,
-  // separately verify group membership before issuing a group token.
+  if(!uuid(callId)||!/^duarte-[0-9a-f-]{36}$/i.test(room))return json({error:'Invalid Duarte group call'},400);
+  // All queries use the member JWT and Supabase RLS. Deny on any error or missing row.
+  const callApi=base+'/rest/v1/duarte_group_calls?select=id,host_id,scope,status,room_name&id=eq.'+encodeURIComponent(callId)+'&limit=1';
+  const callRes=await fetch(callApi,{headers}).catch(()=>null);
+  if(!callRes?.ok)return json({error:'Group call authorization could not be verified'},403);
+  const calls=await callRes.json().catch(()=>[]);
+  const call=Array.isArray(calls)?calls[0]:null;
+  if(!call||call.room_name!==room||!['ringing','active'].includes(String(call.status||'').toLowerCase()))return json({error:'Group call is unavailable or inactive'},403);
+  const memberApi=base+'/rest/v1/duarte_group_call_participants?select=user_id,invite_status&call_id=eq.'+encodeURIComponent(callId)+'&user_id=eq.'+encodeURIComponent(user.id)+'&limit=1';
+  const memberRes=await fetch(memberApi,{headers}).catch(()=>null);
+  if(!memberRes?.ok)return json({error:'Group membership could not be verified'},403);
+  const members=await memberRes.json().catch(()=>[]);
+  const member=Array.isArray(members)?members[0]:null;
+  if(!member||member.user_id!==user.id||!['joined','invited'].includes(String(member.invite_status||'').toLowerCase()))return json({error:'You are not an active participant in this group call'},403);
  }
  return json({server_url:env.LIVEKIT_URL,participant_token:await jwt(env.LIVEKIT_API_KEY,env.LIVEKIT_API_SECRET,user.id,room)},201);
 }};

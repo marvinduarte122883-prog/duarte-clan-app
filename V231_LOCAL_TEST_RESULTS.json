@@ -1,0 +1,47 @@
+{
+  "release": "V231 preview validation",
+  "local": {
+    "index.html": {
+      "pass": true
+    },
+    "login.html": {
+      "pass": true
+    },
+    "admin.html": {
+      "pass": true
+    },
+    "duarte-version.json": {
+      "pass": true
+    },
+    "duarte-sw-v62.js": {
+      "pass": true
+    },
+    "cloudflare-worker-livekit-token.js": {
+      "pass": true
+    },
+    "_headers": {
+      "pass": true
+    },
+    "unique_ids": {
+      "pass": true,
+      "duplicates": []
+    },
+    "version_manifest": {
+      "pass": true,
+      "value": "v231-preview-validation"
+    },
+    "livekit_guard_present": {
+      "pass": true,
+      "note": "Source presence only; not proof of authorization correctness"
+    },
+    "no_embedded_service_role_secret": {
+      "pass": true,
+      "note": "Heuristic only; manual credential audit required"
+    }
+  },
+  "remote": {},
+  "local_pass": true,
+  "remote_pass": false,
+  "manual_tests": "NOT PERFORMED",
+  "production_release": "NO-GO until manual authorization and Android tests pass"
+}

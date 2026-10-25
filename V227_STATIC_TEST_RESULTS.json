@@ -1,0 +1,37 @@
+{
+  "build": "V227 staged",
+  "based_on": "V226",
+  "files": [
+    {
+      "file": "index.html",
+      "script_tags": 182,
+      "inline_checked": 180,
+      "syntax_failures": [],
+      "duplicate_ids": {}
+    },
+    {
+      "file": "login.html",
+      "script_tags": 4,
+      "inline_checked": 3,
+      "syntax_failures": [],
+      "duplicate_ids": {}
+    },
+    {
+      "file": "admin.html",
+      "script_tags": 5,
+      "inline_checked": 4,
+      "syntax_failures": [],
+      "duplicate_ids": {}
+    }
+  ],
+  "missing_required_assets": [],
+  "worker_syntax": {
+    "duarte-sw-v62.js": "pass",
+    "V109_LIVEKIT_TOKEN_WORKER_DEPLOY_SEPARATELY.js": "pass",
+    "cloudflare-worker-livekit-token.js": "pass"
+  },
+  "live_tests": "not performed",
+  "worker_deployment": "not performed",
+  "supabase_rls": "not verified",
+  "android_apk": "not tested"
+}

@@ -15326,7 +15326,7 @@ let tries=0;const timer=setInterval(async()=>{tries++;if(await boot()||tries>120
 </style>
 <div id="ffGroupCallModal" aria-hidden="true"><div class="ff-gc-card"><div class="ff-gc-head"><div><b style="font-size:20px">Group call</b><div style="font-size:12px;color:#aaa">Clan or private members</div></div><button class="ff-gc-x" id="ffGcClose">×</button></div><div class="ff-gc-tabs"><button id="ffGcClan" class="on">All Clan</button><button id="ffGcPrivate">Private</button></div><div class="ff-gc-kind"><button id="ffGcAudio" class="on">📞 Audio</button><button id="ffGcVideo">📹 Video</button></div><div id="ffGcMembers" class="ff-gc-members" hidden></div><div id="ffGcPrivateHint" style="display:none;font-size:12px;color:#bbb;margin:6px 2px 0">Select one or more clan members for this private call.</div><button id="ffGcStart" class="ff-gc-start">Start group call</button><div class="ff-gc-note">Members choose whether to join. Large group media uses an SFU so phones do not send a separate video stream to every participant.</div></div></div>
 <script id="ff-v87-group-config">window.DUARTE_GROUP_CALL_CONFIG={provider:'livekit',serverUrl:'wss://duarteclan-hobduf1o.livekit.cloud',tokenEndpoint:'https://duarte-livekit-token.marvinduarte122883.workers.dev/api/group-call-token'};</script>
-<script id="ff-v84-group-call-lite">
+<script id="ff-v84-group-call-lite-script">
 /* V96 private group-call member selector reliability fix */
 (()=>{let scope='clan',kind='audio',members=[];const $=id=>document.getElementById(id);
 // V86: reuse the exact Supabase client already created by the main Duarte app.
@@ -17259,7 +17259,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAvatar
 #ffStoryComposer #ffV124Canvas:has(#ffV139PreviewVideo:not([hidden])) #ffStoryPreview{display:none!important}
 #ffStoryComposer #ffV124Canvas:has(#ffV139PreviewVideo:not([hidden])) #ffV124DragText{pointer-events:none!important}
 </style>
-<script id="duarte-v149-story-video-preview-fix">
+<script id="duarte-v149-story-video-preview-fix-script">
 (()=>{'use strict';
  const file=document.getElementById('ffStoryFile'),video=document.getElementById('ffV139PreviewVideo'),photo=document.getElementById('ffStoryPreview'),canvas=document.getElementById('ffV124Canvas'),status=document.getElementById('ffStoryStatus');
  if(!file||!video||!canvas)return;

@@ -1,0 +1,57 @@
+/* Duarte Clan V216: lightweight mobile white-and-blue theme.
+   Only presentation styles are changed; notification and Supabase logic remain intact. */
+@media (max-width: 760px) {
+  :root { color-scheme: light; --dc-mobile-bg:#f0f2f5; --dc-mobile-card:#fff; --dc-mobile-ink:#1c1e21; --dc-mobile-blue:#0866ff; }
+  html,body,body:not(.ff-call-mobile-active),.page,.layout,.feed,.center-column,.main-feed,#homeSection,#membersSection { background:#f0f2f5!important; color:#1c1e21!important; }
+  html,body{max-width:100%!important;overflow-x:hidden!important;overscroll-behavior-x:none;}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))!important;}
+  .topbar,header.topbar,.topbar-inner,.mobile-header { background:#0866ff!important; border-bottom:1px solid #dce5f1!important; box-shadow:none!important; backdrop-filter:none!important;-webkit-backdrop-filter:none!important; }
+  .topbar .notification-wrap,.topbar .notification-bell,header .notification-wrap,header .notification-bell {display:none!important;}
+  .topbar .brand,.topbar .brand-text,.topbar .brand-text h1 { color:#fff!important; }
+  .ff-v29c-mobile-nav,.ff-v29c-bottom-nav {
+    background:#fff!important;color:#1c1e21!important;border-top:1px solid #dadde1!important;
+    box-shadow:0 -1px 6px rgba(20,35,60,.06)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    height:calc(62px + env(safe-area-inset-bottom,0px))!important;
+    padding:0 2px env(safe-area-inset-bottom,0px)!important;box-sizing:border-box!important;
+  }
+  .ff-v29c-mobile-nav button,.ff-v29c-bottom-nav button{
+    color:#526071!important;background:transparent!important;border:0!important;
+    font-size:clamp(9px,2.6vw,12px)!important;font-weight:650!important;
+    min-width:0!important;min-height:50px!important;padding:5px 1px!important;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  }
+  .ff-v29c-mobile-nav .ico,.ff-v29c-bottom-nav .ico{font-size:clamp(19px,5.5vw,23px)!important;line-height:1.1!important;color:#0866ff!important;}
+  .ff-v29c-mobile-nav button.active,.ff-v29c-mobile-nav button[aria-current="page"],
+  .ff-v29c-bottom-nav button.active,.ff-v29c-bottom-nav button[aria-current="page"]{
+    background:#edf4ff!important;color:#0866ff!important;border-radius:9px!important;
+  }
+  .ff-v29c-mobile-nav button.primary .ico{background:transparent!important;color:#0866ff!important;width:auto!important;height:auto!important;}
+  .ff-v29c-mobile-nav [data-v29c-nav="menu"]{display:none!important;}
+  .create-post,.post-card,.story-card,.right-card,.member-card,.members-manager,.gallery-manager,
+  .feed .card,.feed .composer,.stories-section,.stories-container,.family-stories,
+  .notification-panel,.profile-mini,.profile-card,.event-list-card{
+    background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;
+    box-shadow:none!important;
+  }
+  .feed-header,.feed-header h2,.feed-header p,.post-text,.post-card .post-text,.post-card .post-author,
+  .post-card .post-header,.post-card .post-meta,.notification-panel,.notification-list {
+    color:#1c1e21!important;
+  }
+  .post-card .post-meta,.post-date,.post-time,.notification-empty,.story-empty{color:#65676b!important;}
+  .feed,.page,.layout{min-width:0!important;max-width:100%!important;}
+  .feed{padding-left:clamp(6px,2vw,12px)!important;padding-right:clamp(6px,2vw,12px)!important;}
+  .post-card,.create-post{width:100%!important;box-sizing:border-box!important;}
+  .post-card img,.post-image,.gallery-image{max-width:100%!important;object-fit:contain!important;}
+  .ff-mobile-nav-panel,.ff-mobile-nav-drawer,.ff-mobile-more-sheet,#ffMobileMoreSheetV50{
+    background:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;backdrop-filter:none!important;
+  }
+  .ff-mobile-nav-link,.ff-mobile-nav-list button{color:#1c1e21!important;border-color:#e4e6eb!important;}
+  .ff-mobile-nav-head,.ff-mobile-nav-head strong,.ff-mobile-nav-profile b{color:#0866ff!important;}
+  .ff-mobile-nav-profile small{color:#65676b!important;}
+  /* Avoid expensive compositing on phones; preserve modal scrolling and interaction. */
+  .post-card,.create-post,.ff-v29c-mobile-nav,.topbar{filter:none!important;}
+  img{max-width:100%;}
+}
+@media (max-width:760px) and (prefers-reduced-motion: reduce){
+  .ff-v29c-mobile-nav button,.post-card,.create-post{transition:none!important;animation:none!important;}
+}

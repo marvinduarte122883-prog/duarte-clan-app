@@ -20547,3 +20547,33 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
 <link rel="stylesheet" href="./duarte-admin-dashboard-v214.css?v=214">
 
 <link rel="stylesheet" href="./duarte-mobile-responsive-v215.css?v=215">
+
+<link rel="stylesheet" href="./duarte-mobile-lite-theme-v216.css?v=216">
+
+<style id="duarte-mobile-v217-inline-override">
+
+/* V217 inline mobile layout override. Deployed inside index.html to avoid missing CSS caching. */
+@media screen and (max-width:760px){
+  :root{color-scheme:light!important;--dc-bg:#f0f2f5;--dc-card:#fff;--dc-text:#1c1e21;--dc-primary:#0866ff}
+  html,html body,body{background:#f0f2f5!important;background-color:#f0f2f5!important;color:#1c1e21!important;max-width:100%!important;overflow-x:clip!important;min-height:100%!important}
+  body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}
+  body .layout,body .page,body main,body .main,body .main-content,body .content,body .feed,body .feed-column,body .center-column,body #homeSection,body #membersSection,body .stories-section,body #ffStories{background-color:#f0f2f5!important;color:#1c1e21!important;max-width:100%!important;min-width:0!important}
+  body header.topbar,body .topbar,body .topbar-inner{background:#0866ff!important;background-color:#0866ff!important;color:#fff!important;border-color:#0866ff!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  body header.topbar .notification-wrap,body header.topbar #notificationWrap{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important;pointer-events:none!important}
+  body header.topbar .notification-bell{display:none!important}
+  body .topbar .brand,body .topbar .brand-text,body .topbar .brand-text span{color:#fff!important}
+  body .ff-v29c-mobile-nav,body .ff-v29c-bottom-nav{display:flex!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;width:100%!important;height:calc(65px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box!important;padding:3px 3px env(safe-area-inset-bottom,0px)!important;background:#fff!important;background-color:#fff!important;color:#1c1e21!important;border:0!important;border-top:1px solid #dadde1!important;box-shadow:0 -2px 7px rgba(0,0,0,.05)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;z-index:2147483000!important;align-items:stretch!important;justify-content:space-around!important}
+  body .ff-v29c-mobile-nav button,body .ff-v29c-bottom-nav button{display:flex!important;flex:1 1 0!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:3px!important;min-width:0!important;width:auto!important;height:auto!important;padding:4px 1px!important;margin:0!important;border:0!important;border-radius:8px!important;box-shadow:none!important;background:transparent!important;color:#344054!important;font-size:clamp(9px,2.5vw,12px)!important;font-weight:650!important;line-height:1.2!important;touch-action:manipulation!important;-webkit-tap-highlight-color:transparent}
+  body .ff-v29c-mobile-nav button .ico,body .ff-v29c-bottom-nav button .ico{font-size:clamp(19px,5.3vw,24px)!important;line-height:1.1!important;color:#0866ff!important}
+  body .ff-v29c-mobile-nav button.active,body .ff-v29c-mobile-nav button[aria-current="page"],body .ff-v29c-bottom-nav button.active{background:#e7f1ff!important;color:#0866ff!important}
+  body .ff-v29c-mobile-nav [data-v29c-nav="menu"],body .ff-v29c-bottom-nav [data-v29c-nav="menu"]{display:none!important}
+  body .create-post,body .post-card,body .story-card,body .card,body .feed .card,body .feed .composer,body .stories-container,body .family-stories,body .members-manager,body .member-card{background-color:#fff!important;color:#1c1e21!important;border-color:#dadde1!important;box-shadow:none!important;max-width:100%!important;min-width:0!important}
+  body .post-text,body .post-author,body .post-header,body .post-card p,body .post-card strong{color:#1c1e21!important}
+  body .post-meta,body .post-date,body .post-time,body .story-empty,body .notification-empty{color:#65676b!important}
+  body .ff-mobile-nav-panel,body .ff-mobile-nav-drawer,body #ffMobileMoreSheetV50{background-color:#fff!important;color:#1c1e21!important}
+  body .post-card img,body .post-image,body .gallery-image{max-width:100%!important;height:auto;object-fit:contain!important}
+  body .post-card,body .create-post,body .ff-v29c-mobile-nav,body .topbar{filter:none!important;will-change:auto!important}
+}
+@media screen and (max-width:360px){body .ff-v29c-mobile-nav button,body .ff-v29c-bottom-nav button{font-size:9px!important}}
+
+</style>

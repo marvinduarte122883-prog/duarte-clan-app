@@ -17926,6 +17926,66 @@ html.ff-v154-profile-active #profileManager.show {
 @media(max-width:390px){html body .post-card,html body .create-post{padding:10px!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}html body *{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+
+<!-- V232: mobile notification single-entry and readability repair. No Supabase logic changed. -->
+<style id="duarte-v232-mobile-notifications">
+@media(max-width:760px){
+  html body header.topbar #notificationWrap,
+  html body .topbar #notificationWrap,
+  html body .user-area #notificationWrap,
+  html body .user-area>.icon-btn[title="Notifications"],
+  html body .ff-v32e-notifications,
+  html body #ffV32ENotificationsTop,
+  html body .ff-notification-floating,
+  html body [data-duarte-v232-duplicate-notification="1"]{display:none!important}
+  html body .ff-v29c-mobile-nav [data-v29c-nav="notifications"],
+  html body .ff-v29c-bottom-nav [data-v29c-nav="notifications"]{color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;min-height:48px!important}
+  html body .ff-v29c-mobile-nav [data-v29c-nav="notifications"] span,
+  html body .ff-v29c-bottom-nav [data-v29c-nav="notifications"] span{opacity:1!important;visibility:visible!important;text-shadow:none!important}
+  html body #ffV31SAlerts{background:#f0f2f5!important;color:#1c1e21!important}
+  html body #ffV31SAlerts header,
+  html body #ffV31SAlerts .notification-head{background:#fff!important;color:#1c1e21!important;border-bottom:1px solid #e4e6eb!important}
+  html body #ffV31SAlertsList{background:#f0f2f5!important}
+  html body #ffV31SAlertsList .notification-item{background:#fff!important;border-bottom:1px solid #e4e6eb!important;color:#1c1e21!important;line-height:1.45!important}
+  html body #ffV31SAlertsList .notification-item.unread{background:#e7f3ff!important;border-left:3px solid #0866ff!important}
+  html body #ffV31SAlerts .notification-message,
+  html body #ffV31SAlertsList .notification-message,
+  html body #ffV31SAlertsList .ff-notification-copy,
+  html body #ffV31SAlertsList .ff-notification-copy *{color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;font-size:14px!important;line-height:1.5!important;opacity:1!important;text-shadow:none!important;overflow-wrap:anywhere}
+  html body #ffV31SAlertsList .notification-time{color:#65676b!important;-webkit-text-fill-color:#65676b!important;font-size:12px!important;opacity:1!important}
+  html body #ffV31SAlerts button{min-height:40px;touch-action:manipulation}
+  html body #ffV31SAlertsEmpty{color:#65676b!important;font-size:14px!important}
+  html body #notificationPanel{background:#fff!important;color:#1c1e21!important}
+  html body #notificationPanel .notification-item{background:#fff!important;border-bottom:1px solid #e4e6eb!important}
+  html body #notificationPanel .notification-item.unread{background:#e7f3ff!important}
+  html body #notificationPanel .notification-message{color:#1c1e21!important;font-size:14px!important;line-height:1.5!important}
+  html body #notificationPanel .notification-time{color:#65676b!important;font-size:12px!important}
+}
+</style>
+<script id="duarte-v232-notification-dedupe">
+(function(){
+ const mq=window.matchMedia('(max-width:760px)');
+ function apply(){
+  if(!mq.matches)return;
+  // Keep a single notification tab in the active bottom navigation; preserve its click handler.
+  const bars=[...document.querySelectorAll('.ff-v29c-mobile-nav,.ff-v29c-bottom-nav')].filter(x=>x.isConnected);
+  const shown=bars.find(x=>getComputedStyle(x).display!=='none')||bars[0];
+  if(shown){
+   const buttons=[...shown.querySelectorAll('[data-v29c-nav="notifications"]')];
+   buttons.slice(1).forEach(b=>b.setAttribute('data-duarte-v232-duplicate-notification','1'));
+  }
+  // Hide duplicate notification actions only; leave alert lists and actual items alone.
+  document.querySelectorAll('.ff-v29c-mobile-nav,.ff-v29c-bottom-nav').forEach(bar=>{
+   if(bar===shown)return;
+   bar.querySelectorAll('[data-v29c-nav="notifications"]').forEach(b=>b.setAttribute('data-duarte-v232-duplicate-notification','1'));
+  });
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',apply,{once:true}); else apply();
+ window.addEventListener('pageshow',apply,{passive:true});
+ window.addEventListener('orientationchange',apply,{passive:true});
+})();
+</script>
+
 </body>
 </html>
 

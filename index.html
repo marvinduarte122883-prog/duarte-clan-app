@@ -20585,3 +20585,28 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
 
 
 
+
+
+<!-- V221: Self-contained mobile stability and readability corrections; no auth/business JS altered. -->
+<style id="duarte-v221-mobile-stability">
+@media (max-width:760px){
+  html{background:#f0f2f5!important;overflow-x:clip;-webkit-text-size-adjust:100%}
+  html body{background:#f0f2f5!important;color:#1c1e21!important;min-width:0!important;overflow-x:clip!important;overscroll-behavior-y:contain}
+  html body .ff-mobile-nav-panel{background:#fff!important;color:#1c1e21!important;border-right:1px solid #e4e6eb!important;width:min(340px,88vw)!important;max-width:100vw!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
+  html body .ff-mobile-nav-head{color:#0866ff!important}
+  html body .ff-mobile-nav-close{background:#e7f3ff!important;color:#0866ff!important}
+  html body .ff-mobile-nav-link{color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;background:#fff!important;border-bottom:1px solid #e4e6eb!important;font-size:15px!important;min-height:48px!important}
+  html body #ffMobileMoreSheetV50 button,html body #ffMobileMoreSheetV50 button span:not(.ff-v50-ico){color:#1c1e21!important;-webkit-text-fill-color:#1c1e21!important;opacity:1!important;text-shadow:none!important}
+  html body #ffMobileMoreSheetV50 button[data-v50-go="logout"]{color:#c73535!important;-webkit-text-fill-color:#c73535!important}
+  html body .ff-v29c-bottom-nav,html body .ff-v29c-mobile-nav{background:#fff!important;color:#1c1e21!important;border-top:1px solid #e4e6eb!important;box-shadow:0 -1px 3px rgba(0,0,0,.06)!important}
+  html body .ff-v29c-bottom-nav button,html body .ff-v29c-mobile-nav button{color:#3b4554!important;-webkit-text-fill-color:#3b4554!important;min-width:0!important;min-height:44px!important;touch-action:manipulation}
+  html body .post-card,html body .create-post{background:#fff!important;color:#1c1e21!important;border-color:#e4e6eb!important;max-width:100%!important;min-width:0!important}
+  html body .post-card img,html body .create-post img{max-width:100%!important;height:auto!important;object-fit:contain!important}
+  html body .ff-comment-dialog,html body .ff-comment-body,html body .ff-comment-footer{max-width:100vw;min-width:0}
+  html body input,html body textarea,html body select{font-size:16px}
+  html body button,html body [role="button"]{touch-action:manipulation}
+  html body header.topbar .notification-btn,html body header.topbar .notification-bell{display:none!important}
+}
+@media (max-width:390px){html body .ff-mobile-nav-panel{width:min(320px,92vw)!important}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}html body *,html body *::before,html body *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>

@@ -1,7 +1,7 @@
 /* Duarte Clan V223 – reliable and isolated static caching.
  * Auth responses, Supabase, tokens, uploads, media and API traffic are never intercepted.
  */
-const CACHE_NAME = 'duarte-clan-v223-shell';
+const CACHE_NAME = 'duarte-clan-v233-shell';
 const PREFIX = 'duarte-clan-';
 const SHELL = ['./index.html', './login.html', './admin.html'];
 const allowCache = response => response && response.ok && response.type === 'basic' && !response.headers.has('set-cookie') && !/private|no-store/i.test(response.headers.get('cache-control') || '');

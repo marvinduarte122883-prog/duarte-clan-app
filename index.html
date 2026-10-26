@@ -16707,13 +16707,13 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 
 <!-- V132: lightweight WebView update checker; no auth storage or caches cleared -->
 <style id="duarte-v132-update-style">
-#duarteV132Update{position:fixed;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:100800;display:none;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;background:#22252b;border:1px solid #555;border-radius:12px;color:#fff;font:13px system-ui,sans-serif;box-shadow:0 4px 18px #0008}
-#duarteV132Update.show{display:flex}#duarteV132Update button{border:0;border-radius:8px;background:#d9b636;color:#191919;padding:8px 10px;font-weight:800;white-space:nowrap}
+#duarteV132Update{position:fixed;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:100800;display:none;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;background:#fff;border:1px solid #dadde1;border-radius:12px;color:#1c1e21;font:13px system-ui,sans-serif;box-shadow:0 4px 18px #0008}
+#duarteV132Update.show{display:flex}#duarteV132Update button{border:0;border-radius:8px;background:#0866ff;color:#fff;padding:8px 10px;font-weight:800;white-space:nowrap}
 </style>
 <div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v166-stage14';
+ const VERSION='v233';
  const endpoint='./duarte-version.json';
  let pending=false,checking=false,lastCheck=0;
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
@@ -17925,6 +17925,17 @@ html.ff-v154-profile-active #profileManager.show {
 }
 @media(max-width:390px){html body .post-card,html body .create-post{padding:10px!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}html body *{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+
+<!-- V233: notification readability enhancements (presentation only) -->
+<style id="duarte-v233-notification-readability">
+@media(max-width:760px){
+ html body #ffV31SAlerts,html body #notificationPanel{color-scheme:light!important;max-width:100vw!important;}
+ html body #ffV31SAlertsList .notification-item,html body #notificationPanel .notification-item{font-size:14px!important;line-height:1.5!important;overflow-wrap:anywhere!important;}
+ html body #ffV31SAlertsList .notification-item button,html body #notificationPanel button{min-height:40px!important;}
+ html body #ffV31SAlertsList .notification-time,html body #notificationPanel .notification-time{font-weight:500!important;}
+}
 </style>
 
 <!-- V232: mobile notification single-entry and readability repair. No Supabase logic changed. -->

@@ -251,18 +251,12 @@ loginForm.addEventListener("submit", async function(event) {
 
 
     if (!navigator.onLine) {
-        try {
-            const cached = JSON.parse(localStorage.getItem("duarte_offline_auth_v26") || "null");
-            const profile = JSON.parse(localStorage.getItem("duarte_offline_profile_v26") || "null");
-            if (cached?.user_id && profile?.id === cached.user_id && profile?.approved === true) {
-                showMessage("Offline mode: opening your previously verified Duarte Clan account.", "success");
-                setTimeout(function(){ window.location.href = "index.html"; }, 350);
-            } else {
-                showMessage("You are offline. Connect to the internet and sign in once on this device first.", "error");
-            }
-        } catch(e) {
-            showMessage("You are offline. Connect to the internet and sign in once on this device first.", "error");
-        }
+        showMessage(
+            "No internet connection. You can't log in while offline. Please reconnect and try again.",
+            "error"
+        );
+        loginButton.disabled = false;
+        loginButton.textContent = "LOGIN";
         return;
     }
 
@@ -464,14 +458,14 @@ document
 (async function checkExistingSession() {
     const next = () => window.location.replace('index.html');
     try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('offline') === '1' && !navigator.onLine) {
+            showMessage('No internet connection. You can't log in while offline.', 'error');
+        }
+    } catch(_) {}
+    try {
         if (!navigator.onLine) {
-            const auth = JSON.parse(localStorage.getItem('duarte_offline_auth_v26') || 'null');
-            const profile = JSON.parse(localStorage.getItem('duarte_offline_profile_v26') || 'null');
-            if (auth?.user_id && profile?.id === auth.user_id && profile?.approved === true) {
-                showMessage('Offline · Opening previously loaded Duarte Clan content.', 'success');
-                next();return;
-            }
-            showMessage('No internet. First sign in online on this device to enable offline access.', 'error');
+            showMessage('No internet connection. You can't log in while offline.', 'error');
             return;
         }
         const {data,error} = await supabaseClient.auth.getSession();

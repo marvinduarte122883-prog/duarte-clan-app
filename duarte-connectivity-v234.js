@@ -6,7 +6,7 @@
   let t;
   function update(initial){
    clearTimeout(t);
-   if(!navigator.onLine){badge.hidden=false;badge.dataset.state='offline';badge.textContent='No internet connection · Previously loaded content remains available';}
+   if(!navigator.onLine){badge.hidden=false;badge.dataset.state='offline';badge.textContent=location.pathname.toLowerCase().endsWith('/login.html')?'No internet connection · Login requires internet':'No internet connection · Previously loaded content remains available';}
    else if(!initial){badge.hidden=false;badge.dataset.state='online';badge.textContent='Back online · Syncing updates';t=setTimeout(()=>{badge.hidden=true},3500);}
    else badge.hidden=true;
   }

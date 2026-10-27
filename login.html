@@ -163,6 +163,15 @@ body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;backgrou
 </div>
 
 
+<script id="duarte-v236-offline-login-guard">
+(function(){
+ function notice(){var box=document.getElementById('message');if(box){box.textContent="No internet connection. You can't log in while offline. Please reconnect and try again.";box.className='message show error';}}
+ document.addEventListener('submit',function(ev){if(!navigator.onLine){ev.preventDefault();ev.stopImmediatePropagation();notice();}},true);
+ document.addEventListener('DOMContentLoaded',function(){if(!navigator.onLine)notice();});
+ window.addEventListener('offline',notice);
+})();
+</script>
+
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -174,12 +183,12 @@ const SUPABASE_URL =
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_wYyisTscusEPgTmpbZGYmw_e_mTcAwW";
 
-const supabaseClient =
-    window.supabase.createClient(
+const supabaseClient = window.supabase?.createClient
+    ? window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY,
         {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
-    );
+    ) : null;
 
 
 const loginForm =
@@ -260,6 +269,10 @@ loginForm.addEventListener("submit", async function(event) {
         return;
     }
 
+    if (!supabaseClient) {
+        showMessage("Login service unavailable. Connect to the internet and try again.", "error");
+        return;
+    }
     loginButton.disabled = true;
     loginButton.textContent = "SIGNING IN...";
 
@@ -460,16 +473,17 @@ document
     try {
         const params = new URLSearchParams(window.location.search);
         if (params.get('offline') === '1' && !navigator.onLine) {
-            showMessage('No internet connection. You can't log in while offline.', 'error');
+            showMessage("No internet connection. You can\'t log in while offline.", "error");
         }
     } catch(_) {}
     try {
         if (!navigator.onLine) {
-            showMessage('No internet connection. You can't log in while offline.', 'error');
+            showMessage("No internet connection. You can\'t log in while offline.", "error");
             return;
         }
+        if (!supabaseClient) return;
         const {data,error} = await supabaseClient.auth.getSession();
-        if (!error && data?.session?.user) {
+        if (navigator.onLine && !error && data?.session?.user) {
             showMessage('Welcome back · Opening Duarte Clan…', 'success');
             next();
         }
@@ -658,7 +672,7 @@ body{background-color:#0f1011!important}.login-side{background:rgba(15,16,17,.78
 })();
 </script>
 
-<script defer src="./duarte-connectivity-v234.js?v=234"></script>
+<script defer src="./duarte-connectivity-v234.js?v=236"></script>
 </body>
 </html>
 

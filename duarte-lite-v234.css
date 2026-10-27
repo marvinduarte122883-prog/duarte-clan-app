@@ -1,0 +1,18 @@
+/* Duarte Clan V234: restrained Facebook Lite-inspired responsive palette. */
+:root{color-scheme:light;--dc-bg:#f0f2f5;--dc-card:#fff;--dc-text:#1c1e21;--dc-primary:#0866ff}
+html,body{overflow-x:clip; -webkit-text-size-adjust:100%}
+body{color:#1c1e21}
+:is(input,textarea,select){font-size:max(16px,1em)}
+:is(button,a,input,textarea,select):focus-visible{outline:2px solid #0866ff;outline-offset:2px}
+:is(.post-card,.create-post,.member-card,.notification-card,.message-card){box-shadow:0 1px 2px rgba(0,0,0,.06);border-radius:10px}
+:is(.post-card,.create-post,.member-card) img{max-width:100%;object-fit:contain}
+#dc-v234-connection{position:fixed;z-index:2147483001;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:max-content;max-width:calc(100vw - 24px);padding:10px 15px;border-radius:10px;background:#202b3d;color:#fff;font:600 13px/1.4 system-ui,Arial,sans-serif;text-align:center;box-shadow:0 4px 20px #0002;pointer-events:none}
+#dc-v234-connection[hidden]{display:none!important}
+#dc-v234-connection[data-state=online]{background:#176b40}
+@media(max-width:760px){
+ html,body{max-width:100%;}
+ body{overflow-x:hidden!important}
+ :is(.post-card,.create-post,.member-card,.notification-card,.card){max-width:100%;min-width:0}
+ #dc-v234-connection{top:calc(6px + env(safe-area-inset-top,0px));font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important}}

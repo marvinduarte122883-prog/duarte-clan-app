@@ -33,6 +33,7 @@ body{min-height:100vh;font-family:Arial,Helvetica,sans-serif;color:#fff;backgrou
 }
 @media(max-width:760px){.dc-facebook-brand .duarte-login-brand-banner{width:min(100%,380px)!important}}
 </style>
+<link rel="stylesheet" href="./duarte-lite-v234.css?v=234">
 </head>
 
 <body>
@@ -176,7 +177,8 @@ const SUPABASE_PUBLISHABLE_KEY =
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+        SUPABASE_PUBLISHABLE_KEY,
+        {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
     );
 
 
@@ -252,7 +254,7 @@ loginForm.addEventListener("submit", async function(event) {
         try {
             const cached = JSON.parse(localStorage.getItem("duarte_offline_auth_v26") || "null");
             const profile = JSON.parse(localStorage.getItem("duarte_offline_profile_v26") || "null");
-            if (cached?.user_id && profile?.id) {
+            if (cached?.user_id && profile?.id === cached.user_id && profile?.approved === true) {
                 showMessage("Offline mode: opening your previously verified Duarte Clan account.", "success");
                 setTimeout(function(){ window.location.href = "index.html"; }, 350);
             } else {
@@ -458,27 +460,26 @@ document
 });
 
 
-/* IF ALREADY LOGGED IN */
-
+/* Automatic return using Supabase persistent session, not saved plaintext credentials. */
 (async function checkExistingSession() {
-    if(!navigator.onLine){
-        try{
-            const cached=JSON.parse(localStorage.getItem("duarte_offline_auth_v26") || "null");
-            const profile=JSON.parse(localStorage.getItem("duarte_offline_profile_v26") || "null");
-            if(cached?.user_id && profile?.id){
-                showMessage("Offline mode available for this previously verified device.", "success");
-            }else{
-                showMessage("Offline login is unavailable until this device has signed in online once.", "error");
+    const next = () => window.location.replace('index.html');
+    try {
+        if (!navigator.onLine) {
+            const auth = JSON.parse(localStorage.getItem('duarte_offline_auth_v26') || 'null');
+            const profile = JSON.parse(localStorage.getItem('duarte_offline_profile_v26') || 'null');
+            if (auth?.user_id && profile?.id === auth.user_id && profile?.approved === true) {
+                showMessage('Offline · Opening previously loaded Duarte Clan content.', 'success');
+                next();return;
             }
-        }catch(e){}
-        return;
-    }
-    try{
-        const { data } = await supabaseClient.auth.getSession();
-        if (data.session) console.log("Existing Duarte Clan session detected.");
-    }catch(e){
-        console.warn("Session check unavailable:",e);
-    }
+            showMessage('No internet. First sign in online on this device to enable offline access.', 'error');
+            return;
+        }
+        const {data,error} = await supabaseClient.auth.getSession();
+        if (!error && data?.session?.user) {
+            showMessage('Welcome back · Opening Duarte Clan…', 'success');
+            next();
+        }
+    } catch(e) {console.warn('Saved session check unavailable:',e);}
 })();
 
 </script>
@@ -663,6 +664,7 @@ body{background-color:#0f1011!important}.login-side{background:rgba(15,16,17,.78
 })();
 </script>
 
+<script defer src="./duarte-connectivity-v234.js?v=234"></script>
 </body>
 </html>
 

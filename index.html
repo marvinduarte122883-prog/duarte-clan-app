@@ -2957,7 +2957,8 @@ const SUPABASE_URL = "https://mrrothkiygcxspiwotjx.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wYyisTscusEPgTmpbZGYmw_e_mTcAwW";
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    SUPABASE_PUBLISHABLE_KEY,
+    {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}
 );
 
 let currentUser = null;
@@ -10434,7 +10435,7 @@ body.ff-offline .ff-online-required{opacity:.55}
 
  if("serviceWorker" in navigator && location.protocol!=="file:"){
    window.addEventListener("load",()=>{
-     navigator.serviceWorker.register("./duarte-sw-v62.js", {updateViaCache:"none"}).catch(e=>console.warn("Duarte service worker:",e));
+     navigator.serviceWorker.register("./duarte-sw-v234.js", {updateViaCache:"none"}).catch(e=>console.warn("Duarte service worker:",e));
    },{once:true});
  }
 })();
@@ -20782,3 +20783,6 @@ header.topbar .notification-wrap .notification-bell {display:flex !important}
   else attach();
 })();
 </script>
+
+<link rel="stylesheet" href="./duarte-lite-v234.css?v=234">
+<script defer src="./duarte-connectivity-v234.js?v=234"></script>

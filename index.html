@@ -11033,45 +11033,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
 </script>
 
 
-<style id="ff-pwa-update-v24-css">
-#ffPwaUpdateV24{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483000;display:none;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px;border:1px solid #dce1e8;border-radius:14px;background:#fff;color:#1c1e21;box-shadow:0 6px 20px rgba(0,0,0,.12);font:600 13px/1.3 system-ui,-apple-system,Segoe UI,sans-serif}
-#ffPwaUpdateV24 button{min-height:40px;border:0;border-radius:10px;padding:0 14px;background:#0866ff;color:#fff;font-weight:800;cursor:pointer}
-#ffPwaUpdateV24 .ff-dismiss{background:#f0f2f5;color:#1c1e21;border:1px solid #dce1e8}
-</style>
-<div id="ffPwaUpdateV24" role="status" aria-live="polite">
-  <span>New Duarte Clan version available.</span>
-  <button id="ffPwaApplyV24" type="button">Update</button>
-  <button id="ffPwaDismissV24" class="ff-dismiss" type="button" aria-label="Dismiss update">Later</button>
-</div>
-<script id="ff-pwa-update-v24-js">
-(function(){
- if(!("serviceWorker" in navigator) || !/^https?:$/.test(location.protocol)) return;
- const box=document.getElementById("ffPwaUpdateV24");
- const apply=document.getElementById("ffPwaApplyV24");
- const later=document.getElementById("ffPwaDismissV24");
- let waiting=null, reloading=false;
-
- function show(worker){ waiting=worker; if(box) box.style.display="flex"; }
- function watch(reg){
-   if(reg.waiting && navigator.serviceWorker.controller) show(reg.waiting);
-   reg.addEventListener("updatefound",()=>{
-     const w=reg.installing;
-     if(!w)return;
-     w.addEventListener("statechange",()=>{
-       if(w.state==="installed" && navigator.serviceWorker.controller) show(w);
-     });
-   });
- }
- navigator.serviceWorker.ready.then(watch).catch(()=>{});
- apply&&apply.addEventListener("click",()=>{
-   if(waiting) waiting.postMessage({type:"SKIP_WAITING"});
- });
- later&&later.addEventListener("click",()=>{ if(box)box.style.display="none"; });
- navigator.serviceWorker.addEventListener("controllerchange",()=>{
-   if(reloading)return; reloading=true; location.reload();
- });
-})();
-</script>
+<!-- Legacy duplicate PWA update notification removed; unified update banner is duarteV132Update. -->
 
 
 <style id="ff-health-v25-css">
@@ -12052,14 +12014,7 @@ body{min-height:100dvh;padding-left:var(--ff-safe-left);padding-right:var(--ff-s
      setTimeout(()=>location.reload(),700);
    }
  }
- document.addEventListener("click",e=>{
-   const el=e.target.closest?.("button,a");
-   if(!el)return;
-   const t=(el.textContent||"").trim().toLowerCase();
-   if(t==="update" && !el.closest("#duarteV132Update") && (document.body.textContent||"").includes("New Duarte Clan version")){
-     e.preventDefault();e.stopImmediatePropagation();updateNow();
-   }
- },true);
+
  window.ffDuarteMobileStableV31N={version:"production-facebook-lite-v46",updateNow};
 })();
 </script>
@@ -16735,14 +16690,16 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
 <!-- V132: lightweight WebView update checker; no auth storage or caches cleared -->
 <style id="duarte-v132-update-style">
 #duarteV132Update{position:fixed;left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:100800;display:none;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;background:#fff;border:1px solid #dadde1;border-radius:12px;color:#1c1e21;font:13px system-ui,sans-serif;box-shadow:0 4px 18px #0008}
-#duarteV132Update.show{display:flex}#duarteV132Update button{border:0;border-radius:8px;background:#0866ff;color:#fff;padding:8px 10px;font-weight:800;white-space:nowrap}
+#duarteV132Update.show{display:flex}#duarteV132Update .duarte-update-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}#duarteV132Update button{border:0;border-radius:8px;background:#0866ff;color:#fff;padding:8px 10px;font-weight:800;white-space:nowrap}
+#duarteV132Update #duarteV132UpdateLater{background:#edf0f3;color:#1c1e21;border:1px solid #dce1e8}
+@media(max-width:600px){#duarteV132Update{left:10px;right:10px;bottom:calc(12px + env(safe-area-inset-bottom));flex-wrap:wrap;gap:8px}#duarteV132UpdateText{flex:1 1 100%}#duarteV132Update .duarte-update-actions{width:100%;justify-content:flex-end}}
 </style>
-<div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><button type="button" id="duarteV132UpdateApply">Update</button></div>
+<div id="duarteV132Update" role="status" aria-live="polite"><span id="duarteV132UpdateText">An update is available.</span><div class="duarte-update-actions"><button type="button" id="duarteV132UpdateApply">Update</button><button type="button" id="duarteV132UpdateLater" aria-label="Dismiss update notification">Later</button></div></div>
 <script id="duarte-v132-update-script">
 (()=>{
- const VERSION='v233';
+ const VERSION='v234';
  const endpoint='./duarte-version.json';
- let pending=false,checking=false,lastCheck=0;
+ let pending=false,checking=false,lastCheck=0,availableVersion='';
  const box=document.getElementById('duarteV132Update'),message=document.getElementById('duarteV132UpdateText');
  const active=()=>{
    const selectors=['#ffStoryComposer.open','#ffStoryViewer.open','.ff-call-modal.open','#ffMsgModal.open','#duarteV63Composer.open','#postModal.open','.modal.open'];
@@ -16764,7 +16721,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
      try{resp=await fetch(endpoint+'?t='+Date.now(),{cache:'no-store',signal:ctrl.signal})}finally{clearTimeout(timeout)}
      if(!resp.ok)throw Error('Update check failed');
      const remote=await resp.json();
-     if(remote?.version && /^v\d+$/.test(remote.version) && Number(remote.version.slice(1))>Number(VERSION.slice(1))){if(sessionStorage.getItem('duarte_update_attempt')===remote.version && Date.now()-Number(sessionStorage.getItem('duarte_update_attempt_at')||0)<15*60*1000){box.classList.remove('show');return;}pending=true;show(active()?'Update ready — finish your current activity first.':'A new Duarte Clan version is available.');}
+     if(remote?.version && /^v\d+$/.test(remote.version) && Number(remote.version.slice(1))>Number(VERSION.slice(1))){availableVersion=remote.version;if(sessionStorage.getItem('duarte_update_dismissed')===remote.version){box.classList.remove('show');return;}if(sessionStorage.getItem('duarte_update_attempt')===remote.version && Date.now()-Number(sessionStorage.getItem('duarte_update_attempt_at')||0)<15*60*1000){box.classList.remove('show');return;}pending=true;show(active()?'Update ready — finish your current activity first.':'A new Duarte Clan version is available.');}
      else {pending=false;box.classList.remove('show');if(force){show('You have the latest Duarte Clan version.');setTimeout(()=>{if(!pending)box.classList.remove('show')},2500)}}
    }catch(e){if(force){show('Could not check updates. Check your internet connection.');setTimeout(()=>box.classList.remove('show'),3500)}}
    finally{checking=false}
@@ -16779,6 +16736,7 @@ body:has(.ff-story-modal.open) #ffV118AppRefresh,body:has(.ff-call-modal.open) #
  }
  window.duarteSafeUpdateCheck=check;
  document.getElementById('duarteV132UpdateApply').addEventListener('click',apply);
+ document.getElementById('duarteV132UpdateLater').addEventListener('click',()=>{if(availableVersion)sessionStorage.setItem('duarte_update_dismissed',availableVersion);box.classList.remove('show')});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
  window.addEventListener('online',()=>check(),{passive:true});
  document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>check(),1700),{once:true});

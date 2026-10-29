@@ -3711,6 +3711,8 @@ async function protectPrivateClan() {
 
         document.body.style.visibility = "visible";
         await loadPosts();
+        // One greeting per newly approved member on their first online visit.
+        if(typeof duarteShowFirstWelcome === "function") void duarteShowFirstWelcome();
         await loadEvents();
         await loadMembersDirectory();
         startNotificationRefresh();
@@ -17980,6 +17982,46 @@ html.ff-v154-profile-active #profileManager.show {
  window.addEventListener('pageshow',apply,{passive:true});
  window.addEventListener('orientationchange',apply,{passive:true});
 })();
+</script>
+
+
+<style id="duarte-welcome-v235-style">
+#duarteWelcomeV235{position:fixed;inset:0;z-index:2147482000;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.54);padding:16px;box-sizing:border-box}
+#duarteWelcomeV235[hidden]{display:none!important}
+#duarteWelcomeV235 .welcome-panel{width:min(100%,440px);box-sizing:border-box;background:#fff;color:#17212f;padding:27px 23px;border-radius:18px;box-shadow:0 16px 50px #0003;text-align:center;font-family:inherit}
+#duarteWelcomeV235 .welcome-emoji{font-size:45px;line-height:1.4}
+#duarteWelcomeV235 h2{font-size:22px;line-height:1.3;margin:10px 0;color:#17212f}
+#duarteWelcomeV235 p{font-size:15px;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere;color:#35445b;margin:12px 0 20px}
+#duarteWelcomeV235 button{background:#0866ff;color:white;border:0;border-radius:10px;padding:12px 22px;font:700 15px inherit;min-height:44px;cursor:pointer}
+@media(max-width:600px){#duarteWelcomeV235 .welcome-panel{padding:24px 18px;border-radius:15px}#duarteWelcomeV235 h2{font-size:20px}}
+</style>
+<script id="duarte-welcome-v235">
+// Welcome screen is deliberately only shown to approved members; does not change approval rules.
+async function duarteShowFirstWelcome(){
+ try{
+  if(!navigator.onLine || !currentUser?.id || currentProfile?.approved!==true)return;
+  const uid=String(currentUser.id), key='duarte-welcome-v235:'+uid;
+  if(localStorage.getItem(key))return;
+  if(document.getElementById('duarteWelcomeV235'))return;
+  // Existing administrator-defined greeting, when Supabase V124 functions are installed.
+  let template='🎉 Welcome to the Duarte Clan Family, {name}! Your membership has been approved. Explore family stories, share memories and photos, join clan events, and connect with the family. ❤️ — Duarte Clan Administration';
+  try{
+   if(typeof supabaseClient!=='undefined'){
+    const result=await supabaseClient.rpc('duarte_get_welcome_template');
+    if(!result.error && typeof result.data==='string' && result.data.trim())template=result.data.slice(0,1500);
+   }
+  }catch(_){/* The greeting works even if the optional RPC has not been installed. */}
+  if(currentUser?.id!==uid || currentProfile?.approved!==true || localStorage.getItem(key))return;
+  const modal=document.createElement('div');modal.id='duarteWelcomeV235';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','duarteWelcomeV235Title');
+  const panel=document.createElement('div');panel.className='welcome-panel';
+  const emoji=document.createElement('div');emoji.className='welcome-emoji';emoji.textContent='🎉';
+  const heading=document.createElement('h2');heading.id='duarteWelcomeV235Title';heading.textContent='Welcome to Duarte Clan!';
+  const msg=document.createElement('p');msg.textContent=template.replace(/\{name\}/gi,String(currentProfile.full_name||'Clan Member'));
+  const button=document.createElement('button');button.type='button';button.textContent='Explore Duarte Clan';
+  button.addEventListener('click',()=>{try{localStorage.setItem(key,new Date().toISOString())}catch(_){}modal.remove()});
+  panel.append(emoji,heading,msg,button);modal.append(panel);document.body.append(modal);button.focus();
+ }catch(err){console.warn('Welcome greeting unavailable:',err)}
+}
 </script>
 
 </body>
